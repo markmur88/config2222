@@ -1,0 +1,31 @@
+X-Firefox-Http3: h3
+access-control-allow-credentials: true
+access-control-allow-headers: idempotency-id,process-id,otp,Correlation-ID,Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization,Cookie,X-Frame-Options,X-Content-Type-Options,Strict-Transport-Security,previewsignature
+access-control-allow-methods: GET,POST,PATCH,HEAD,OPTIONS,DELETE
+access-control-allow-origin: 
+access-control-max-age: 3628800
+alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+content-length: 173
+content-type: application/json
+date: Thu, 27 Feb 2025 20:59:24 GMT
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+via: 1.1 google
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-request-id: c9dac1ce-630d-4117-b75b-4795933db39c
+x-sf-cors: true
+
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: es-CO,en-US;q=0.7,en;q=0.3
+Alt-Used: api.db.com
+Connection: keep-alive
+Host: api.db.com
+Priority: u=0, i
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+TE: trailers
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0

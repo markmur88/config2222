@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+<a href="{% url 'transfers_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+
+
+<h1>Transacciones</h1>
+<a href="{% url 'transaction-create' %}" class="btn btn-primary mb-3">Crear Transacción</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cuenta Origen</th>
+            <th>Cuenta Destino</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaction in transactions %}
+        <tr>
+            <td>{{ transaction.id }}</td>
+            <td>{{ transaction.source_account }}</td>
+            <td>{{ transaction.destination_account }}</td>
+            <td>{{ transaction.amount }} {{ transaction.currency }}</td>
+            <td>{{ transaction.get_status_display }}</td>
+            <td>
+                <a href="{% url 'transaction-detail' transaction.id %}" class="btn btn-info btn-sm">Detalles</a>
+                <a href="{% url 'transaction-update' transaction.id %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'transaction-delete' transaction.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

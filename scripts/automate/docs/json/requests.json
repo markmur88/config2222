@@ -1,0 +1,40 @@
+{
+  "create_transaction": {
+    "method": "POST",
+    "url": "http://127.0.0.1:8000/transactions/",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "transaction_id": "SW123456789",
+      "sender_name": "John Doe",
+      "sender_account": "1234567890",
+      "receiver_name": "Jane Doe",
+      "receiver_account": "0987654321",
+      "amount": "1000.00",
+      "currency": "USD"
+    }
+  },
+  "get_all_transactions": {
+    "method": "GET",
+    "url": "http://127.0.0.1:8000/transactions/"
+  },
+  "get_transaction": {
+    "method": "GET",
+    "url": "http://127.0.0.1:8000/transactions/SW123456789/"
+  },
+  "update_transaction": {
+    "method": "PUT",
+    "url": "http://127.0.0.1:8000/transactions/SW123456789/",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "status": "COMPLETED"
+    }
+  },
+  "delete_transaction": {
+    "method": "DELETE",
+    "url": "http://127.0.0.1:8000/transactions/SW123456789/"
+  }
+}

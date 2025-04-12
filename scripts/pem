@@ -1,0 +1,156 @@
+Client_id: ynCsnS3WA2dQtvlDBttYpv51goAzlSMUxSLGxHEO
+Client_secret: pbkdf2_sha256$870000$KBmduLQnMQdWI9gAjKMBMs$Ih40gPHNYMupc6H5N+k+JsDT2erKQdvpXz9RmDC20KA=
+
+
+  openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+
+
+
+Para implementar la autenticación en tu aplicación Django utilizando tokens JWT firmados con una clave privada en formato PEM, puedes seguir los siguientes pasos:
+
+1. Generación de Claves RSA
+
+Primero, necesitas generar un par de claves RSA (pública y privada) en formato PEM. Estas claves se utilizarán para firmar y verificar los tokens JWT. Puedes generar estas claves utilizando OpenSSL:
+
+    Generar la clave privada:
+
+  openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+
+    Generar la clave pública:
+
+  openssl rsa -pubout -in private.pem -out public.pem
+
+Estas claves se almacenarán en los archivos private.pem y public.pem.
+
+2. Instalación de Dependencias
+
+Asegúrate de tener instaladas las siguientes bibliotecas en tu entorno de Django:
+
+    Django REST Framework:
+
+  pip install djangorestframework
+
+    PyJWT:
+
+  pip install pyjwt
+
+3. Configuración de Django
+
+En tu archivo settings.py, agrega las siguientes configuraciones:
+
+    Agregar aplicaciones instaladas:
+
+  INSTALLED_APPS = [
+      ...
+      'rest_framework',
+  ]
+
+    Configurar las clases de autenticación:
+
+  REST_FRAMEWORK = {
+      'DEFAULT_AUTHENTICATION_CLASSES': (
+          'rest_framework.authentication.BaseAuthentication',
+      ),
+  }
+
+4. Creación de un Middleware de Autenticación Personalizado
+
+Crea un middleware que se encargue de verificar el token JWT en las cabeceras de las solicitudes entrantes.
+
+    Crear el archivo middleware.py:
+
+  import jwt
+  from config import settings
+  from django.http import JsonResponse
+
+  class JWTAuthenticationMiddleware:
+      def __init__(self, get_response):
+          self.get_response = get_response
+
+      def __call__(self, request):
+          token = request.headers.get('Authorization')
+          if token:
+              try:
+                  # Eliminar el prefijo 'Bearer ' si está presente
+                  if token.startswith('Bearer '):
+                      token = token[7:]
+                  # Decodificar el token utilizando la clave pública
+                  with open('path/to/public.pem', 'r') as f:
+                      public_key = f.read()
+                  jwt.decode(token, public_key, algorithms=['RS256'])
+              except jwt.ExpiredSignatureError:
+                  return JsonResponse({'error': 'Token ha expirado'}, status=401)
+              except jwt.InvalidTokenError:
+                  return JsonResponse({'error': 'Token inválido'}, status=401)
+          else:
+              return JsonResponse({'error': 'Token no proporcionado'}, status=401)
+
+          response = self.get_response(request)
+          return response
+
+Asegúrate de reemplazar 'path/to/public.pem' con la ruta correcta a tu archivo de clave pública.
+
+5. Uso del Token en Solicitudes
+
+Al realizar solicitudes a tu API, incluye el token JWT en la cabecera Authorization de la siguiente manera:
+
+Authorization: Bearer <tu_token_aquí>
+
+Este token debe ser generado previamente y proporcionado al cliente que realiza la solicitud.
+
+6. Generación del Token JWT
+
+Para generar el token JWT en el servidor, puedes utilizar la clave privada para firmarlo.
+
+    Generar el token:
+
+  import jwt
+  from datetime import datetime, timedelta
+
+  def generar_token(user_id):
+      with open('path/to/private.pem', 'r') as f:
+          private_key = f.read()
+      payload = {
+          'user_id': user_id,
+          'exp': datetime.utcnow() + timedelta(hours=1),
+          'iat': datetime.utcnow(),
+      }
+      token = jwt.encode(payload, private_key, algorithm='RS256')
+      return token
+
+Asegúrate de reemplazar 'path/to/private.pem' con la ruta correcta a tu archivo de clave privada.
+
+Este token puede ser enviado al cliente para que lo incluya en las cabeceras de sus solicitudes.
+
+Implementando estos pasos, tu aplicación Django podrá autenticar solicitudes utilizando tokens JWT firmados con una clave privada en formato PEM, asegurando una comunicación segura y eficiente.
+
+
+
+
+El error que estás viendo indica que Certbot no pudo autenticar el dominio `transferencias-swift-db.com` debido a problemas con los registros DNS. Específicamente, el error `NXDOMAIN` sugiere que no se encontraron registros A o AAAA para el dominio.
+
+Aquí hay algunos pasos que puedes seguir para solucionar este problema:
+
+1. **Verificar los registros DNS**:
+   - Asegúrate de que el dominio `transferencias-swift-db.com` tenga registros DNS configurados correctamente. Debe haber al menos un registro A (para IPv4) o un registro AAAA (para IPv6) que apunte a la dirección IP de tu servidor.
+
+2. **Comprobar la propagación DNS**:
+   - A veces, los cambios en los registros DNS pueden tardar un tiempo en propagarse. Puedes usar herramientas como [WhatsMyDNS](https://www.whatsmydns.net/) para verificar si los registros DNS se han propagado correctamente.
+
+3. **Asegurarse de que el servidor Nginx esté accesible desde Internet**:
+   - Verifica que tu servidor Nginx esté configurado correctamente y sea accesible desde Internet. Puedes intentar acceder a tu dominio desde un navegador web para asegurarte de que el servidor responde.
+
+4. **Revisar el archivo de configuración de Nginx**:
+   - Asegúrate de que la configuración de Nginx esté correcta y que el servidor esté escuchando en los puertos adecuados (80 para HTTP y 443 para HTTPS).
+
+5. **Revisar el log de Certbot**:
+   - Puedes revisar el archivo de log de Certbot para obtener más detalles sobre el error. El archivo de log se encuentra en `/var/log/letsencrypt/letsencrypt.log`.
+
+6. **Ejecutar Certbot con más detalles**:
+   - Puedes ejecutar Certbot con la opción `-v` para obtener más detalles sobre el proceso de autenticación:
+     ```bash
+     sudo certbot --nginx -v
+     ```
+
+Si después de seguir estos pasos aún tienes problemas, puedes buscar ayuda en la comunidad de Let's Encrypt en [https://community.letsencrypt.org](https://community.letsencrypt.org).
+

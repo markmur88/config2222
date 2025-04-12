@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<br><br>
+
+<h1>Eliminar IBAN</h1>
+<p>¿Estás seguro de que deseas eliminar el IBAN {{ object.iban }}?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'iban-list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,91 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<br><br>
+
+<h1 class="text-center">Dashboard</h1>
+<br><br>
+<div class="row">
+    <!-- Categoría: Saldo -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Saldo Actual</h5>
+                <p class="card-text" id="saldo-actual">Cargando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categoría: Transacciones -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Últimas Transacciones</h5>
+                <ul class="list-group" id="ultimas-transacciones">
+                    <li class="list-group-item">Cargando...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categoría: Transferencias -->
+    <div class="col-md-12 mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Transferencias Realizadas</h5>
+                <ul class="list-group" id="transferencias-realizadas">
+                    <li class="list-group-item">Cargando...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categoría: Perfil -->
+    <div class="col-md-12 mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Información del Perfil</h5>
+                <p class="card-text" id="perfil-info">Cargando...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import apiService from "{% static 'js/apiService.js' %}";
+
+    // Formateadores para cada categoría
+    const formatSaldo = (data) => `$${data.balance.toFixed(2)}`;
+    const formatTransacciones = (data) => data.map(t => `<li class="list-group-item">${t.type}: $${t.amount}</li>`).join('');
+    const formatTransferencias = (data) => data.map(t => `<li class="list-group-item">A: ${t.to_account} - $${t.amount}</li>`).join('');
+    const formatPerfil = (data) => `Nombre: ${data.name}<br>Email: ${data.email}`;
+
+    // Función para cargar datos dinámicos
+    async function fetchData(apiCall, elementId, formatter) {
+        try {
+            const data = await apiCall();
+            document.getElementById(elementId).innerHTML = formatter(data.data);
+        } catch (error) {
+            document.getElementById(elementId).innerHTML = "Error al cargar datos.";
+            console.error(error);
+        }
+    }
+
+    // Cargar datos dinámicos usando apiService
+    fetchData(apiService.getAccounts, 'saldo-actual', (data) => formatSaldo(data[0])); // Muestra el saldo de la primera cuenta
+    fetchData(apiService.getTransactions, 'ultimas-transacciones', formatTransacciones); // Transacciones realizadas
+    fetchData(apiService.getTransfers, 'transferencias-realizadas', formatTransferencias); // Transferencias realizadas
+    fetchData(apiService.getAccountById.bind(null, 1), 'perfil-info', formatPerfil); // Ejemplo con ID 1
+</script>
+
+<script src="{% static 'js/dashboard.js' %}"></script>
+<script src="{% static 'js/axiosClient.js' %}"></script>
+
+{% endblock %}
+
+

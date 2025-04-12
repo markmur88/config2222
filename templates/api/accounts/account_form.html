@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Formulario de Cuenta{% endblock %}
+
+{% block content %}
+
+<br><br>
+
+<h1>{% if object %}Editar Cuenta{% else %}Crear Cuenta{% endif %}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a href="{% url 'account_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

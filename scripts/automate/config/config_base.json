@@ -1,0 +1,7 @@
+{
+    "rangos_ip": ["193.150.166.0/255", "10.0.0.1/50"],
+    "archivo_usuarios": "diccionarios/usuarios.txt",
+    "archivo_contrasenas": "diccionarios/contraseñas.txt",
+    "puerto_ssh": 22,
+    "timeout_hydra": 10
+  }

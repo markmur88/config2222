@@ -1,0 +1,31 @@
+
+
+
+ssh -o PreferredAuthentications=password 493069k1@193.150.166.1 -p 22
+
+# Cambiar ip
+sudo su
+ifconfig
+
+# cambio de ip
+ifconfig eth0 10.0.2.15
+
+# Cambiar mascara
+macchanger -s eth0
+08:00:27:53:98:2b
+
+# Cambiar mac
+macchanger -A eth0
+70:7c:18:e0:6b:ab
+
+# para ingresar la direccion mac manualmente deshabilita el adaptador
+ifconfig eth0 down
+
+# asignar la nueva mac
+ifconfig eth0 hw ether 00:11:22:33:44:55
+
+# habilitar el adaptador
+ifconfig eth0 up
+
+# aplica la mac original
+macchanger -p eth0

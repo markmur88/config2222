@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Sección: Endpoints de Transferencias -->
+<div class="container mb-5">
+    <div class="card h-100 text-center shadow-sm border-0 bg-light text-dark">
+        <div class="card-body">
+            <!-- Transferencias Generales -->
+            <h3 class="text-primary">Transferencias Generales</h3>
+            <a href="{% url 'transfer_form' %}" class="btn btn-primary mt-3">transfer_form</a>
+            <!-- ...otros enlaces de Transferencias Generales... -->
+
+            <!-- Transferencias SEPA -->
+            <h3 class="text-success mt-4">Transferencias SEPA</h3>
+            <a href="{% url 'sepa_transfer_list' %}" class="btn btn-success mt-3">sepa_transfer_list</a>
+
+            <!-- Transacciones SEPA -->
+            <h3 class="text-warning mt-4">Transacciones SEPA</h3>
+            <a href="{% url 'sepa_transaction_form' %}" class="btn btn-warning mt-3">sepa_transaction_form</a>
+
+            <!-- Copias de transferencias -->
+            <h3 class="text-info mt-4">Copias de transferencias</h3>
+            <a href="{% url 'sepa_transfer_copy_create' %}" class="btn btn-info mt-3">sepa_transfer_copy_create</a>
+
+            <!-- SEPA3 COM2 -->
+            <h3 class="text-danger mt-4">SEPA3 COM2</h3>
+            <a href="{% url 'sepa3_tcom2_create' %}" class="btn btn-danger mt-3">sepa3_tcom2_create</a>
+            <a href="{% url 'sepa3_com2_create' %}" class="btn btn-danger mt-3">sepa3_com2_create</a>
+
+
+            <!-- Transferencias rápidas -->
+            <h3 class="text-dark mt-4">Transferencias rápidas</h3>
+            <a href="{% url 'transfer_quick_list' %}" class="btn btn-dark mt-3">transfer_quick_list</a>
+
+            <!-- Transferencias internacionales -->
+            <h3 class="text-secondary mt-4">Transferencias internacionales</h3>
+            <a href="{% url 'transfer_international_list' %}" class="btn btn-secondary mt-3">transfer_international_list</a>
+
+            <!-- Transferencias ALL -->
+            <h3 class="text-primary mt-4">Transferencias ALL</h3>
+            <a href="{% url 'transfer_all_list' %}" class="btn btn-primary mt-3">transfer_all_list</a>
+            <a href="{% url 'transfer_all_create' %}" class="btn btn-primary mt-3">transfer_all_create</a>
+            <a href="{% url 'transfer_all_form' %}" class="btn btn-primary mt-3">transfer_all_form</a>
+            <a href="{% url 'transferAllCV' %}" class="btn btn-primary mt-3">transferAllCV</a>
+
+
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="{% url 'core_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+<h1>Lista de IBANs</h1>
+<a href="{% url 'iban-create' %}" class="btn btn-primary">Crear IBAN</a>
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>IBAN</th>
+            <th>BIC</th>
+            <th>Banco</th>
+            <th>Estado</th>
+            <th>Tipo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for iban in ibans %}
+        <tr>
+            <td>{{ iban.iban }}</td>
+            <td>{{ iban.bic }}</td>
+            <td>{{ iban.bank_name }}</td>
+            <td>{{ iban.status }}</td>
+            <td>{{ iban.type }}</td>
+            <td>
+                <a href="{% url 'iban-update' iban.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'iban-delete' iban.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

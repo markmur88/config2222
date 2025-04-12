@@ -1,0 +1,13 @@
+- DNS server Domain: 160.83.58.33
+- SSH: 193.150.166.1
+- Server Global IP: 193.150.166.0/24 / 193.150.167.255
+- Server Global ID (ORIGIN): AS8373
+- ns1.db.com.de (193.112.95.1)
+- ns21.db.net (204.13.250.141)
+- ns21.db.uk (204.13.251.141)
+- ns20.db.net (208.78.70.141)
+- ns20.db.uk (208.78.71.141)
+- ns11.db.com.de (193.112 90.4)
+
+
+

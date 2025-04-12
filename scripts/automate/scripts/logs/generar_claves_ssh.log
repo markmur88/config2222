@@ -1,0 +1,11 @@
+2025-03-02 21:18:04,610 - INFO - Iniciando script de generación de claves SSH...
+2025-03-02 21:18:04,610 - INFO - Iniciando: Generar Claves SSH
+2025-03-02 21:18:04,694 - ERROR - Error al ejecutar el comando: sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+sudo: a password is required
+2025-03-02 21:18:04,694 - INFO - Claves SSH generadas en /home/markmur88/Documentos/automation_project/scripts/../keys/id_rsa
+2025-03-02 21:18:06,694 - INFO - Script de generación de claves SSH completado.
+2025-03-02 21:20:50,592 - INFO - Iniciando script de generación de claves SSH...
+2025-03-02 21:20:50,593 - INFO - Iniciando: Generar Claves SSH
+2025-03-02 21:20:51,053 - INFO - Comando ejecutado correctamente: Generar Claves SSH
+2025-03-02 21:20:51,053 - INFO - Claves SSH generadas en /home/markmur88/Documentos/automation_project/scripts/../keys/id_rsa
+2025-03-02 21:20:53,054 - INFO - Script de generación de claves SSH completado.

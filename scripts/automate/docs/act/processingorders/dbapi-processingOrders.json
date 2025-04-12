@@ -1,0 +1,585 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "dbapi-processingOrders",
+    "description": "Create a document processing order. Limited access for special consumers only.",
+    "termsOfService": "https://developer.db.com/termsandconditions",
+    "contact": {
+      "url": "https://developer.db.com/contact",
+      "email": "bank.api@db.com"
+    },
+    "version": "v2"
+  },
+  "servers": [
+    {
+      "url": "https://simulator-api.db.com:443/gw/dbapi/others/processingOrders/v2"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Processing Orders"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "tags": [
+          "Processing Orders"
+        ],
+        "summary": "Create a processing order",
+        "description": "Create a processing order. This endpoint has limited access for special consumers only. It's possible to start manual processes only.",
+        "operationId": "createProcessingOrders",
+        "parameters": [
+          {
+            "name": "idempotency-id",
+            "in": "header",
+            "description": "Unique id of the service call. Should be resent during retries to avoid multiple processing of the same request",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Correlation-Id",
+            "in": "header",
+            "description": "Free form key controlled by the caller e.g. uuid",
+            "required": false,
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "processingOrder"
+                ],
+                "type": "object",
+                "properties": {
+                  "processingOrder": {
+                    "type": "string",
+                    "description": "The metadata of this processing order and their belonging documents. Must be a content-type application/json and schema #/definitions/ProcessingOrderMetadata. It must be the leading part of the multipart request payload followed by the individual documents as referenced in the metadata.",
+                    "format": "binary"
+                  },
+                  "documentData": {
+                    "type": "string",
+                    "description": "The document data itself. You can send multiple documents with different multipart/form-data names; valid content types are: application/pdf, image/tiff or application/xml. The number of documents must match the number of document metadata provided in JSON for multipart/form-data processingOrder.documentMetas",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {}
+          },
+          "400": {
+            "description": "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": [
+                  {
+                    "code": 123,
+                    "message": "Invalid %s for multipart/form-data entry: %s."
+                  },
+                  {
+                    "code": 124,
+                    "message": "Must provide at least two multiparts: \"processingOrder\" and 1-n parts with part name equal to processingOrder.documentMetadata[].documentName."
+                  },
+                  {
+                    "code": 125,
+                    "message": "Missing documentMetas for document %s."
+                  },
+                  {
+                    "code": 129,
+                    "message": "Invalid processing order request/data, one or more fields failed validation"
+                  },
+                  {
+                    "code": 137,
+                    "message": "Invalid document upload request - must be exactly one multipart"
+                  },
+                  {
+                    "code": 1123,
+                    "message": "Invalid PDF document content for a multipart/form-data entry."
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_client_credential": [
+              "create_processing_orders"
+            ]
+          }
+        ]
+      }
+    },
+    "/documents": {
+      "post": {
+        "tags": [
+          "Processing Orders"
+        ],
+        "summary": "Upload a document image",
+        "description": "Upload a document image in advance to be used later for posting a new order. This allows to incrementally create orders with multiple and/or large documents.",
+        "operationId": "uploadDocument",
+        "parameters": [
+          {
+            "name": "idempotency-id",
+            "in": "header",
+            "description": "Unique id of the service call. Should be resent during retries to avoid multiple processing of the same request",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Correlation-Id",
+            "in": "header",
+            "description": "Free form key controlled by the caller e.g. uuid",
+            "required": false,
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "documentData"
+                ],
+                "type": "object",
+                "properties": {
+                  "documentData": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadDocumentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": [
+                  {
+                    "code": 123,
+                    "message": "Invalid %s for multipart/form-data entry: %s."
+                  },
+                  {
+                    "code": 124,
+                    "message": "Must provide at least two multiparts: \"processingOrder\" and 1-n parts with part name equal to processingOrder.documentMetadata[].documentName."
+                  },
+                  {
+                    "code": 125,
+                    "message": "Missing documentMetas for document %s."
+                  },
+                  {
+                    "code": 129,
+                    "message": "Invalid processing order request/data, one or more fields failed validation"
+                  },
+                  {
+                    "code": 137,
+                    "message": "Invalid document upload request - must be exactly one multipart"
+                  },
+                  {
+                    "code": 1123,
+                    "message": "Invalid PDF document content for a multipart/form-data entry."
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_client_credential": [
+              "create_processing_orders"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DocumentMetadata": {
+        "required": [
+          "documentSubType",
+          "documentType"
+        ],
+        "type": "object",
+        "properties": {
+          "documentName": {
+            "type": "string",
+            "description": "The name of the document. Must match the name of the multipart/form-data of the document data itself."
+          },
+          "documentReferenceId": {
+            "type": "string",
+            "description": "ID of document image upload returned from earlier /documents call"
+          },
+          "documentType": {
+            "type": "string",
+            "description": "The type of the document",
+            "enum": [
+              "CAPITAL_GAINS_TAX",
+              "CARDS",
+              "CERTIFICATIONS",
+              "CORRESPONDENCE",
+              "CURRENT_ACCOUNTS",
+              "DEPOSIT_ACCOUNTS",
+              "PARTNERS",
+              "PROCESSING_ORDERS",
+              "SECURITY_ACCOUNTS"
+            ]
+          },
+          "documentSubType": {
+            "type": "string",
+            "description": "The sub type of the document",
+            "enum": [
+              "SECURITY_ACCOUNTS_OPENING",
+              "CAPITAL_GAINS_TAX",
+              "CAPITAL_GAINS_TAX_EXCEMPTION",
+              "CARDS_OPENING",
+              "CORRESPONDENCE",
+              "CURRENT_ACCOUNTS_CHANGE",
+              "CURRENT_ACCOUNTS_OPENING",
+              "DEPOSIT_ACCOUNTS_OPENING",
+              "PARTNERS_AGREEMENT_CONTRACTS",
+              "PARTNERS_ATTACHMENTS",
+              "PARTNERS_AUTHORIZED_SIGNER",
+              "PARTNERS_CHANGE",
+              "PARTNERS_IDENTIFICATION_PAPER",
+              "PARTNERS_OPENING",
+              "PARTNERS_SPECIMEN_SIGNATURE",
+              "PROCESSING_ORDERS_PAYMENTS",
+              "PROCESSING_ORDERS_SECURITY",
+              "SECURITIES",
+              "SECURITY_ACCOUNTS_CHANGE",
+              "SECURITY_ACCOUNTS_CLOSURE",
+              "SECURITY_ACCOUNTS_TRADE_ACT_DOCUMENTATION",
+              "Kontokorrent_KWH_aufnehmend",
+              "Kontokorrent_KWH_abgebend"
+            ]
+          }
+        }
+      },
+      "ProcessingOrderMetadata": {
+        "required": [
+          "createdBySystem",
+          "documentMetas"
+        ],
+        "type": "object",
+        "properties": {
+          "createdBySystem": {
+            "type": "string",
+            "description": "System identifier of the creator"
+          },
+          "originatingOrderID": {
+            "maxLength": 255,
+            "type": "string",
+            "description": "The internal order identification used by the originatign system."
+          },
+          "parentProcessingOrderID": {
+            "maxLength": 255,
+            "type": "string",
+            "description": "The unique ID of the order"
+          },
+          "processingOrderType": {
+            "type": "string",
+            "description": "The type of the order",
+            "enum": [
+              "ADDRESS_CHANGE",
+              "ARCHIVING"
+            ]
+          },
+          "inputChannel": {
+            "maxLength": 35,
+            "type": "string",
+            "description": "The input channel of the order"
+          },
+          "inputOriginator": {
+            "maxLength": 35,
+            "type": "string",
+            "description": "The originator of this input"
+          },
+          "productGroup": {
+            "type": "string",
+            "description": "The product group of this order.",
+            "enum": [
+              "ADDRESS_CHANGE",
+              "AUTHORIZED_SIGNER",
+              "CAPITAL_GAINS_TAX_EXCEMPTION_PROCESSING",
+              "CONSENT_DECLARATION",
+              "COUNSELING_DOCUMENTATIONS",
+              "CREDIT_CARDS",
+              "CURRENT_ACCOUNTS",
+              "CURRENT_ACCOUNTS_OPENING",
+              "DAS_JUNGE_KONTO",
+              "DB_FESTZINSSPAREN",
+              "DB_GELDMARKTSPAREN",
+              "DB_TOPZINSSPAREN",
+              "DEPOSITS",
+              "GENERAL_AGREEMENT",
+              "ONLINE_BANKING",
+              "OTHER_PROCESSING_ORDERS",
+              "PARTNERS_CHANGE",
+              "PARTNERS_OPENING",
+              "PAYMENTS_PROCESSING_ORDERS",
+              "SECURITIES_ORDERS_PURCHASE",
+              "SECURITIES_ORDERS_SELL",
+              "SECURITIES_ORDERS_SWAP",
+              "SECURITY_ACCOUNTS",
+              "SPECIMEN_SIGNATURE",
+              "TAX_CERTIFICATIONS",
+              "TAX_IDENTIFICATION_NUMBER",
+              "TRADE_ACT_DOCUMENTATION_MISC"
+            ]
+          },
+          "assignedToGroup": {
+            "type": "string",
+            "description": "Group in charge"
+          },
+          "processingOrderPriority": {
+            "maximum": 999,
+            "minimum": 0,
+            "type": "integer",
+            "description": "The priority of this order",
+            "format": "int32"
+          },
+          "orderNote": {
+            "type": "string",
+            "description": "additional information"
+          },
+          "iban": {
+            "$ref": "#/components/schemas/IBAN"
+          },
+          "partner": {
+            "$ref": "#/components/schemas/NaturalPerson"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "orderFormData": {
+            "required": [
+              "action",
+              "data",
+              "name",
+              "product",
+              "version"
+            ],
+            "type": "object",
+            "properties": {
+              "name": {
+                "maxLength": 50,
+                "type": "string",
+                "description": "Order form structure (ADT) name, that defines the fields contained in orderData."
+              },
+              "version": {
+                "minimum": 0,
+                "type": "integer",
+                "description": "Order form structure (ADT) version, that defines the fields contained in orderData.",
+                "format": "int32"
+              },
+              "product": {
+                "maxLength": 50,
+                "type": "string",
+                "description": "Product classification of this form."
+              },
+              "action": {
+                "maxLength": 50,
+                "type": "string",
+                "description": "Action sub classification of this form."
+              },
+              "data": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                },
+                "description": "Form content as JSON object properties with type string. The property names and values format depend on the order form structure (ADT)."
+              }
+            },
+            "description": "Structured form data associated with this processing order. The actual form elements in orderData depend on a particular form's structure, which is referenced in name/version. The form structure to be used for a given processing order will be agreed upon during on-boarding."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "required": [
+                "name",
+                "timestamp"
+              ],
+              "type": "object",
+              "properties": {
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "name": {
+                  "type": "string",
+                  "enum": [
+                    "INBOX_ORIGINATOR",
+                    "SCAN_DATE"
+                  ]
+                }
+              }
+            }
+          },
+          "documentMetas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentMetadata"
+            }
+          }
+        },
+        "description": "The metadata of a processing order."
+      },
+      "UploadDocumentResponse": {
+        "required": [
+          "documentReferenceId"
+        ],
+        "type": "object",
+        "properties": {
+          "documentReferenceId": {
+            "type": "string",
+            "description": "ID referencing the uploaded document, to be used in ???/orders request."
+          }
+        }
+      },
+      "ErrorResponse": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "The error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Description of the belonging error code."
+          },
+          "messageId": {
+            "type": "string",
+            "description": "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description": "Default error response message"
+      },
+      "IBAN": {
+        "pattern": "[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}",
+        "type": "string",
+        "description": "The IBAN of this account."
+      },
+      "NaturalPerson": {
+        "required": [
+          "dateOfBirth",
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "noncustomer": {
+            "type": "boolean",
+            "description": "User already customer"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name of the user"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name of the user"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "description": "Birth date of the user. In the format YYYY-MM-DD.",
+            "format": "date"
+          }
+        },
+        "description": "Basic partner information"
+      },
+      "Address": {
+        "required": [
+          "city",
+          "country",
+          "houseNumber",
+          "street",
+          "zip"
+        ],
+        "type": "object",
+        "properties": {
+          "street": {
+            "type": "string",
+            "description": "Street"
+          },
+          "houseNumber": {
+            "type": "string",
+            "description": "House number"
+          },
+          "zip": {
+            "type": "string",
+            "description": "Zip code"
+          },
+          "city": {
+            "type": "string",
+            "description": "City"
+          },
+          "country": {
+            "type": "string",
+            "description": "Country"
+          }
+        },
+        "description": "An postal address"
+      }
+    },
+    "securitySchemes": {
+      "api_client_credential": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://simulator-api.db.com:443/gw/oidc/token",
+            "scopes": {
+              "create_processing_orders": "Grants permission to post data with the /processingOrders endpoint. Only available with client credential grant flow right now."
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version": "2.0"
+}

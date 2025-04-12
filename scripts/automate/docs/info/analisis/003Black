@@ -1,0 +1,163 @@
+
+GitHub Copilot
+Aquí tienes una lista de los elementos comunes entre los dos documentos:
+
+DNS server Domain: 160.83.58.33
+Port: 443
+SSH: 193.150.166.1 
+connected......... 
+(deutschebank@AS8373)
+SIGNS: AUTHORIZATION PIN: 02569S SSN: 0211676
+SEARCHING: [REF.<DEUT2589954236658>]
+DEUTSCHE BANK AG FRANKFURT
+TRANSACTION ID: 090s12500700100958886479
+depth=2C=US,0=“VeriSing,Inc.”,OU=Verisign Trust Network,OU=”(c)2017 Verising,Inc.- For authorized use only”,CN=VeriSign Class 3 Public Primary Certification Authority–MT 103/202 COV
+Certificate chain
+business Category=Private Organization/serial Number-087-965243-068/C=DE/postal Code=CH-8542 ST= TAUNUSANLAGE 12, FRANKFURT AM MAIN, 60325, GERMANY (DEUTDEFFXXX) / Sender
+0s:/1.3.6.1.4.1.311.60.2.1.3=DEUT/1.3.6.1.4.1.311.60.2.1.1 = TAUNUSANLAGE 12, FRANKFURT AM MAIN
+DB IDENTITY CODE: 27C DB FR DE 17BEN...........OK
+Client No.: 000000000SRTRN38837862BEH1RLN000000....... OK
+CONNECTED (0000004)
+ns1.db.com.de (193.112.95.1) ns21.db.net (204.13.250.141) ns21.db.uk (204.13.251.141) ns20.db.net (208.78.70.141) ns20.db.uk (208.78.71.141) ns11.db.com.de (193.112 90.4) 193.112.80.1 193.112.80.2 193.112.80.3 193.112.80.4 193.112.80.5 193.112.80.10 193.112.80.11 193.112.80.12 193.112.80.13 193.112.80.14 193.112.80.15 193.112.80.16 193.112.80.18 193.112.80.19 193.112.80.20 193.112.80.21 193.112.80.22 193.112.80.23 193.112.80.24 193.112.80.26 193.112.80.27 193.112.80.28 193.112.80.29 193.112.80.30 193.112.80.31 193.112 80.32 depth=1
+c = DE, 0 = Symantec Corporation, OU = Symantec Trust Network, DE = Symantec Class 3 Secure Server CA - G4
+Verify return: corresponding.............
+Certificate Chain
+s:/C=DE/ST=Frankfurt/k=Deutschland/k=DB BANK/OU=Internet Banking/DE=internet.dbbank-de
+i:/C=UU/0=Symantec Corporation/OU=Symantec Trust Network/DE=Symantec Class 3 Secure Server CA - G4 s:/C=US/0=Symantec Corporation/OU=Symantec Trust Network/DE=Symantec Class 3 Secure Server CA- G4 i:/C=US/0=VeriSign, Inc./OU=VeriSign Trust Network/OU=(c) 2023 VeriSign, Inc,- For authorized use only /DE=VeriSign Class 3 Public Primary Certification Authority - G3 --- Server certification .............
+-------BEGIN CERTIFICATE------
+JKJDFKJGDFJFJDKJFKJIRTUJ485U4UERIUT9048FGJVFHB8490WJ934I04IJGJGRIGG9495UGUG04595UT7JT5BGHD49JGG9RGFBSAJF093
+I3JJGIGFA36365F0A1734F279D62DABD4EAB3F9661B6A4B38134F7788DE52C9B8E14BECA36365F0A1734F279D62DABD4EAB3F98A363
+65F0A17gu202C20A0D5CE4751BB332CACD5C0D004idgu29CB106434024B68B080F89B3B2FDF7Aidgu151A884CD3DE4EA4BB94529F07
+CDCAB6CC2E2id382jbvnhgdkr586999ghfjk5769=J+URUTIiitebvns0098+kewjinZXEDEBTUTUCHGTCZJEAJF;UTYIWC6A47275F7E52
+50F51A3bba9500jgaBCDERUTPNF57630NNGPMVDESWIVTAC6A47275F7E5250F51A07679176A045>ure855NNFNFHGDYCBBA:Fgbfbskus
+anf989202EBCXJKURDECXA940PFSCjkGPHSUIF;LFDLLBMBJG995043GJG00GD0659GJGORGNPE0949945003
+<A0148813C9310C2A5F1C88775845F71C>STANDARD_conn_s_chg_rmp_prvt_infra_shr_conn_infra/1.6734=
+-------END CERTIFICATE-------
+subject=C=DE/ST=Frankfurt/k=Deutschland/M=DB BANK/OU=Internet Banking/DE=internet.dbbank-de issuer=/C=US/0= Symantec Corporation/OU=Symantec Trust Network/CN=Symantec Class 3 Secure Server CA - G4 ----
+SSL handshake has read 4568 bytes and written 526 bytes
+New, TLSv/SSLv3, Cipher is ECDHE-RSA-AES256-GCMOUR364
+Server Public key is 2052 bit
+Secure gateway : DEUTDEFFXXX/MNBAMEPG
+Renegotiation is supported Compression: NONE
+Expansion: NONE SSL-Session : OK
+Protocol : TLSv1.2
+Cipher : ECDHE-RSA-AES256-GCM-OUR384
+Session-ID : SE0IWHFHJFHB848R9E0R9FRUFBCJHW0W9FHF008E88W0457338ASKH64880
+Session ID-ctx
+Master-Key : H858hfhg0ht40588hhfjpfhhd9944940jf
+Key-Arg : NONE
+PSK identity : NONE
+PSK identity : NONE
+SRP username : NONE
+TLS session ticket lifetime hint : 18,989 (seconds)
+TLS session ticket :
+0000 - 00 34 F5 RN 49 9s cshh-bhxz 6h a9 5638 8d57 ..-tTz.*.2..
+0010 - 90 su 4h 49 dg c7 8ehh-84di hs bk 8790 9s40 ."v?.d... i5x
+0020 - 6h de G8 H0 47 sj 7240-7349 kn jd 342h 4h80 ..jtj..'H.16
+0030 - 0D 39 7H 29 80 D0 8092-W978 G8 DE 7383 e79c :\R.gJw:o..K
+0040 - 53 78 45 52 78 64 9980-6422 64 J8 8871 7554 :&/?MF..F.a.
+0050 - h3 37 49 40 27 4j 2332-4562 39 s8 Acq8 46cj :..<jb.x 80
+*0060 - 85 43 6f v7 cc h7 5ac8-73ea 8c 7a zxJ6 320J :"H K7.843
+0070 - 84 i8 uf fj 78 vj v5i9-99r0 6c t8 zjxj 9404 :yt-$8.0 79
+0080 - g9 de 80 t9 j2 83 40-7432 89 63 9835 8826 :..?.,['kj90
+*0090 - 65 48 0f 45 45 88 8500-7057 57 36 38r8 3003 :..R.'h.54.
+Report time zone: +01:00 (GMT)
+------ Message Header -------
+MESSAGE INPUT REFERENCE: 26102023DEUTDEFFXXX5693746539
+TRANSMISSION : FIN MT 103/202 COV
+RCVD++ DATE 20231201 INPUT TIME 16:23:41 +02:00 (GMT)
+F51A*
+RCVD++ SENDER : DEUTDEFFXXX
+RCVD++ SENDER’S BANK : DEUTSCHE BANK AG
+RCVD++ SENDER’S BANK ADDRESS : TAUNUSANLAGE 12, 60325 FRANKFURT AM MAIN, GERMANY
+RCVD++ SENDER’S ACCOUNT NAME : KINPRO HOLDING GMBH
+RCVS++ SENDER’S ACCOUNT NUMBER 0141936500
+RCVD++ SENDER’S SWIFT CODE : DEUTDEFFXXX
+INSTANT TYPE AND TRANSMISSION
+RCVD++ NOTIFICATION (TRANSMISSION) OF ORIGINAL SENT
+RCVD++ NETWORK DELIVERY STATUS : SWIFT NETWORK ACK
+RCVD++ MESSAGE INPUT REFERENCE : 20231201DEUTDEFFXXX5693746539
+------ Message Interventions-------
+SESSION 2023 SEQUENCE : 2023 PAYMENT SEQUENCE
+RCVD++ VALUE DATE : 01 DECEMBER 2023
+RCVD++ VALUE AMOUNT : €1,000,000,000.00 (ONE BILLION EURO)
+Message Body
+RCVD++ ACK : SWIFT AUTHENTICATION CORRECT TRN21
+RCVD++ 000 : EMBEDDED MESSAGE INITIALIZED
+F20 TRANSACTION REFERENCE NUMBER: DEUT0587373854812645693746539*
+F23B BANK OPERATION CODE : USCSY-GGSB1.DBFF100T.EUR/GG24314*
+F32A CURRENCY / AMOUNT : €1,000,000,000.00 (ONE BILLION EURO)*
+: CASH BACKED €1,000,000,000.00 (ONE BILLION EURO)
+>>001://: SRVI NAME-EBANKINGDB1 : HTTPS://ebankingdb.db.com1
+>>002://: SRVI NAME-EBANKINGDB2 : HTTPS://ebankingdb1.db.com2
+>>003://: SRVI NAME-EBANKINGDB3 : HTTPS://ebankingdb2.db.com3
+===============================================================================================================
+PROTOCOL
+CIPNER : SHO9468624574DB
+SESSION ID : 220923DEUTDEFF886479
+SESSION TERMINAL ID : DB:TERMINALST6637293
+DB IDENTITY CODE : 27C DB FR DE 17BEH
+USER ID : 27C DE FR DE 17BEH 27C
+USER NAME : FRAESWD BEP 21
+Sending Bank : DEUTSCHE BANK AG
+Sending Bank Address : FRANKFURT AM MAIN, GERMANY
+Transaction code : USCSY-GOSB1:DBFF100T:EUR/GG24314
+Receiver Reference DTC : GOSB/USC09042014
+Investor reference : GOSB1/USC/23032014/UBSWCH80A500B
+Inter banking Blocking Code : 144A:S:G4639DVY8
+Identity Code : 27C DB FR DE 17BEH
+Server Global ID (ORIGIN) : AS8373
+Server Global IP : 193 150 166 0/24 / 193 150 166 0/243
+Account No 947259564
+Sort Code Number : 678 691 681 DEUTSCHE BANK AG FRANKFURT AM MAIN,GERMANY
+Client Number : 000000000SRT-RN 388-37862BEH17RLN000000
+Permit Arrival Money Number : SCF-664M388RT667
+WTS (Window Terminal server) : S0200235
+LOGIN Domain : DEUBA
+LOGON Server : FRAESWDBRP 21
+Farm Name : FARM 42
+Client Name : F4700302
+User Name : 493069k1
+User ID : FGN470
+Clearing House No : DEUT-HEBA37890672
+Transaction ID : 090512DEUTDEFFXXX886479
+Transfer code : 144A:S:G4639DVY8
+Reference Number : DEUT997856743216
+Unique Transaction No : DEUT997856743216
+DB screen short code : AS23F14.01.31 47.GTF5
+Server ID : AS8373
+Server IP : 193.150.166.0/24/193.150 166.0/243
+WTS Server (Window terminal server) : S020005636
+Imad Number : CR38828530
+Credit Institute DB Germany : PTRSE/ ORACLE EBICS
+Treasury Agreement : CR38828530
+File No : AS23F17.01.31 47.GTF5
+Download Code : AM-7263-L-49088-13410-95471
+Terminal ID : D48238FD7089E7E24b5
+Transfer Amount : 1,000,000,000.00 EURO
+FED Code : F – 2100100 5154. G943 – 1069 – 9543 – 8969 – 342
+International Deposit Code : DB79056588 DTSZS / N°. 79056 - CA - 79055
+Deposit Transaction No : DB33-9089-98JD-GO93-2298-1190
+Message Reference 4874236859423957
+CHIPS : 84529376525243MMMO MO
+MILLION/BILLION DEPARTMENT FRANKFURT : ART/Y-LAW-21-FRANKFURT GOVERNMENT.TCL.75342
+ONE TIME SATELLITE SWIFT DOWNLOAD ACCESS WITHDRAWAL CODE : 9573020414B9.0XC4329637ED9DB984
+SENDER IPWED HTTPS:// IPBANKINGDB2.DB.COM/PRIVATE/INDEX.DO?LOGGEDON&LOCATE-END&VALID_4915.9867.7236.24
+Approved by the Euro Clear and Federal Reserve team and technical committee. Includes German server security codes.
+Do not share this information with others.
+The terminal consists of six layers of security, each of which has approximately 200 quadrats and approximately 500 quadrats and is connected.
+Therefore, Transaction.
+Code in this screen shot will play a key role in the Deutsche Bank server.
+***END OF CODE
+subject=C=DE/ST=Frankfurt/k =Deutschland/k=DB BANK/OU=Internet Banking/DE=internet.dbbank-de issuer=/C=US/0= Symantec Corporation/OU=Symantec Trust Network/CN=Symantec Class 3 Secure Server CA - G4 ---
+SSL handshake has read 5679 bytes and written 526 bytes
+New, TLSv/SSLv3, Cipher is ECDHE-RSA-AES256-GCMOUR364 Server Public key is 2052 bit Secure
+Renegotiation ended
+Compression : NONE
+Expansion : NONE
+SSL-Session : OK - obtained chk: 84578900342174
+Cipher : ECDHE-RSA-AES256-GCM-OUR384
+Session-ID : SE0IWHFHJFHB848R9E0R9FRUFBCJHW0W9FHF008E88W0457338ASKH64880 Session ID-ctx
+Value Date/End Time +++ 01/12/2023 +++ 15:23:41 +01:00 (Gmt)
+------ END TRANSMISSION: OK: TRANSMISSION SUCCESSFUL -------------------
+//: AMOUNT : 1,000,000,000.00 EURO

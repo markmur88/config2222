@@ -1,0 +1,24 @@
+# Crear una nueva transacción
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/transactions/" -Method POST -ContentType "application/json" -Body '{
+    "transaction_id": "SW123456789",
+    "sender_name": "John Doe",
+    "sender_account": "1234567890",
+    "receiver_name": "Jane Doe",
+    "receiver_account": "0987654321",
+    "amount": "1000.00",
+    "currency": "USD"
+}'
+
+# Obtener todas las transacciones
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/transactions/"
+
+# Obtener una transacción específica
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/transactions/SW123456789/"
+
+# Actualizar una transacción
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/transactions/SW123456789/" -Method PUT -ContentType "application/json" -Body '{
+    "status": "COMPLETED"
+}'
+
+# Eliminar una transacción
+Invoke-WebRequest -Uri "http://127.0.0.1:8000/transactions/SW123456789/" -Method DELETE

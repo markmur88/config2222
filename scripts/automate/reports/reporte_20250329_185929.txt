@@ -1,0 +1,49 @@
+Informe de escaneo - Fecha y hora: 2025-03-29 18:59:29
+
+
+### REPORTE DE: 193.150.166.0
+  Puerto 22:
+    status: abierto
+    nc: 
+    telnet: Trying 193.150.166.0...
+Connected to 193.150.166.0.
+Escape character is '^]'.
+    ssh: 
+    ping: PING 193.150.166.0 (193.150.166.0) 56(84) bytes of data.
+
+--- 193.150.166.0 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3051ms
+    nmap: Starting Nmap 7.95 ( https://nmap.org ) at 2025-03-29 19:00 -05
+Nmap scan report for 193.150.166.0
+Host is up (0.22s latency).
+
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap done: 1 IP address (1 host up) scanned in 0.82 seconds
+
+--------------------------------------------------
+
+
+Resumen del escaneo:
+
+IP: 193.150.166.0
+  Puerto 22:
+    status: abierto
+    nc: 
+    telnet: Trying 193.150.166.0...
+Connected to 193.150.166.0.
+Escape character is '^]'.
+    ssh: 
+    ping: PING 193.150.166.0 (193.150.166.0) 56(84) bytes of data.
+
+--- 193.150.166.0 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3051ms
+    nmap: Starting Nmap 7.95 ( https://nmap.org ) at 2025-03-29 19:00 -05
+Nmap scan report for 193.150.166.0
+Host is up (0.22s latency).
+
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap done: 1 IP address (1 host up) scanned in 0.82 seconds

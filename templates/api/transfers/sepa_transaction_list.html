@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+<a href="{% url 'transfers_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+
+
+<div class="container mt-4">
+    <h2>Lista de Transacciones SEPA</h2>
+    <a href="{% url 'sepa-transaction-create' %}" class="btn btn-success mb-3">Nueva Transacción SEPA</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>IBAN Remitente</th>
+                <th>IBAN Beneficiario</th>
+                <th>Monto</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in object_list %}
+            <tr>
+                <td>{{ transaction.transaction_id }}</td>
+                <td>{{ transaction.sender_iban }}</td>
+                <td>{{ transaction.recipient_iban }}</td>
+                <td>{{ transaction.amount }}</td>
+                <td>{{ transaction.status }}</td>
+                <td>
+                    <a href="{% url 'sepa-transaction-detail' transaction.pk %}" class="btn btn-info btn-sm">Ver</a>
+                    <a href="{% url 'sepa_transaction_update' transaction.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

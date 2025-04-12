@@ -1,0 +1,56 @@
+
+# Guía de Conexión
+
+## Paso 1: Preparación
+1. Asegúrate de tener una conexión a internet estable.
+2. Verifica que tienes acceso a un terminal o consola de comandos.
+
+## Paso 2: Conexión SSH
+1. Abre tu terminal o consola de comandos.
+2. Escribe el siguiente comando para iniciar la conexión SSH:
+   ```bash
+   #ssh usuario@193.150.166.1 -p 22
+   ssh 493069k1@193.150.166.1 -p 22
+   ```
+   Reemplaza `usuario` con tu nombre de usuario.
+   493069k1
+
+ssh -p 22 
+
+## Paso 3: Autenticación
+1. Cuando se te solicite, ingresa la contraseña correspondiente al usuario:
+   ```plaintext
+   #Contraseña: tu_contraseña
+   Contraseña: bar 1588623
+   ```
+   Reemplaza `tu_contraseña` con la contraseña proporcionada.
+
+## Paso 4: Acceso a Servidores
+1. Una vez autenticado, tendrás acceso al servidor.
+2. Puedes navegar por el sistema de archivos y ejecutar comandos según sea necesario.
+
+## Paso 5: Códigos de Autorización
+1. Si se requiere un código de autorización, ingresa el siguiente código cuando se te solicite:
+   ```plaintext
+   Código de Autorización: 02569S
+   ```
+
+## Paso 6: Desconexión
+1. Para desconectarte del servidor, escribe el siguiente comando:
+   ```bash
+   exit
+   ```
+
+## Usuarios y Contraseñas
+- **Usuario:** 493069k1
+- **Contraseña:** bar1588623
+- **Correo:*** j.moltke@db.com
+
+## Códigos Importantes
+- **Código de Autorización:** 02569S
+- **Código de Bloqueo Final:** 144A:S:G4639DVY8
+- **Código de Liberación:** 4jv9xltr5
+
+## Notas Adicionales
+- Asegúrate de mantener tus credenciales seguras y no compartirlas con nadie.
+- Si encuentras algún problema durante la conexión, verifica tu conexión a internet y las credenciales ingresadas.

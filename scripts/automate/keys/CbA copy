@@ -1,0 +1,21 @@
+Certificate based Authentication
+
+Some APIs only allow certificate based authentication.
+Generally
+
+During the app creation as well as the go-live request you will be asked to provide:
+
+    the complete SSL certificate trust chain
+
+    in .pem format (either manually or via file upload)
+
+    in the following order:
+
+    --BEGIN CERTIFICATE-- (The primary SSL certificate: your_domain_name.crt)
+    --END CERTIFICATE--
+    --BEGIN CERTIFICATE-- (The intermediate certificate: intermediateCert.crt)
+    --END CERTIFICATE--
+    --BEGIN CERTIFICATE-- (The root certificate: trustedRoot.crt)
+    --END CERTIFICATE--
+
+You need to use 2-way TLS for the connection to the API and the according certificate.

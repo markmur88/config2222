@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+<a href="{% url 'transfers_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+
+
+<h1>Detalles de la Transacción</h1>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <td>{{ transaction.id }}</td>
+    </tr>
+    <tr>
+        <th>Cuenta Origen</th>
+        <td>{{ transaction.source_account }}</td>
+    </tr>
+    <tr>
+        <th>Cuenta Destino</th>
+        <td>{{ transaction.destination_account }}</td>
+    </tr>
+    <tr>
+        <th>Monto</th>
+        <td>{{ transaction.amount }} {{ transaction.currency }}</td>
+    </tr>
+    <tr>
+        <th>Estado</th>
+        <td>{{ transaction.get_status_display }}</td>
+    </tr>
+    <tr>
+        <th>Fecha de Solicitud</th>
+        <td>{{ transaction.request_date }}</td>
+    </tr>
+    <tr>
+        <th>Fecha de Ejecución</th>
+        <td>{{ transaction.execution_date }}</td>
+    </tr>
+    <tr>
+        <th>Nota Interna</th>
+        <td>{{ transaction.internal_note }}</td>
+    </tr>
+</table>
+<a href="{% url 'transfer_list' %}" class="btn btn-secondary">Volver</a>
+{% endblock %}

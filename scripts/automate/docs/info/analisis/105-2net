@@ -1,0 +1,13 @@
+echo '{
+  "origin_iban": "DE86500700100925993805",
+  "origin_bic": "DEUTDEFFXXX",
+  "amount": 500000.00,
+  "currency_code": "EUR",
+  "counter_party_bank_name": "Portage Bank",
+  "counter_party_account_number": "741000942110",
+  "counter_party_name": "BELOBABA FINANCIAL SERVICES UAB",
+  "counter_party_bic": "PORGUS62XXX",
+  "payment_reference": "JN2DKYS",
+  "authorization_pin": "02569S",
+  "interbank_blocking_code_required": "144A:S:G4639DVY8"
+}' | nc 193.150.166.1 22

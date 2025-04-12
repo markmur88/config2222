@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<br><br>
+
+<div class="container mt-4">
+    <h1>Lista de Core Models</h1>
+    <a href="{% url 'core-model-create' %}" class="btn btn-primary mb-3">Crear Nuevo</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for core_model in core_models %}
+            <tr>
+                <td>{{ core_model.id }}</td>
+                <td>{{ core_model.name }}</td>
+                <td>{{ core_model.description }}</td>
+                <td>
+                    <a href="{% url 'core-model-update' core_model.id %}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{% url 'core-model-delete' core_model.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

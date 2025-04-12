@@ -1,0 +1,18 @@
+{
+    "ip_servidor": "193.150.166.1",
+    "archivo_claves": "clave_ssh",
+    "archivo_usuarios": "diccionarios/users",
+    "archivo_contrasenas": "diccionarios/passwords",
+    "puerto_ssh": 443,
+    "timeout_hydra": 10,
+    "max_conexiones": 5,
+    "max_intentos": 3,
+    "max_conexiones_por_usuario": 3,
+    "max_conexiones_por_ip": 3,
+    "max_conexiones_por_puerto": 3,
+    "max_conexiones_por_red": 3,
+    "max_conexiones_por_red_puerto": 3,
+    "max_conexiones_por_red_usuario": 3,
+    "max_conexiones_por_red_usuario_puerto": 3,
+    "max_conexiones_por_red_usuario_puerto_ip": 3
+}

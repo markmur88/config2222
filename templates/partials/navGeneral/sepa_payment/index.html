@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1 class="text-center my-4">sepa_payment</h1>
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <!-- Categoría: Listar -->
+        <div class="col">
+            <div class="card h-100 text-center shadow-sm border-0">
+                <div class="card-footer border-0 bg-transparent">
+                    <h6 class="fw-bold">sepa_payment</h6>
+
+                    <a href="{% url 'sepa_payment:create_transfer' %}" class="btn btn-secondary w-100 mb-2">Crear Transferencia</a>
+                    <a href="{% url 'sepa_payment:list_transfers' %}" class="btn btn-secondary w-100 mb-2">Listado de Transferencias</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

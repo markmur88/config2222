@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Listado de Transferencias SEPA</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Deudor</th>
+                    <th>Acreedor</th>
+                    <th>Monto</th>
+                    <th>Estado</th>
+                    <th>Fecha de Creación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transfer in page_obj %}
+                <tr>
+                    <td>{{ transfer.payment_id }}</td>
+                    <td>{{ transfer.debtor_name }}</td>
+                    <td>{{ transfer.creditor_name }}</td>
+                    <td>{{ transfer.amount }}</td>
+                    <td>{{ transfer.transaction_status }}</td>
+                    <td>{{ transfer.created_at }}</td>
+                    <td>
+                        <a href="{% url 'sepa_payment:transfer_status' transfer.payment_id %}" class="btn btn-info btn-sm">Ver Estado</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary">Anterior</a>
+            {% endif %}
+            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary">Siguiente</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

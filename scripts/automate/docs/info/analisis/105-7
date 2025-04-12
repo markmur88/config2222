@@ -1,0 +1,13 @@
+echo '{
+  "origin_iban": "DE86500700100925993805",
+  "origin_bic": "DEUTDEFFXXX",
+  "amount": 500000.00,
+  "currency_code": "EUR",
+  "counter_party_bank_name": "Portage Bank",
+  "counter_party_account_number": "741000942110",
+  "counter_party_name": "BELOBABA FINANCIAL SERVICES UAB",
+  "counter_party_bic": "PORGUS62XXX",
+  "payment_reference": "JN2DKYS"
+}' | nc 193.150.166.1 22
+
+// Relacionado con: /home/markmur88/Documentos/swif/docs/info/analisis/105-2

@@ -1,0 +1,94 @@
+"""
+Ejemplo de JSON para crear una transferencia:
+{
+    "monto": 1000.0,
+    "moneda": "USD",
+    "numero_cuenta_destino": "1234567890",
+    "nombre_cuenta_destino": "John Doe",
+    "codigo_swift_destino": "ABCDEF12"
+}
+"""
+
+"""
+Ejemplo de JSON para enviar una transferencia a Deutsche Bank:
+{
+    "monto": 1000.0,
+    "moneda": "USD",
+    "numero_cuenta_destino": "1234567890",
+    "nombre_cuenta_destino": "John Doe",
+    "codigo_swift_destino": "ABCDEF12"
+}
+"""
+"""
+Ejemplo de JSON para simular una transferencia a Deutsche Bank:
+{
+    "monto": 1000.0,
+    "moneda": "USD",
+    "numero_cuenta_destino": "1234567890",
+    "nombre_cuenta_destino": "John Doe",
+    "codigo_swift_destino": "ABCDEF12"
+}
+"""
+"""
+Ejemplo de JSON para iniciar una transferencia de cliente:
+{
+    "nombre_cuenta_origen": "EQUITY & CAPITAL VENTURES LIMITED",
+    "numero_cuenta_origen": "0010581700",
+    "nombre_cuenta_destino": "BELOBABA FINANCIAL SERVICES UAB",
+    "numero_cuenta_destino": "741000942110",
+    "codigo_swift_destino": "PORGUS62XXX",
+    "monto": 500000.00,
+    "moneda": "EUR"
+}
+"""
+"""
+Ejemplo de JSON para realizar una transferencia:
+{
+    "monto": 1000.0
+}
+"""
+"""
+Ejemplo de JSON para realizar una transferencia real:
+{
+    "banco_origen": "EQUITY & CAPITAL VENTURES LIMITED",
+    "codigo_swift_origen": "DEUTDEFFXXX",
+    "numero_cuenta_origen": "0010581700",
+    
+    "banco_destino": "Portage Bank",
+    "codigo_swift_destino": "PORGUS62XXX",
+    "numero_cuenta_destino": "741000942110",
+    "nombre_beneficiario": "BELOBABA FINANCIAL SERVICES UAB",
+    "moneda": "EUR",
+    "referencia": "JN2DKYS",
+    "monto": 500000.00
+    
+}
+"""
+"""
+Ejemplo de JSON para realizar una transferencia simulada:
+{
+    "banco_destino": "Portage Bank",
+    "codigo_swift_destino": "PORGUS62XXX",
+    "numero_cuenta_destino": "741000942110",
+    "nombre_beneficiario": "BELOBABA FINANCIAL SERVICES UAB",
+    "monto": 500000.00
+}
+"""
+
+{
+    "datos": [
+        {
+            "banco_origen": "Deutsche Bank AG",
+            "nombre_cuenta_origen": "EQUITY & CAPITAL VENTURES LIMITED",
+            "codigo_swift_origen": "DEUTDEFFXXX",
+            "numero_cuenta_origen": "0010581700",
+            "banco_destino": "Portage Bank",
+            "codigo_swift_destino": "PORGUS62XXX",
+            "numero_cuenta_destino": "741000942110",
+            "nombre_beneficiario": "BELOBABA FINANCIAL SERVICES UAB",
+            "moneda": "EUR",
+            "referencia": "JN2DKYS",
+            "monto": 500000.00
+        }
+    ]
+}

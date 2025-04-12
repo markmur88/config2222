@@ -1,0 +1,94 @@
+Informe de escaneo - Fecha y hora: 2025-03-30 20:44:16
+
+
+### REPORTE DE: 193.150.166.1
+  Puerto 22:
+    status: abierto
+    nc: 
+    telnet: Trying 193.150.166.1...
+Connected to 193.150.166.1.
+Escape character is '^]'.
+    ssh: 
+    ping: PING 193.150.166.1 (193.150.166.1) 56(84) bytes of data.
+
+--- 193.150.166.1 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3073ms
+    nmap: Starting Nmap 7.95 ( https://nmap.org ) at 2025-03-30 20:45 -05
+Nmap scan report for 193.150.166.1
+Host is up (0.21s latency).
+
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap done: 1 IP address (1 host up) scanned in 0.83 seconds
+
+--------------------------------------------------
+
+
+### REPORTE DE: 193.150.166.0
+  Puerto 22:
+    status: abierto
+    nc: 
+    telnet: Trying 193.150.166.0...
+Connected to 193.150.166.0.
+Escape character is '^]'.
+    ssh: 
+    ping: PING 193.150.166.0 (193.150.166.0) 56(84) bytes of data.
+
+--- 193.150.166.0 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3073ms
+    nmap: Starting Nmap 7.95 ( https://nmap.org ) at 2025-03-30 20:45 -05
+Nmap scan report for 193.150.166.0
+Host is up (0.22s latency).
+
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap done: 1 IP address (1 host up) scanned in 0.84 seconds
+
+--------------------------------------------------
+
+
+Resumen del escaneo:
+
+IP: 193.150.166.1
+  Puerto 22:
+    status: abierto
+    nc: 
+    telnet: Trying 193.150.166.1...
+Connected to 193.150.166.1.
+Escape character is '^]'.
+    ssh: 
+    ping: PING 193.150.166.1 (193.150.166.1) 56(84) bytes of data.
+
+--- 193.150.166.1 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3073ms
+    nmap: Starting Nmap 7.95 ( https://nmap.org ) at 2025-03-30 20:45 -05
+Nmap scan report for 193.150.166.1
+Host is up (0.21s latency).
+
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap done: 1 IP address (1 host up) scanned in 0.83 seconds
+
+IP: 193.150.166.0
+  Puerto 22:
+    status: abierto
+    nc: 
+    telnet: Trying 193.150.166.0...
+Connected to 193.150.166.0.
+Escape character is '^]'.
+    ssh: 
+    ping: PING 193.150.166.0 (193.150.166.0) 56(84) bytes of data.
+
+--- 193.150.166.0 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3073ms
+    nmap: Starting Nmap 7.95 ( https://nmap.org ) at 2025-03-30 20:45 -05
+Nmap scan report for 193.150.166.0
+Host is up (0.22s latency).
+
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap done: 1 IP address (1 host up) scanned in 0.84 seconds

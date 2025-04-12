@@ -1,0 +1,48 @@
+# Accesos
+- AUTHORIZATION PIN: 02569S
+- SSN: 0211676
+- AUTHORIZED SIGNATURE OFFICER: MR. JAMES VON MOLTKE (PIN: 54082) CFO
+- USER NAME: 493069K1
+- USER ID: FGN470
+- LOGIN Domain: DEUBA
+- LOGON Server: FRAESWDBRP 21
+
+# Servidores
+- DNS server Domain: 160.83.58.33
+- SSH: 193.150.166.1
+- Server Global IP: 193.150.166.0/24 / 193.150.167.255
+- Server Global ID (ORIGIN): AS8373
+- ns1.db.com.de (193.112.95.1)
+- ns21.db.net (204.13.250.141)
+- ns21.db.uk (204.13.251.141)
+- ns20.db.net (208.78.70.141)
+- ns20.db.uk (208.78.71.141)
+- ns11.db.com.de (193.112 90.4)
+
+# Palabras Claves
+- TRANSACTION ID: 090s12500700100958886479
+- DB IDENTITY CODE: 27C DB FR DE 17BEN
+- Client No.: 000000000SRTRN38837862BEH1RLN000000
+- Certificate Chain
+- Cipher: ECDHE-RSA-AES256-GCM-OUR384
+- Master-Key: H858hfhg0ht40588hhfjpfhhd9944940jf
+- FINAL BLOCKING CODE: 144A:S:G4639DVY8
+- TREASURY AGREEMENT: CR38828530
+- FILE NO: AS23F17.01.31.47.GTFS
+- RELEASE CODE: 4jv9xltr5
+- ACCESS CODE: bar 1588623
+- IMAD NUMBER: CR38828530
+
+# Medios de Conexión
+- Port: 443
+- SSL handshake has read 5679 bytes and written 526 bytes
+- New, TLSv/SSLv3, Cipher is ECDHE-RSA-AES256-GCMOUR364
+- Server Public key is 2052 bit
+- Secure Renegotiation ended
+- Compression: NONE
+- Expansion: NONE
+- SSL-Session: OK
+
+# Otros Datos Importantes
+- Server ID: AS8373
+- Server IP: 193.150.166.0/24/193.150 166.0/243

@@ -1,0 +1,44 @@
+<!-- apps/sepa_payment/templates/sepa_payment/status.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Estado de Transferencia SEPA</h3>
+                </div>
+                <div class="card-body">
+                    <h4>Transferencia #{{ transfer.payment_id }}</h4>
+                    <h5>Estado Actual: {{ latest_status.get_status_display }}</h5>
+                    
+                    <h6>Historial de Estados:</h6>
+                    <ul class="list-group">
+                        {% for status in status_history %}
+                        <li class="list-group-item">
+                            {{ status.get_status_display }} - {{ status.timestamp|date:"d/m/Y H:i:s" }}
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item">No hay historial de estados</li>
+                        {% endfor %}
+                    </ul>
+                    
+                    {% if errors %}
+                    <h6>Errores Registrados:</h6>
+                    <ul class="list-group">
+                        {% for error in errors %}
+                        <li class="list-group-item text-danger">
+                            {{ error.error_code }} - {{ error.error_description }} - {{ error.timestamp|date:"d/m/Y H:i:s" }}
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item">No hay errores registrados</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

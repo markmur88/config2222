@@ -1,0 +1,10 @@
+El comando 'Ataque Medusa a 193.150.166.0 con 493069k1' excedió el tiempo de espera y fue terminado.
+El comando 'Ataque Medusa a 193.150.166.0 con 493069k1' excedió el tiempo de espera y fue terminado.
+El comando 'Ataque Medusa a 193.150.166.1 con 493069K1' excedió el tiempo de espera y fue terminado.
+El comando 'Ataque Medusa a 193.150.166.1 con 493069K1' excedió el tiempo de espera y fue terminado.
+El comando 'Ataque Medusa a 193.150.166.1 con deutschebank@AS8373' excedió el tiempo de espera y fue terminado.
+Error al enviar la transferencia SWIFT: HTTPSConnectionPool(host='ebankingdb.db.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7f5a0dcd02f0>: Failed to resolve 'ebankingdb.db.com' ([Errno -2] Name or service not known)"))
+Error al enviar la transferencia SWIFT: HTTPSConnectionPool(host='ebankingdb.db.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7f5a0dcc56d0>: Failed to resolve 'ebankingdb.db.com' ([Errno -2] Name or service not known)"))
+Error al enviar la transferencia SWIFT: HTTPSConnectionPool(host='ebankingdb.db.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7f5a0dcc60d0>: Failed to resolve 'ebankingdb.db.com' ([Errno -2] Name or service not known)"))
+Error al leer el archivo /home/kali/Documentos/GitHub/config/scripts/automate/diccionarios/diccionarios/diccionarios/users: [Errno 2] No such file or directory: '/home/kali/Documentos/GitHub/config/scripts/automate/diccionarios/diccionarios/diccionarios/users'
+Error al leer el archivo /home/kali/Documentos/GitHub/config/scripts/automate/diccionarios/diccionarios/diccionarios/passwords: [Errno 2] No such file or directory: '/home/kali/Documentos/GitHub/config/scripts/automate/diccionarios/diccionarios/diccionarios/passwords'

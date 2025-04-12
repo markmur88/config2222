@@ -1,0 +1,52 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">Banco</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+
+                <!-- Administración -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/">Administración</a>
+                </li>
+
+                <!-- Documentación -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/swagger/">Swagger UI</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/redoc/">Redoc</a>
+                </li>
+
+                <!-- Aplicaciones -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'core_index' %}">Core</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'collection_index' %}">Colección</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'accounts_index' %}">Cuentas</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'transfers_index' %}">Transferencias</a>
+                </li>                
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'sct_index' %}">SCT</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'sepa_payment:index_sepa_payment' %}">SEPA</a>
+                </li>
+                <div class="d-flex ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+</nav>

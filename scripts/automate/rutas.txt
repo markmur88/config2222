@@ -1,0 +1,3 @@
+/home/kali/Documentos/GitHub/automate/diccionarios/diccionarios/usuarios.txt
+
+/home/kali/Documentos/GitHub/automate/diccionarios/diccionarios/contrasenas.txt

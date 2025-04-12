@@ -1,0 +1,198 @@
+
+# SSH
+systemctl status ssh
+sudo systemctl start ssh
+sudo apt install openssh-server -y
+ssh usuario@IP_DEL_SERVIDOR
+ssh usuario@IP_DEL_SERVIDOR -p PUERTO
+ssh -i /ruta/a/clave_privada.pem usuario@IP_DEL_SERVIDOR
+docker run -d -p 2222:22 --name ssh-test rastasheep/ubuntu-sshd
+ssh root@localhost -p 2222
+ssh-keygen -t ed25519 -C "your_email@example.com"
+ssh-keygen -t 4096 -C "your_email@example.com"
+deutschebank@AS8373
+
+# SSH al ssh-agent
+eval "$(ssh-agent -s)"
+Agent pid 59566
+ssh-add ~/.ssh/id_ed25519
+
+# HYDRA
+sudo apt install hydra -y
+hydra -l usuario -P lista_de_contraseñas.txt ssh://IP_DEL_SERVIDOR -t 4
+hydra -l 493069k1 -P passwords.txt ssh://192.168.1.10 -t 4
+
+# MEDUSA
+sudo apt install medusa -y  # Para Debian/Ubuntu/Kali
+medusa -h IP_DEL_SERVIDOR -u usuario -P lista_de_contraseñas.txt -M ssh
+
+# NCRACK
+sudo apt install ncrack -y
+ncrack -p 22 -U lista_de_usuarios.txt -P lista_de_contraseñas.txt IP_DEL_SERVIDOR
+
+# PATATOR
+git clone https://github.com/lanjelot/patator.git
+cd patator
+python3 patator.py ssh_login host=IP_DEL_SERVIDOR user=usuario password=FILE0 0=lista_de_contraseñas.txt
+
+# John the Ripper + Hashcat
+sudo apt install john hashcat -y
+john --wordlist=lista_de_contraseñas.txt hash.txt
+
+# NSLOOKUP
+nslookup dbonline.deutsche-bank.es
+23.50.131.155
+23.50.131.136
+
+nslookup api.db.com
+34.111.230.211
+
+nslookup deutsche-bank.de
+160.83.8.144
+
+# NETCAT
+# nc -zv servidor_ip 22
+nc -zv 193.150.166.0 22 443
+
+# TELNET
+# telnet servidor_ip 22
+telnet 193.150.166.0 22
+telnet 193.150.166.0 443
+
+# NMAP
+nmap -p 22,443 193.150.166.0
+
+
+
+# La IP no responde a pings (ICMP bloqueado)
+# Muchos servidores y firewalls bloquean los paquetes ICMP (ping) para evitar ataques o escaneos no deseados.
+# Puedes probar con traceroute para ver si hay respuesta en algún punto:
+traceroute 193.150.166.0
+
+# La IP no está asignada o no existe
+# Puede ser una dirección privada o una IP pública que no esté en uso.
+# Puedes verificar con whois:
+whois 193.150.166.0
+
+# La red está caída o la ruta está bloqueada
+# Puede haber problemas en la red de origen o destino.
+# Intenta probar con mtr, que combina ping y traceroute:
+mtr 193.150.166.0
+
+# Tu firewall o ISP está bloqueando la conexión
+# Si estás en una red corporativa o con restricciones, pueden estar filtrando el tráfico ICMP.
+# Prueba hacer ping a una IP conocida, como Google:
+ping 8.8.8.8
+
+
+# Si un servidor cuando hago ping no responde, puedo ingresar con SSH?
+# ChatGPT dijo:
+# Depende de varios factores:
+#     El servidor está en línea: Si el servidor no responde al ping pero sigue funcionando, es posible que el firewall bloquee los paquetes ICMP (ping), pero aún permita conexiones SSH.
+#     El puerto SSH está abierto: Verifica que el puerto 22 (o el que uses para SSH) esté accesible. Puedes probar con:
+telnet servidor_ip 22
+# o
+nc -zv servidor_ip 22
+#     Firewall o reglas de red: Algunos servidores o redes bloquean ping pero permiten SSH. Si estás en una red corporativa o detrás de un firewall, revisa las reglas.
+#     Configuración del servidor: Si SSH está deshabilitado o el servicio sshd no está en ejecución, no podrás conectarte.
+# Para probar la conexión SSH directamente:
+ssh usuario@servidor_ip
+# Si no responde, puedes probar con -v para ver más detalles:
+ssh -v usuario@servidor_ip
+# Si sigue sin funcionar, revisa la configuración del servidor y la red.
+# Dijiste:
+# Tiene el puerto 22 abierto pero sale un error "Connection be peer"
+# ChatGPT dijo:
+# El error "Connection reset by peer" generalmente indica que el servidor está rechazando la conexión activamente. Aquí hay algunas posibles causas y soluciones:
+# 1. El servicio SSH no está corriendo
+# En el servidor, verifica si el servicio SSH está activo:
+systemctl status sshd
+# Si está detenido, inícialo con:
+sudo systemctl start sshd
+# 2. Reglas del firewall bloquean SSH
+# Si el servicio está activo, revisa el firewall:
+sudo iptables -L -n | grep 22
+# Si está bloqueado, puedes permitir SSH con:
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo systemctl restart iptables
+# Para ufw (si está en uso):
+sudo ufw allow 22/tcp
+sudo ufw reload
+# 3. Demasiados intentos fallidos (Fail2Ban o SSH Guard)
+# Si has intentado muchas conexiones en poco tiempo, puede que estés bloqueado por fail2ban. Revisa los logs en el servidor:
+sudo fail2ban-client status sshd
+# Si estás bloqueado, elimínate de la lista negra:
+sudo fail2ban-client unban IP_DEL_CLIENTE
+# 4. Clave pública o autenticación fallida
+# Si usas autenticación por clave, revisa que la clave esté en ~/.ssh/authorized_keys en el servidor y tenga permisos correctos:
+chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+# Y en el cliente, prueba con:
+ssh -i /ruta/a/tu/clave usuario@servidor
+# 5. SELinux bloqueando SSH
+# Si usas SELinux, revisa si está restringiendo SSH:
+sudo getenforce
+# Si está en Enforcing, prueba desactivarlo temporalmente:
+sudo setenforce 0
+# 6. Configuración incorrecta en /etc/ssh/sshd_config
+# Si todo lo anterior falla, revisa la configuración de SSH en el servidor:
+sudo nano /etc/ssh/sshd_config
+# Verifica que las líneas clave sean correctas:
+PermitRootLogin yes
+PasswordAuthentication yes
+PubkeyAuthentication yes
+# Luego reinicia SSH:
+sudo systemctl restart sshd
+# Si el problema persiste, ¿puedes compartir más detalles del sistema operativo del servidor y los logs de SSH (/var/log/auth.log o /var/log/secure)?
+# Dijiste:
+# no esta instalado sshd
+# ChatGPT dijo:
+# Si el servicio SSH (sshd) no está instalado en el servidor, necesitas instalarlo antes de poder conectarte. Aquí te dejo los pasos según tu sistema operativo:
+# 1. Instalar OpenSSH Server
+# Debian / Ubuntu
+sudo apt update
+sudo apt install openssh-server -y
+sudo systemctl enable ssh
+sudo systemctl start ssh
+# CentOS / RHEL
+sudo yum install -y openssh-server
+sudo systemctl enable sshd
+sudo systemctl start sshd
+# Arch Linux
+sudo pacman -S openssh
+sudo systemctl enable sshd
+sudo systemctl start sshd
+# Alpine Linux
+sudo apk add openssh
+rc-update add sshd
+service sshd start
+# 2. Verificar que SSH está corriendo
+systemctl status sshd
+# Si no está activo, intenta reiniciarlo:
+sudo systemctl restart sshd
+# 3. Verificar que SSH está escuchando en el puerto 22
+ss -tlnp | grep :22
+# Si no está en el puerto correcto, edita la configuración:
+sudo nano /etc/ssh/sshd_config
+# Asegúrate de que Port 22 está configurado y que PermitRootLogin sea yes si necesitas acceder como root.
+# Guarda los cambios y reinicia el servicio:
+sudo systemctl restart sshd
+# 4. Abrir el puerto en el firewall (si es necesario)
+# Para UFW (Ubuntu/Debian)
+sudo ufw allow 22/tcp
+sudo ufw reload
+# Para iptables
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo systemctl restart iptables
+# Para firewalld (CentOS/RHEL)
+sudo firewall-cmd --add-service=ssh --permanent
+sudo firewall-cmd --reload
+# 5. Probar la conexión SSH
+# Desde otro equipo, intenta conectarte:
+ssh usuario@IP_DEL_SERVIDOR
+# Si usas autenticación por clave:
+ssh -i /ruta/clave usuario@IP_DEL_SERVIDOR
+
+
+
+

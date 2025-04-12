@@ -1,0 +1,23 @@
+Con los archivos de 006Datos, crear 0073swift.json según la siguiente información: 
+1-Datos para reemplazar = 006payload.json.
+
+
+2-Estructura para generar y reemplazar valores=dbapi-transactions.json.
+
+
+3-Datos complementarios(generar archivo 006Datos) con los archivos = 001Black, 002Black, 003Black.
+En los datos complementarios, necesito la información completa para la conexión, aprobación credenciales, etc. y los clasificarás.
+
+
+Según 0061dbapi-transactions.json genera el archivo 000_4Swift.md con todos los campos, lo clasificarás detalladamente y explicarás como ubicar la información para programar en #codebase
+
+
+000Swift.md
+006Datos
+006payload.json
+
+Según las instrucciones del 000Swift.md, los datos de conexión del 006Datos, y con los datos para la transferencia ubicados en 006payload.json genera el archivo 0073.json 
+
+
+
+0073swift.json

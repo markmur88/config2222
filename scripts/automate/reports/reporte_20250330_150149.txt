@@ -1,0 +1,17 @@
+Informe de escaneo - Fecha y hora: 2025-03-30 15:01:49
+
+
+### REPORTE DE: 193.150.166.0
+  Puerto 22:
+    status: abierto
+    ssh: 
+
+--------------------------------------------------
+
+
+Resumen del escaneo:
+
+IP: 193.150.166.0
+  Puerto 22:
+    status: abierto
+    ssh: 

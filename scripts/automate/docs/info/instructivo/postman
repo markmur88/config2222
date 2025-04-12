@@ -1,0 +1,36 @@
+Ejemplo completo en Postman
+Método: POST
+
+URL: http://127.0.0.1:8000/api/transactions/
+
+Headers:
+
+Authorization: Bearer <access_token>
+
+Content-Type: application/json
+
+Body (raw, JSON):
+
+json
+Copy
+
+payload = {
+    "originIban": "DE75440700240010581700",
+    "originBic": "DEUTDEFFXXX",
+    "amount": 500000.00,
+    "currencyCode": "EUR",
+    "counterPartyName": "BELOBABA FINANCIAL SERVICES UAB",
+    "counterPartyAccountNumber": "741000942110",
+    "counterPartyBic": "PORGUS62XXX",
+    "paymentReference": "JN2DKYS",
+    "bookingDate": "2023-10-15",
+    "transactionCode": "TRANSFER",
+    "externalBankTransactionDomainCode": "PMNT",
+    "externalBankTransactionFamilyCode": "001",
+    "externalBankTransactionSubFamilyCode": "001",
+    "mandateReference": "MAND12345",
+    "creditorId": "CRED12345",
+    "e2eReference": "E2E12345",
+    "paymentIdentification": "PAY12345",
+    "valueDate": "2023-10-15"
+}

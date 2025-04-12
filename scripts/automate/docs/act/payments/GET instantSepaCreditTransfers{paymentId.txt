@@ -1,0 +1,142 @@
+GET /instantSepaCreditTransfers/{paymentId}
+"Checks the processing status of an Instant SEPA Credit Transfer request."
+
+paymentId
+string
+(path)
+Used to unambiguously identify a payment transaction
+maxLength: 256
+
+Correlation-Id
+string
+(header)
+Free form key controlled by the caller e.g. uuid
+maxLength: 50
+
+Responses
+
+##200 successful operation
+{
+  "transactionStatus": "ACCP",
+  "message": {
+    "code": "string",
+    "text": "string",
+    "category": "string"
+  }
+}
+
+description:
+message
+description:
+Backend response when the transaction was not accepted
+
+category
+string
+Reason category
+
+code
+string
+The response code
+
+text
+string
+The reason for the unaccepted transaction
+
+transactionStatus
+string
+Transaction Status: Specifies the status of a transaction, in a coded form. 
+* ACCP - AcceptedCustomerProfile. Preceding check of technical validation was successful. Customer profile check was also successful. 
+* RJCT - Rejected. Payment initiation or individual transaction included in the payment initiation has been rejected. 
+* CARJ - Rejected. Payment initiation or individual transaction included in the payment initiation has been rejected because the client rejected the PUSHTAN request. 
+* PYLE - Rejected. Payment initiation or individual transaction included in the payment initiation has been rejected because payment limit was reached. 
+* PDNG - Pending. Payment initiation or individual transaction included in the payment initiation is pending. Further checks and status update will be performed. 
+* ACAT - Pending. Waiting for customer authorization. Further checks and status update will be performed.
+enum:
+[ACCP, RJCT, CARJ, PYLE, PDNG, ACAT]
+
+Headers
+Name: correlation-id
+Description: Free form key controlled by the caller
+Type
+
+##400 Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+[
+  {
+    "code": 2,
+    "message": "Invalid value for %s."
+  },
+  {
+    "code": 114,
+    "message": "Unable to identify transaction by Id."
+  },
+  {
+    "code": 115,
+    "message": "Time limit exceeded."
+  },
+  {
+    "code": 121,
+    "message": "OTP invalid challenge response: %s."
+  },
+  {
+    "code": 122,
+    "message": "Invalid OTP."
+  },
+  {
+    "code": 127,
+    "message": "Booking date from must precede booking date to."
+  },
+  {
+    "code": 131,
+    "message": "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+  },
+  {
+    "code": 132,
+    "message": "not supported"
+  },
+  {
+    "code": 138,
+    "message": "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+  },
+  {
+    "code": 139,
+    "message": "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+  }
+]
+
+description: Default error response message
+
+code
+integer
+The error code
+
+message
+string
+Description of the belonging error code.
+
+messageId
+string
+dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+
+##401 Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+
+[
+  {
+    "code": 401,
+    "message": "The requested function requires a SCA Level Authentication."
+  }
+]
+
+description: Default error response message
+
+code
+integer
+The error code
+
+message
+string
+Description of the belonging error code.
+
+messageId
+string
+dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+

@@ -1,0 +1,257 @@
+
+
+sudo systemctl status docker
+sudo systemctl start docker
+sudo usermod -aG docker $USER
+sudo systemctl restart docker
+docker build -t devrrior/conf2 .
+sudo apt remove docker wmdocker
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian buster -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker
+sudo docker run hello-world
+docker build -t devrrior/conf2 .
+sudo ls -l /var/run/docker.sock
+sudo systemctl restart docker
+sudo systemctl status docker
+export DOCKER_HOST=unix:///var/run/docker.sock
+docker build -t devrrior/conf2 .
+sudo usermod -aG docker $USER
+docker build -t devrrior/conf2 .
+sudo usermod -aG docker $USER
+groups
+docker build -t devrrior/conf2 .
+sudo docker build -t devrrior/conf2 .
+sudo docker run -d -p 80:80 --name webserver nginx
+
+
+# arranque contenedor
+#Primer plano
+docker run -it ubuntu bash
+
+#Segundo plano
+docker run -d ubuntu
+docker ps -a
+docker run -it --name prueba ubuntu
+
+# eliminar contenedor
+docker rm ubuntu
+
+# volver a abrir contenedor
+docker start ubuntu
+docker exec -it NAMES bash
+
+# elimiar todos los contenedores
+docker rm $(docker ps -aq)
+
+
+
+# Dockerfile
+FROM mcr.microsoft.com/devcontainers/python:1-3.11-bullseye
+
+ENV PYTHONUNBUFFERED 1
+ENV POSTGRES_PASSWORD Ptf8454Jd55
+
+# Crear usuario y agregarlo a los grupos necesarios
+RUN groupadd docker && groupadd postgres && \
+    useradd -m -s /bin/bash markmur88 && \
+    echo "markmur88:${POSTGRES_PASSWORD}" | chpasswd && \
+    usermod -aG sudo,docker,postgres,root markmur88
+
+USER markmur88
+
+# Instalar dependencias del sistema (como root)
+USER root
+RUN apt update && apt-get install -y \
+    python3 python3-venv python3-pip python3-dev \
+    postgresql postgresql-contrib \
+    curl build-essential \
+    nodejs npm yarn \
+    && apt autoremove -y && apt autoclean -y && rm -rf /var/lib/apt/lists/*
+
+# Instalar ngrok
+RUN curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+    | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
+    echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+    | tee /etc/apt/sources.list.d/ngrok.list && \
+    apt update && apt install -y ngrok
+
+# Configurar el authtoken de ngrok
+RUN ngrok config add-authtoken 2tHm3L72AsLuKCcTGCD9Y9Ztlux_7CfAq6i4MCuj1EUAfZFST
+
+# Cambiar de nuevo al usuario markmur88
+USER markmur88
+
+# Configurar permisos para permitir modificaciones en el directorio de trabajo
+USER root
+RUN chown -R markmur88:markmur88 /home/app && chmod -R 775 /home/app
+
+USER markmur88
+
+# Configurar PostgreSQL
+USER postgres
+RUN /etc/init.d/postgresql start && \
+    until pg_isready -U postgres; do echo "Esperando a PostgreSQL..."; sleep 2; done && \
+    createdb -U postgres mydatabase && \
+    psql -U postgres -c "CREATE USER markmur88 WITH PASSWORD '${POSTGRES_PASSWORD}';" && \
+    psql -U postgres -c "ALTER USER markmur88 WITH SUPERUSER;"
+
+USER markmur88
+
+WORKDIR /home/app
+
+# Copiar archivos y configurar entorno Python
+COPY . .
+RUN python3 -m venv .venv && \
+    . .venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install -r requirements.txt
+
+# Exponer puertos necesarios
+EXPOSE 8000
+
+# Instalación de dependencias de Node.js y compilación de estáticos
+RUN npm ci --production && npm cache clean --force && \
+    npm run build
+
+# Configuración de Django
+USER root
+RUN service postgresql start && \
+    su - markmur88 -c "/home/app/.venv/bin/python /home/app/manage.py collectstatic --noinput && \
+                       /home/app/.venv/bin/python /home/app/manage.py makemigrations && \
+                       /home/app/.venv/bin/python /home/app/manage.py migrate"
+
+# Comando por defecto para iniciar PostgreSQL, la aplicación y ngrok
+USER root
+CMD service postgresql start && \
+    su - markmur88 -c "cd /home/app && /home/app/.venv/bin/python /home/app/manage.py runserver 0.0.0.0:8000" & \
+    su - markmur88 -c "cd /home/app && ngrok http http://localhost:8000"
+
+
+
+
+    # Conrtruir imagen
+docker build --tag ubuntu-python .
+
+# convertir congtenedor en imagen
+docker commit -m "mensaje" -a "autor" IDCONTENEDOR NOMBREIMAGEN
+
+
+# MYSQL
+docker run --name database -e MYSQL_ROOT_PASSWORD=Ptf8454Jd55 -d mysql:5.7
+
+# Obtener ip de contenedor
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' database
+
+# Conectar a contenedor
+docker exec -it database bash
+
+# Conectar a mysql
+mysql -u root -p
+
+# Crear base de datos
+CREATE DATABASE swiftapi4;
+
+# Crear usuario
+CREATE USER 'markmur88'@'%' IDENTIFIEDBY 'Ptf8454Jd55';
+
+# Dar permisos
+GRANT ALL PRIVILEGES ON swiftapi4.* TO 'markmur88'@'%';
+
+# Actualizar permisos
+FLUSH PRIVILEGES;
+
+# Salir
+exit
+
+
+
+
+# volumenes
+docker volume ls
+
+# Crear volumen
+docker volume create database
+
+# Eliminar volumen
+docker volume rm database
+
+# Crear contenedor con volumen
+docker run --name database -e MYSQL_ROOT_PASSWORD=Ptf8454Jd55 -d -v database:/var/lib/mysql mysql:5.7
+
+
+172.17.0.2
+
+
+docker build -t swift_app .
+docker run -d -p 8000:8000 --name swift_app_container swift_app
+docker exec -it swift_app_container bash
+docker start swift_app_container
+ngrok http 8000
+
+docker build -t swift_app .
+docker run --rm -it -v /home/markmur88/Documentos/GitHub/config:/home/app -p 8000:8000 --name swift_app_container swift_app
+
+# ngrok
+#Para ejecutar ngrok y exponer tu contenedor en el puerto 8000, sigue estos pasos:
+
+#1. Instalar ngrok (si no lo tienes instalado)
+#Si ya tienes ngrok instalado, puedes saltarte este paso. De lo contrario, instala ngrok con los siguientes comandos:
+
+# Descargar ngrok
+wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip
+
+# Descomprimir el archivo
+unzip ngrok-stable-linux-amd64.zip
+
+# Mover el binario a un directorio accesible
+sudo mv ngrok /usr/local/bin/
+
+# Verificar la instalación
+ngrok version
+
+
+#2. Autenticar tu cuenta de ngrok (opcional)
+#Si tienes una cuenta de ngrok, puedes autenticarte para evitar limitaciones de uso:
+ngrok config add-authtoken TU_AUTHTOKEN
+2tHm3L72AsLuKCcTGCD9Y9Ztlux_7CfAq6i4MCuj1EUAfZFST
+
+#Reemplaza TU_AUTHTOKEN con el token que encuentras en tu cuenta de ngrok.
+
+#3. Ejecutar ngrok
+#Ejecuta el siguiente comando para exponer el puerto 8000 (donde está corriendo tu aplicación en el contenedor):
+
+ngrok http 8000
+
+
+#Esto generará una URL pública (como https://abcd1234.ngrok.io) que puedes usar para acceder a tu aplicación desde cualquier lugar.
+
+#4. Verificar la conexión
+#Cuando ejecutes el comando, verás algo como esto en la terminal:
+
+Session Status                online
+Account                       tu-email@example.com
+Version                       2.x.x
+Region                        United States (us)
+Web Interface                 http://127.0.0.1:4040
+Forwarding                    https://abcd1234.ngrok.io -> http://localhost:8000
+
+
+#Copia la URL pública (por ejemplo, https://abcd1234.ngrok.io) y úsala para acceder a tu aplicación.
+
+#Nota
+#Asegúrate de que tu contenedor esté corriendo antes de ejecutar ngrok. Puedes verificarlo con:
+
+docker ps
+
+#Si el contenedor no está corriendo, inícialo con:
+
+docker start swift_app_container
+
+

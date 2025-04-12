@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+<a href="{% url 'transfers_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+
+
+<h1>Eliminar Transacción</h1>
+<p>¿Estás seguro de que deseas eliminar esta transacción?</p>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <td>{{ transaction.id }}</td>
+    </tr>
+    <tr>
+        <th>Cuenta Origen</th>
+        <td>{{ transaction.source_account }}</td>
+    </tr>
+    <tr>
+        <th>Cuenta Destino</th>
+        <td>{{ transaction.destination_account }}</td>
+    </tr>
+    <tr>
+        <th>Monto</th>
+        <td>{{ transaction.amount }} {{ transaction.currency }}</td>
+    </tr>
+</table>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'transfer_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

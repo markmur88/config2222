@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+<a href="{% url 'transfers_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+
+
+<div class="container mt-4">
+    <h2>{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Transacción SEPA</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'sepa-transfer_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

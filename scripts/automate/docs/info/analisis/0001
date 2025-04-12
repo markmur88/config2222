@@ -1,0 +1,38 @@
+access-control-allow-headers: 
+  - idempotency-id
+  - process-id
+  - otp
+  - Correlation-ID
+  - Origin
+  - Accept
+  - X-Requested-With
+  - Content-Type
+  - Access-Control-Request-Method
+  - Access-Control-Request-Headers
+  - Authorization
+  - Cookie
+  - X-Frame-Options
+  - X-Content-Type-Options
+  - Strict-Transport-Security
+  - previewsignature
+access-control-allow-methods: 
+  - GET
+  - POST
+  - PATCH
+  - HEAD
+  - OPTIONS
+  - DELETE
+access-control-allow-origin: "*"
+access-control-max-age: 3628800
+alt-svc: 
+  - h3=":443"; ma=2592000
+  - h3-29=":443"; ma=2592000
+content-length: 173
+content-type: application/json
+date: Thu, 27 Feb 2025 20:59:24 GMT
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+via: 1.1 google
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-request-id: c9dac1ce-630d-4117-b75b-4795933db39c
+x-sf-cors: true

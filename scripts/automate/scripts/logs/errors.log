@@ -1,0 +1,74 @@
+Error al cargar la configuración base: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+No se pudo cargar la configuración base. Verifica el archivo config_base.json.
+Error al cargar la configuración base: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+No se pudo cargar la configuración base. Verifica el archivo config_base.json.
+Error al cargar la configuración base: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+No se pudo cargar la configuración base. Verifica el archivo config_base.json.
+Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/diccionarios/usuarios.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/diccionarios/usuarios.txt'
+Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/diccionarios/contraseñas.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/diccionarios/contraseñas.txt'
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/diccionarios/usuarios.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/diccionarios/usuarios.txt'
+Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/diccionarios/contraseñas.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/diccionarios/contraseñas.txt'
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/usuarios.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/usuarios.txt'
+Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/contraseñas.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/contraseñas.txt'
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/usuarios.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/usuarios.txt'
+Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/contraseñas.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/contraseñas.txt'
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+Error al cargar la configuración: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+No se pudo cargar la configuración. Verifica el archivo config.json.
+Error al cargar la configuración: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+No se pudo cargar la configuración. Verifica el archivo config.json.
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+ssh-keygen no está instalada.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+ssh-keygen no está instalada. Error: Command '['ssh-keygen', '--version']' returned non-zero exit status 1.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+Error al ejecutar el comando: /bin/sh: 1: protonvpn-cli: not found
+El comando para verificar ssh-keygen excedió el tiempo de espera y fue terminado.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+Error al ejecutar el comando: sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+sudo: a password is required
+El comando para verificar ssh-keygen excedió el tiempo de espera y fue terminado.
+Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+hydra no está instalada. Error: Command '['hydra', '--version']' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+Error al leer el archivo diccionarios/usuarios.txt: [Errno 2] No such file or directory: 'diccionarios/usuarios.txt'
+Error al leer el archivo diccionarios/usuarios.txt: [Errno 2] No such file or directory: 'diccionarios/usuarios.txt'
+Error al leer el archivo diccionarios/contrasenas.txt: [Errno 2] No such file or directory: 'diccionarios/contrasenas.txt'
+hydra no está instalada. Error: Command '['hydra', '--version']' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+Falta la herramienta: hydra. Instálala antes de continuar.
+ssh no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S ssh --version' returned non-zero exit status 255.
+Falta la herramienta: ssh. Instálala antes de continuar.

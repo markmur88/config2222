@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br>
+<div class="container mt-4">
+    <h1>{{ title }}</h1>
+    <a href="{{ create_url }}" class="btn btn-primary mb-3">{{ create_label }}</a>
+    <table class="table table-striped">
+        <thead>
+            {{ table_headers }}
+        </thead>
+        <tbody>
+            {{ table_rows }}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

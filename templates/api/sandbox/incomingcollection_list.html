@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<br><br>
+
+<h1>Lista de Colecciones Entrantes</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Monto</th>
+            <th>Moneda</th>
+            <th>Remitente</th>
+            <th>IBAN Remitente</th>
+            <th>IBAN Destinatario</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for collection in collections %}
+        <tr>
+            <td>{{ collection.reference_id }}</td>
+            <td>{{ collection.amount }}</td>
+            <td>{{ collection.currency }}</td>
+            <td>{{ collection.sender_name }}</td>
+            <td>{{ collection.sender_iban }}</td>
+            <td>{{ collection.recipient_iban }}</td>
+            <td>{{ collection.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'incomingcollection-create' %}" class="btn btn-primary">Crear Nueva Colección</a>
+{% endblock %}

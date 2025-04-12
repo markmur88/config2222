@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<a href="{% url 'collection_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+
+<br><br>
+
+<h1>Lista de Mandatos</h1>
+<a href="{% url 'mandate-create' %}" class="btn btn-primary">Crear Mandato</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Referencia</th>
+            <th>Esquema</th>
+            <th>Deudor</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for mandate in mandates %}
+        <tr>
+            <td>{{ mandate.reference }}</td>
+            <td>{{ mandate.scheme }}</td>
+            <td>{{ mandate.debtor_name }}</td>
+            <td>
+                <a href="{% url 'mandate-update' mandate.pk %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'mandate-delete' mandate.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,720 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "dbapi-paymentInitiation-payments",
+    "description": "Easily initiate SEPA credit transfers and check on the processing status afterwards.",
+    "termsOfService": "https://developer.db.com/termsandconditions",
+    "contact": {
+      "url": "https://developer.db.com/contact",
+      "email": "bank.api@db.com"
+    },
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://simulator-api.db.com:443/gw/dbapi/paymentInitiation/payments/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Instant Payments"
+    }
+  ],
+  "paths": {
+    "/instantSepaCreditTransfers": {
+      "post": {
+        "tags": [
+          "Instant Payments"
+        ],
+        "summary": "Initiates an Instant SEPA Credit Transfer.",
+        "description": "Initiates an Instant SEPA Credit Transfer from your customers account to another SEPA account.",
+        "operationId": "performPaymentInstant",
+        "parameters": [
+          {
+            "name": "idempotency-id",
+            "in": "header",
+            "description": "Unique id of the service call. Should be resent during retries to avoid multiple processing of the same request",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "otp",
+            "in": "header",
+            "description": "The one-time password based on which the payment is authorized by the end user or PUSHTAN to get a notification on the photoTAN app and confirm the payment",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Correlation-Id",
+            "in": "header",
+            "description": "Free form key controlled by the caller e.g. uuid",
+            "required": false,
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "headers": {
+              "correlation-id": {
+                "description": "Free form key controlled by the caller",
+                "schema": {
+                  "maxLength": 50,
+                  "type": "string"
+                }
+              },
+              "location": {
+                "description": "URI of the created resource",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": [
+                  {
+                    "code": 2,
+                    "message": "Invalid value for %s."
+                  },
+                  {
+                    "code": 114,
+                    "message": "Unable to identify transaction by Id."
+                  },
+                  {
+                    "code": 115,
+                    "message": "Time limit exceeded."
+                  },
+                  {
+                    "code": 121,
+                    "message": "OTP invalid challenge response: %s."
+                  },
+                  {
+                    "code": 122,
+                    "message": "Invalid OTP."
+                  },
+                  {
+                    "code": 127,
+                    "message": "Booking date from must precede booking date to."
+                  },
+                  {
+                    "code": 131,
+                    "message": "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                  },
+                  {
+                    "code": 132,
+                    "message": "not supported"
+                  },
+                  {
+                    "code": 138,
+                    "message": "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+                  },
+                  {
+                    "code": 139,
+                    "message": "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": [
+                  {
+                    "code": 401,
+                    "message": "The requested function requires a SCA Level Authentication."
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_auth_code": [
+              "instant_sepa_credit_transfers"
+            ]
+          },
+          {
+            "api_implicit": [
+              "instant_sepa_credit_transfers"
+            ]
+          }
+        ],
+        "x-codegen-request-body-name": "paymentRequest"
+      }
+    },
+
+
+
+
+
+
+    "/instantSepaCreditTransfers/{paymentId}": {
+      "get": {
+        "tags": [
+          "Instant Payments"
+        ],
+        "summary": "Checks the processing status of an Instant SEPA Credit Transfer request.",
+        "description": "Checks the processing status of an Instant SEPA Credit Transfer request. Use the paymentId returned from a previous call to initiate the transfer.",
+        "operationId": "getPaymentStatus",
+        "parameters": [
+          {
+            "name": "paymentId",
+            "in": "path",
+            "description": "Used to unambiguously identify a payment transaction",
+            "required": true,
+            "schema": {
+              "maxLength": 256,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Correlation-Id",
+            "in": "header",
+            "description": "Free form key controlled by the caller e.g. uuid",
+            "required": false,
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "correlation-id": {
+                "description": "Free form key controlled by the caller",
+                "schema": {
+                  "maxLength": 50,
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": [
+                  {
+                    "code": 2,
+                    "message": "Invalid value for %s."
+                  },
+                  {
+                    "code": 114,
+                    "message": "Unable to identify transaction by Id."
+                  },
+                  {
+                    "code": 115,
+                    "message": "Time limit exceeded."
+                  },
+                  {
+                    "code": 121,
+                    "message": "OTP invalid challenge response: %s."
+                  },
+                  {
+                    "code": 122,
+                    "message": "Invalid OTP."
+                  },
+                  {
+                    "code": 127,
+                    "message": "Booking date from must precede booking date to."
+                  },
+                  {
+                    "code": 131,
+                    "message": "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                  },
+                  {
+                    "code": 132,
+                    "message": "not supported"
+                  },
+                  {
+                    "code": 138,
+                    "message": "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+                  },
+                  {
+                    "code": 139,
+                    "message": "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": [
+                  {
+                    "code": 401,
+                    "message": "The requested function requires a SCA Level Authentication."
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_auth_code": [
+              "instant_sepa_credit_transfers"
+            ]
+          },
+          {
+            "api_implicit": [
+              "instant_sepa_credit_transfers"
+            ]
+          }
+        ]
+      }
+    },
+
+
+
+
+
+    "/instantSepaCreditTransfers/creditorAccounts/{iban}/reachabilityStatus": {
+      "get": {
+        "tags": [
+          "Instant Payments"
+        ],
+        "summary": "Verifies if the provided IBAN is reachable for an Instant SEPA Credit Transfer.",
+        "description": "Verifies if the provided IBAN is reachable for an Instant SEPA Credit Transfer.",
+        "operationId": "getReachabilityStatus",
+        "parameters": [
+          {
+            "name": "iban",
+            "in": "path",
+            "description": "International Bank Account Number",
+            "required": true,
+            "schema": {
+              "maxLength": 34,
+              "minLength": 5,
+              "pattern": "[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}",
+              "type": "string"
+            }
+          },
+          {
+            "name": "Correlation-Id",
+            "in": "header",
+            "description": "Free form key controlled by the caller e.g. uuid",
+            "required": false,
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "correlation-id": {
+                "description": "Free form key controlled by the caller",
+                "schema": {
+                  "maxLength": 50,
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReachabilityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": [
+                  {
+                    "code": 2,
+                    "message": "Invalid value for %s."
+                  },
+                  {
+                    "code": 114,
+                    "message": "Unable to identify transaction by Id."
+                  },
+                  {
+                    "code": 115,
+                    "message": "Time limit exceeded."
+                  },
+                  {
+                    "code": 121,
+                    "message": "OTP invalid challenge response: %s."
+                  },
+                  {
+                    "code": 122,
+                    "message": "Invalid OTP."
+                  },
+                  {
+                    "code": 127,
+                    "message": "Booking date from must precede booking date to."
+                  },
+                  {
+                    "code": 131,
+                    "message": "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                  },
+                  {
+                    "code": 132,
+                    "message": "not supported"
+                  },
+                  {
+                    "code": 138,
+                    "message": "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+                  },
+                  {
+                    "code": 139,
+                    "message": "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": [
+                  {
+                    "code": 401,
+                    "message": "The requested function requires a SCA Level Authentication."
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_auth_code": [
+              "instant_sepa_credit_transfers"
+            ]
+          },
+          {
+            "api_implicit": [
+              "instant_sepa_credit_transfers"
+            ]
+          }
+        ]
+      }
+    }
+  },
+
+
+  
+  "components": {
+    "schemas": {
+      "PaymentRequest": {
+        "required": [
+          "creditorAccount",
+          "creditorName",
+          "debtorAccount",
+          "instructedAmount"
+        ],
+        "type": "object",
+        "properties": {
+          "debtorAccount": {
+            "$ref": "#/components/schemas/AccountReference"
+          },
+          "endToEndIdentification": {
+            "$ref": "#/components/schemas/EndToEndIdentification"
+          },
+          "instructedAmount": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "creditorAgent": {
+            "maxLength": 11,
+            "type": "string",
+            "description": "Código de identificador de negocios para bancos y otras instituciones, definido por Swift "
+          },
+          "creditorName": {
+            "maxLength": 70,
+            "type": "string",
+            "description": "Name by which a party is known and which is usually used to identify that party"
+          },
+          "creditorAddress": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "creditorAccount": {
+            "$ref": "#/components/schemas/AccountReference"
+          },
+          "remittanceInformationUnstructured": {
+            "maxLength": 140,
+            "type": "string"
+          }
+        }
+      },
+      "AccountReference": {
+        "required": [
+          "iban"
+        ],
+        "type": "object",
+        "properties": {
+          "iban": {
+            "$ref": "#/components/schemas/IBAN"
+          },
+          "currencyCode": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "PaymentResponse": {
+        "required": [
+          "paymentId",
+          "transactionStatus"
+        ],
+        "type": "object",
+        "properties": {
+          "paymentId": {
+            "maxLength": 256,
+            "type": "string",
+            "description": "Used to unambiguously identify a payment transaction"
+          },
+          "transactionStatus": {
+            "$ref": "#/components/schemas/TransactionStatus"
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        }
+      },
+      "ReachabilityResponse": {
+        "required": [
+          "isInstantPaymentReachable"
+        ],
+        "type": "object",
+        "properties": {
+          "isInstantPaymentReachable": {
+            "type": "boolean",
+            "description": "IBAN is reachable for instant SEPA credit transfers"
+          }
+        }
+      },
+      "StatusResponse": {
+        "required": [
+          "transactionStatus"
+        ],
+        "type": "object",
+        "properties": {
+          "transactionStatus": {
+            "$ref": "#/components/schemas/TransactionStatus"
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        }
+      },
+      "Message": {
+        "required": [
+          "code",
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "The response code"
+          },
+          "text": {
+            "type": "string",
+            "description": "The reason for the unaccepted transaction"
+          },
+          "category": {
+            "type": "string",
+            "description": "Reason category"
+          }
+        },
+        "description": "Backend response when the transaction was not accepted"
+      },
+      "TransactionStatus": {
+        "type": "string",
+        "description": "Transaction Status: Specifies the status of a transaction, in a coded form.\n  * ACCP - AcceptedCustomerProfile. Preceding check of technical validation was successful. Customer profile check was also successful.\n  * RJCT - Rejected. Payment initiation or individual transaction included in the payment initiation has been rejected.\n  * CARJ - Rejected. Payment initiation or individual transaction included in the payment initiation has been rejected because the client rejected the PUSHTAN request.\n  * PYLE - Rejected. Payment initiation or individual transaction included in the payment initiation has been rejected because payment limit was reached.\n  * PDNG - Pending. Payment initiation or individual transaction included in the payment initiation is pending. Further checks and status update will be performed.\n  * ACAT - Pending. Waiting for customer authorization. Further checks and status update will be performed.\n ",
+        "enum": [
+          "ACCP",
+          "RJCT",
+          "CARJ",
+          "PYLE",
+          "PDNG",
+          "ACAT"
+        ]
+      },
+      "EndToEndIdentification": {
+        "pattern": "[a-zA-Z0-9.-]{1,35}$",
+        "type": "string",
+        "description": "Unique identification assigned by the initiating party to unambiguously identify the transaction"
+      },
+      "ErrorResponse": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "The error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Description of the belonging error code."
+          },
+          "messageId": {
+            "type": "string",
+            "description": "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description": "Default error response message"
+      },
+      "Amount": {
+        "required": [
+          "amount",
+          "currencyCode"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "number of fraction digits limited to 2",
+            "format": "double",
+            "example": 58.13
+          },
+          "currencyCode": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "CurrencyCode": {
+        "pattern": "[A-Z]{3}",
+        "type": "string",
+        "description": "ISO 4217 Alpha 3 currency code.",
+        "example": "EUR"
+      },
+      "Address": {
+        "required": [
+          "country"
+        ],
+        "type": "object",
+        "properties": {
+          "street": {
+            "maxLength": 70,
+            "type": "string",
+            "description": "Street name"
+          },
+          "buildingNumber": {
+            "type": "string",
+            "description": "House number"
+          },
+          "city": {
+            "type": "string",
+            "description": "City name"
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "Zip code"
+          },
+          "country": {
+            "maxLength": 2,
+            "minLength": 2,
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2 country code"
+          }
+        }
+      },
+      "IBAN": {
+        "pattern": "[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}",
+        "type": "string",
+        "description": "The IBAN of this account."
+      }
+    },
+    "securitySchemes": {
+      "api_auth_code": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://simulator-api.db.com:443/gw/oidc/authorize",
+            "tokenUrl": "https://simulator-api.db.com:443/gw/oidc/token",
+            "scopes": {
+              "instant_sepa_credit_transfers": "Initiate and check status of instant SEPA credit transfers",
+              "openid": "Request access to OpenId Connect functionality",
+              "offline_access": "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      },
+      "api_implicit": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://simulator-api.db.com:443/gw/oidc/authorize",
+            "scopes": {
+              "instant_sepa_credit_transfers": "Initiate and check status of instant SEPA credit transfers",
+              "openid": "Request access to OpenId Connect functionality"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version": "2.0"
+} 

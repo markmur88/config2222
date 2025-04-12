@@ -1,0 +1,106 @@
+Para obtener un token de acceso OAuth2 en Django utilizando Django OAuth Toolkit, debes seguir estos pasos. Este proceso implica configurar un cliente OAuth2, realizar una solicitud de token y luego usar ese token para autenticar las solicitudes a la API.
+
+1. Configurar un Cliente OAuth2
+Primero, necesitas crear un cliente OAuth2 en tu base de datos. Esto se puede hacer a través de la interfaz de administración de Django o mediante la consola.
+
+Opción 1: Usar la interfaz de administración de Django
+Accede a la interfaz de administración de Django (https://127.0.0.1:8000/admin).
+Ve a la sección "Django OAuth Toolkit" y selecciona "Applications".
+Haz clic en "Add Application" y completa los campos:
+User: Selecciona un usuario (puede ser el superusuario).
+Client type: Selecciona Confidential.
+Authorization grant type: Selecciona Authorization code.
+Name: Pon un nombre descriptivo, como API Client.
+Redirect URIs: Deja este campo en blanco o usa https://localhost:8000/oauth2/callback.
+Client ID y Client Secret: Estos se generarán automáticamente.
+
+Opción 2: Usar la consola
+Puedes crear un cliente OAuth2 directamente desde la consola usando el siguiente comando:
+
+python manage.py create_oauth2_client \
+    --name="API Client" \
+    --client-type="confidential" \
+    --grant-type="authorization-code" \
+    --redirect-uri="https://localhost:8000/oauth2/callback"
+
+Esto generará un Client ID y un Client Secret, que necesitarás para obtener el token.
+
+2. Obtener un Token de Acceso
+Para obtener un token de acceso, debes realizar una solicitud al endpoint de autorización de OAuth2. Aquí te explico cómo hacerlo paso a paso.
+
+Paso 1: Solicitar un Código de Autorización
+Primero, necesitas obtener un código de autorización. Esto se hace redirigiendo al usuario al endpoint de autorización.
+URL de Autorización: https://127.0.0.1:8000/o/authorize/
+Parámetros:
+client_id: El Client ID que obtuviste al crear el cliente OAuth2.
+client_id: gQ8zZPxiSqNDaEJsoVndS8RL6YiwLo8gKnzckmE2
+client_secret: pbkdf2_sha256$870000$45s8vMfD8z4PwPDuPUg5zR$McHRA3VikVOMo/xefLVlJyTH/ZVx0+YetAC+o3ZSGBw=
+response_type: code
+scope: read_transactions (o los scopes que necesites).
+redirect_uri: La URI de redirección que configuraste en el cliente.
+Ejemplo de URL completa: 
+
+https://127.0.0.1:8000/o/authorize/?client_id=XXPTsod975lcMt1zPalRunuvGhaSEeo4Ic3bcCJZ&response_type=code&scope=read_transactions&redirect_uri=https://localhost:8000/oauth2/callback
+
+Cuando el usuario acceda a esta URL, se le pedirá que inicie sesión y autorice la aplicación. Después de la autorización, se redirigirá a la redirect_uri con un código de autorización en la URL.
+
+Paso 2: Intercambiar el Código por un Token de Acceso
+Una vez que tengas el código de autorización, puedes intercambiarlo por un token de acceso.
+URL del Token: https://127.0.0.1:8000/o/token/
+Parámetros:
+grant_type: authorization_code
+code: El código de autorización que obtuviste.
+redirect_uri: La misma URI de redirección que usaste en el paso anterior.
+client_id: El Client ID.
+client_secret: El Client Secret.
+Ejemplo de solicitud usando curl:
+
+curl -X POST \
+    -d "grant_type=authorization_code" \
+    -d "code=<authorization_code>" \
+    -d "redirect_uri=https://localhost:8000/oauth2/callback" \
+    -d "client_id=<client_id>" \
+    -d "client_secret=<client_secret>" \
+    https://127.0.0.1:8000/o/token/
+
+Respuesta del Token
+Si la solicitud es exitosa, recibirás una respuesta JSON con el token de acceso:
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token_type": "Bearer",
+    "expires_in": 36000,
+    "refresh_token": "def50200e5b2f3c1...",
+    "scope": "read_transactions"
+}
+access_token: El token que usarás para autenticar las solicitudes a la API.
+refresh_token: Úsalo para obtener un nuevo token de acceso cuando el actual expire.
+expires_in: Tiempo de vida del token en segundos.
+
+3. Usar el Token de Acceso
+Una vez que tengas el token de acceso, puedes usarlo para autenticar las solicitudes a la API. Simplemente incluye el token en el encabezado Authorization de tus solicitudes.
+Ejemplo de solicitud usando curl:
+curl -X GET https://127.0.0.1:8000/api/transactions/ \
+    -H "Authorization: Bearer <access_token>"
+
+4. Refrescar el Token de Acceso
+Cuando el token de acceso expire, puedes usar el refresh_token para obtener un nuevo token sin necesidad de que el usuario vuelva a autorizar la aplicación.
+URL del Token: https://127.0.0.1:8000/o/token/
+Parámetros:
+grant_type: refresh_token
+refresh_token: El refresh token que obtuviste.
+client_id: El Client ID.
+client_secret: El Client Secret.
+Ejemplo de solicitud usando curl:
+curl -X POST \
+    -d "grant_type=refresh_token" \
+    -d "refresh_token=<refresh_token>" \
+    -d "client_id=<client_id>" \
+    -d "client_secret=<client_secret>" \
+    https://127.0.0.1:8000/o/token/
+
+Resumen
+Crea un cliente OAuth2 en Django OAuth Toolkit.
+Obtén un código de autorización redirigiendo al usuario al endpoint de autorización.
+Intercambia el código por un token de acceso usando el endpoint de token.
+Usa el token de acceso para autenticar las solicitudes a la API.
+Refresca el token cuando expire usando el refresh_token.

@@ -1,0 +1,175 @@
+Los documentos contienen información sobre accesos y rutas relacionadas con Deutsche Bank AG en Frankfurt. Aquí tienes un resumen de los accesos y rutas encontrados:
+78414
+Accesos:
+Código de acceso: e4f15898780.
+Nombre de usuario: 493069k1.
+ID de usuario: FGM470.
+Dominio de inicio de sesión: DEUBA.
+Servidor de inicio de sesión: FRAESWDBRP 21.
+Nombre de la granja de servidores: FARM 42.
+Nombre del cliente: F4700302.
+Número de cliente: 000000005RT-RN-388-37862BEH17RLN000000.
+Servidor de terminal: SO200235.
+Servidor de terminal Windows: S020005636.
+Oficiales del banco:
+Colin Fan (PTN CODE 022677).
+Manuel Mang (PTN CODE 817690).
+Rutas y direcciones IP:
+Rango de IPs: 193.150.166.0/24.
+Organización: Deutsche Bank AG.
+Ubicación: Alfred-Herrhausen-Allee 16-24, 65760 Eschborn, Alemania.
+Contactos técnicos y administrativos: dns.admin@db.com.
+Código de interbloqueo bancario: 144A:S:G4639DV8.
+Número de referencia único de transacción: DEUT997856743216.
+Códigos de transacción y transferencia:
+090512DEUTDEFFXXX886479.
+144A;S:G4639DY8.
+
+code_verifier : Ubqtl1fsCVu7Up1vu_5WOimLVHdxJLukVQZk8wddCrXy8ebYzqLdWw
+code_challenge : FB5vBMLYbnhGwMA9rSs8gahEcoY_MvQZb8ynkhfmGGg
+
+client_id : KE63TgVNUB804t9OQtepCU2R2A7cbVF6Sv7jNnms
+client_secret : pbkdf2_sha256$870000$9ZmCxDPifExXK4KzBc9lNF$J3SIhCG+FHRsTcU+FcAw57icy9F+E8SQpgQ8B6HVpBY=
+
+http://127.0.0.1:8000/o/authorize/?client_id=KE63TgVNUB804t9OQtepCU2R2A7cbVF6Sv7jNnms&response_type=code&scope=read_transactions&redirect_uri=http://localhost:8000/oauth2/callback&code_challenge=FB5vBMLYbnhGwMA9rSs8gahEcoY_MvQZb8ynkhfmGGg&code_challenge_method=S256
+
+Authorization code: usVmT2mx2rJ7x9bz5oCbBrBcycHiw5
+
+
+
+
+client_id : tyxqwySahMKF0szmL32e0NGRJp369pyCnqUnJuIS
+client_secret : eQoaI6XTlEsCpP0VkYTaFxmBGQi1m9TCkHhJI8N6rSt51uJZqKmO46U3be2lVOce00cllWaPpiX7JTofoJ6ZbCiqPg5utZ4w74kYuIwabQj1fMmdOR8knbo2CdYnCu6X
+code_verifier : BR1s4ziHt5uYKwyat0ryEzw5v6L3-EJZDQbMjwhMIl-yBI0QULPW3g
+code_challenge : w3cSvF5mHmXdECWXEmJDI7VwbZJc2pHBt-VVknm4n0A
+http://127.0.0.1:8000/o/authorize/?client_id=tyxqwySahMKF0szmL32e0NGRJp369pyCnqUnJuIS&response_type=code&scope=read_transactions&redirect_uri=http://localhost:8000/oauth2/callback&code_challenge=w3cSvF5mHmXdECWXEmJDI7VwbZJc2pHBt-VVknm4n0A&code_challenge_method=S256
+
+Authorization code: DJ45bgfwEfHslJ8GbMrNNHNzcBqJgm
+
+Code Verifier: 9eMWzjOZR5uFmiq_a8MREXXImVmec2PX0fJw4WI-PuIbEJryJV2UOQ
+Code Challenge: HswyvdXzVxA3tJNEG8JMLa4PEfR0bqCs1upLUtsN6DY
+http://127.0.0.1:8000/o/authorize/?client_id=tyxqwySahMKF0szmL32e0NGRJp369pyCnqUnJuIS&response_type=code&scope=read_transactions&redirect_uri=http://localhost:8000/oauth2/callback&code_challenge=HswyvdXzVxA3tJNEG8JMLa4PEfR0bqCs1upLUtsN6DY&code_challenge_method=S256
+
+Authorization code: 4aAq6Ln6xV51LPB9sFj3moJKy9fivN
+
+
+client_id : tyxqwySahMKF0szmL32e0NGRJp369pyCnqUnJuIS
+client_secret : eQoaI6XTlEsCpP0VkYTaFxmBGQi1m9TCkHhJI8N6rSt51uJZqKmO46U3be2lVOce00cllWaPpiX7JTofoJ6ZbCiqPg5utZ4w74kYuIwabQj1fMmdOR8knbo2CdYnCu6X
+Code Verifier: 9eMWzjOZR5uFmiq_a8MREXXImVmec2PX0fJw4WI-PuIbEJryJV2UOQ
+Code Challenge: HswyvdXzVxA3tJNEG8JMLa4PEfR0bqCs1upLUtsN6DY
+Authorization code: 4aAq6Ln6xV51LPB9sFj3moJKy9fivN
+id_Token: db8f854f-7750-4e29-98d4-6be21edef2e4
+
+access_token: 
+tocken_checksum: f18d733146ec962b3f490b0fde0050dd54cb54b36eae29f571629ebda9d9372f
+expires: 2025-02-28 06:00:00
+
+https://dbapi-transactions.onrender.com/
+
+
+client_id: <client_id>
+client_secret: <client_secret>
+code_verifier: <code_verifier>
+code_challenge: <code_challenge>
+http://127.0.0.1:8000/o/authorize/?client_id=<client_id>jNnms&response_type=code&scope=read_transactions&redirect_uri=http://localhost:8000/oauth2/callback&code_challenge=<code_challenge>&code_challenge_method=S256
+
+Authorization code: usVmT2mx2rJ7x9bz5oCbBrBcycHiw5
+id_Token: <id_Token>
+
+###ADMIN###
+client_id: <XXPTsod975lcMt1zPalRunuvGhaSEeo4Ic3bcCJZ>
+
+client_secret: <4kWnTNEsxQfy4JyykUXo3RKoAJouT3yzedl6RZjVQY68ALWVkYGVjDgbzzyRNvTJIzaRAnLAjeoLO0S2WWmEVB0s8FS0MQI59zb8TNhImwrXuPmF5QeQ0Vwygif1B46v>
+
+Code Verifier: 7PcQkqML97vtwnVIMWGPdSzGWIbTfW2GCHwzAjesgXSWjlzWsoe1LQ
+
+Code Challenge: mpISR8qploLro2Ec0OpRn_yNqI2M3nSKrvh4V8LI8rI
+
+http://127.0.0.1:8000/o/authorize/?client_id=XXPTsod975lcMt1zPalRunuvGhaSEeo4Ic3bcCJZjNnms&response_type=code&scope=read_transactions&redirect_uri=http://localhost:8000/oauth2/callback&code_challenge=mpISR8qploLro2Ec0OpRn_yNqI2M3nSKrvh4V8LI8rI&code_challenge_method=S256
+
+
+Authorization code: usVmT2mx2rJ7x9bz5oCbBrBcycHiw5
+id_Token: <id_Token>
+
+
+
+
+
+##################
+client_id: <client_id>
+zvNiJb0VbOK5NTIwbfoLfO0tbnaMhopnQl72aedm
+
+client_secret: <client_secret>
+t5Ek7S3Ep0lwPIvsofC8Q2HQ3WN9Ce8U0cMLbAPvDHHWVi6HZX95jNXSFNsmH7CKGAQtADE0teALr5DlPROXAufzRGy9waI7mTkquCSZE2FQytGtoIRZluZPFZami0mE
+
+code_verifier: <code_verifier>
+Code Verifier: OENBS7ar8rLmIQYCeqtwfvq8Zc8VXxgyXJaCeCDpk9C1VNKWcBQGVg
+
+code_challenge: <code_challenge>
+Code Challenge: 2ukTTDbxAKC8bRnYsFkQzfU8RC7coc1agl34uay15tI
+
+http://127.0.0.1:8000/o/authorize/?client_id=zvNiJb0VbOK5NTIwbfoLfO0tbnaMhopnQl72aedm&response_type=code&scope=read_write_transactions&redirect_uri=http://localhost:8000/oauth2/callback&code_challenge=2ukTTDbxAKC8bRnYsFkQzfU8RC7coc1agl34uay15tI&code_challenge_method=S256
+
+
+Authorization code: DOX4ZcY3mK0bg05hC4DOQQvCn5e0Xb
+
+id_Token: <id_Token>
+f07c1f21-5da9-4b36-a8de-7c4a5c8515d6
+
+token_Checksum: <token_Checksum>
+9f73db5ff44530d68ff74b98fd777a18e4ef4baa22abcf9d5fa169da94888222
+
+
+
+client_id: <client_id>
+fSoZZZ0H0jfq1ySivjjcdDHRlPB1GHNLZOyjAd7O
+
+client_secret: <client_secret>
+2zyoyv6r25Msu7tbPagzZJ0lBbZXlp1aRHzfH3kdep0TS6XngQM3aGNHsNtmvH9JsfKTGimfoM6ygEN2IRzbrYmRsoLRXxKdwqPiMprJeeoc7nMIG0US3cmBCsniZvGc
+
+code_verifier: <code_verifier>
+Code Verifier: 2F07rfDDws7GlOBuoYyvfk55dLnfj6RLcVF6MnEbtpLwLqHwisbjjg
+
+code_challenge: <code_challenge>
+Code Challenge: 7tJYICrj8SveWRamIWTgDLsmYYZi3ypyW51sCs7tIzs
+
+http://127.0.0.1:8000/o/authorize/?client_id=fSoZZZ0H0jfq1ySivjjcdDHRlPB1GHNLZOyjAd7O&response_type=code&scope=read_write_transactions&redirect_uri=http://localhost:8000/oauth2/callback&code_challenge=7tJYICrj8SveWRamIWTgDLsmYYZi3ypyW51sCs7tIzs&code_challenge_method=S256
+
+http://127.0.0.1:8000/o/authorize/?client_id=tu_client_id&response_type=code&scope=read_write_transactions&redirect_uri=http://localhost:8000/oauth2/callback&code_challenge=tu_code_challenge&code_challenge_method=S256
+
+Authorization code: PilH5hgHp1vcmmADQbDDtP5ChZRkK0
+
+{"access_token": "w0qXWSEW4YVFgeInQqBEg8sXnjFJsl", 
+"expires_in": 36000, 
+"token_type": "Bearer", 
+"scope": "read_write_transactions", 
+"refresh_token": "EqFrL79NORSaflL9nZapVo05CdprUS"}
+
+
+
+
+**********
+
+client_id: <client_id>
+RR3BqtriOFKOiozGX6n6vd6Saer1ZSsKc6AlTxoi
+
+client_secret: <client_secret>
+IIF24vaWxqLi4X4fsFfVG1JIVqjJP4NsmgN56lQUxy1qoOIXJwDC8xtBvmtDgIVdeZWbPCcCMoLYnhwJZLX5IQIDfPEUBzr8IPfxTLWAmVQvzFV3aD5K1vmzlDf9hgqh
+
+code_verifier: <code_verifier>
+Code Verifier: ixcdHP0nDjkVyad9uLP2yMHvWMip0Z1N_srpwgzVrQ_uCZUOkPewLA
+
+code_challenge: <code_challenge>
+Code Challenge: JqXS_Ws6RvZExNCqpdnBf4DGUCryXJgW6liGzCAOm6k
+
+https://127.0.0.1:8002/o/authorize/?client_id=RR3BqtriOFKOiozGX6n6vd6Saer1ZSsKc6AlTxoi&response_type=code&scope=write_transactions&redirect_uri=https://localhost:8002/oauth2/callback&code_challenge=JqXS_Ws6RvZExNCqpdnBf4DGUCryXJgW6liGzCAOm6k&code_challenge_method=S256
+
+https://127.0.0.1:8000/o/authorize/?client_id=tu_client_id&response_type=code&scope=write_transactions&redirect_uri=http://localhost:8000/oauth2/callback&code_challenge=tu_code_challenge&code_challenge_method=S256
+
+Authorization code: bOQ2phMssoKbC87wmke5tWF8rrA6DJ
+
+{"access_token": "w0qXWSEW4YVFgeInQqBEg8sXnjFJsl", 
+"expires_in": 36000, 
+"token_type": "Bearer", 
+"scope": "read_write_transactions", 
+"refresh_token": "EqFrL79NORSaflL9nZapVo05CdprUS"}

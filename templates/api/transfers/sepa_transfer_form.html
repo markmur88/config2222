@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Formulario de Transferencia SEPA{% endblock %}
+
+
+{% block content %}
+<a href="{% url 'transfers_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+
+
+<h1>{% if object %}Editar Transferencia SEPA{% else %}Crear Transferencia SEPA{% endif %}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a href="{% url 'sepa_transfer_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

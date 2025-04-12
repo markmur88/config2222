@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<a href="{% url 'sct_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+<h1>Lista y Creación de Transferencias SEPA</h1>
+
+<!-- Tabla para listar transferencias existentes -->
+<div class="card mt-5">
+    <div class="card-header">
+        <h2>Transferencias Existentes</h2>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Idempotency</th>
+                        <th>Payment</th>
+                        <th>End-to-End</th>
+                        <th>Recibe</th>
+                        <th>Banco</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transfer in transfers %}
+                    <tr>
+                        <td>{{ transfer.id }}</td>
+                        <td>{{ transfer.requested_execution_date }}</td>
+                        <td>{{ transfer.idempotency_key }}</td>
+                        <td>{{ transfer.payment_id }}</td>
+                        <td>{{ transfer.payment_identification_end_to_end_id }}</td>
+                        <td>{{ transfer.creditor_name }}</td>
+                        <td>{{ transfer.creditor_agent_financial_institution_id }}</td>
+                        <td>{{ transfer.instructed_amount }}</td>
+                        <td>{{ transfer.transaction_status }}</td>
+                        <td>
+
+                            <a href="{% url 'download_pdf' transfer.id %}" class="btn btn-secondary btn-sm">Des PDF</a>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+
+<!-- Formulario para crear una nueva transferencia -->
+<h2>Crear Nueva Transferencia</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">Monto</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="instructed_amount">Monto</label>
+                        {{ form.instructed_amount }}
+                    </div>
+                    <div class="form-group">
+                        <label for="instructed_currency">Moneda</label>
+                        {{ form.instructed_currency }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">Identificación</div>
+                <div class="card-body">
+
+                    <div class="form-group">
+                        <label for="payment_identification_instruction_id">ID de Instrucción</label>
+                        {{ form.payment_identification_instruction_id }}
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_id">Payment ID</label>
+                        {{ form.payment_id }}
+                    </div>
+                    <div class="form-group">
+                        <label for="auth_id">Auth ID</label>
+                        {{ form.auth_id }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">Autorización</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="idempotency_key">Idempotency Key</label>
+                        {{ form.idempotency_key }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payment_identification_end_to_end_id">End-to-End ID</label>
+                        {{ form.payment_identification_end_to_end_id }}
+                    </div>
+                    <div class="form-group mb-6">
+                        <label for="requested_execution_date">Fecha de Ejecución Solicitada</label>
+                        {{ form.requested_execution_date }}
+                    </div>                                 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3" style="min-height: 97%;">
+                <div class="card-header">Envía</div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label for="debtor_name">Nombre</label>
+                        {{ form.debtor_name }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="debtor_adress_street_and_house_number">Dirección</label>
+                        {{ form.debtor_adress_street_and_house_number }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="debtor_adress_zip_code_and_city">Código Postal y Ciudad</label>
+                        {{ form.debtor_adress_zip_code_and_city }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="debtor_adress_country">País</label>
+                        {{ form.debtor_adress_country }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="debtor_account_iban">IBAN</label>
+                        {{ form.debtor_account_iban }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="debtor_account_bic">BIC</label>
+                        {{ form.debtor_account_bic }}
+                    </div>
+                    <div class="form-group mb-0">
+                        <label for="debtor_account_currency">Moneda</label>
+                        {{ form.debtor_account_currency }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">Recibe</div>
+                <div class="card-body">
+                    <div class="form-group mb-1">
+                        <label for="creditor_name">Nombre</label>
+                        {{ form.creditor_name }}
+                    </div>
+                    <div class="form-group mb-1">
+                        <label for="creditor_adress_street_and_house_number">Dirección</label>
+                        {{ form.creditor_adress_street_and_house_number }}
+                    </div>
+                    <div class="form-group mb-1">
+                        <label for="creditor_adress_zip_code_and_city">Código Postal y Ciudad</label>
+                        {{ form.creditor_adress_zip_code_and_city }}
+                    </div>
+                    <div class="form-group mb-1">
+                        <label for="creditor_adress_country">País</label>
+                        {{ form.creditor_adress_country }}
+                    </div>
+                    <div class="form-group mb-1">
+                        <label for="creditor_account_iban">IBAN</label>
+                        {{ form.creditor_account_iban }}
+                    </div>
+                    <div class="form-group mb-1">
+                        <label for="creditor_account_bic">BIC</label>
+                        {{ form.creditor_account_bic }}
+                    </div>
+                    <div class="form-group mb-1">
+                        <label for="creditor_account_currency">Moneda</label>
+                        {{ form.creditor_account_currency }}
+                    </div>
+                    <div class="form-group mb-1">
+                        <label for="creditor_agent_financial_institution_id">ID Institución Financiera</label>
+                        {{ form.creditor_agent_financial_institution_id }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">Información</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="transaction_status">Estado</label>
+                        {{ form.transaction_status }}
+                    </div>
+                    <div class="form-group">
+                        <label for="purpose_code">Código de Propósito</label>
+                        {{ form.purpose_code }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header">Información de Remesa</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="remittance_information_structured">Información Estructurada</label>
+                        {{ form.remittance_information_structured }}
+                    </div>
+                    <div class="form-group">
+                        <label for="remittance_information_unstructured">Información No Estructurada</label>
+                        {{ form.remittance_information_unstructured }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <button type="submit" class="btn btn-success">Guardar</button>
+</form>
+
+
+
+{% endblock %}

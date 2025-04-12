@@ -1,0 +1,8 @@
+2025-03-06 23:29:01,254 - INFO - Iniciando script de generación de claves SSH...
+2025-03-06 23:29:01,255 - INFO - Iniciando: Generar Claves SSH
+2025-03-06 23:29:01,525 - ERROR - Error al ejecutar el comando: Saving key "/home/markmur88/Documentos/automation_project/../keys/id_rsa" failed: No such file or directory
+2025-03-06 23:29:01,525 - INFO - Claves SSH generadas en /home/markmur88/Documentos/automation_project/../keys/id_rsa
+2025-03-06 23:29:03,526 - INFO - Script de generación de claves SSH completado.
+2025-03-06 23:29:57,122 - INFO - Iniciando script de generación de claves SSH...
+2025-03-06 23:29:57,122 - WARNING - Las claves SSH ya existen en /home/markmur88/Documentos/automation_project/keys/id_rsa
+2025-03-06 23:29:59,123 - INFO - Script de generación de claves SSH completado.

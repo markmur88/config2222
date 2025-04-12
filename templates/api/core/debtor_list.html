@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="{% url 'core_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+<h1>Lista de Deudores</h1>
+<a href="{% url 'debtor-create' %}" class="btn btn-primary">Crear Deudor</a>
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>IBAN</th>
+            <th>Dirección</th>
+            <th>Ciudad</th>
+            <th>País</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for debtor in debtors %}
+        <tr>
+            <td>{{ debtor.name }}</td>
+            <td>{{ debtor.iban.iban }}</td>
+            <td>{{ debtor.street }} {{ debtor.building_number }}</td>
+            <td>{{ debtor.city }}</td>
+            <td>{{ debtor.country }}</td>
+            <td>
+                <a href="{% url 'debtor-update' debtor.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'debtor-delete' debtor.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,1451 @@
+from rest_framework import generics
+from api.transfers.models import SEPA2, Transfer
+from api.transfers.serializers import SEPA2Serializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from api.core.bank_services import deutsche_bank_transfer, memo_bank_transfer
+from rest_framework.exceptions import APIException
+import logging
+from drf_yasg.utils import swagger_auto_schema
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from api.transfers.forms import SEPA2Form
+from django.contrib import messages
+from api.core.services import generate_sepa_xml
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+import os
+from django.template.loader import render_to_string
+
+logger = logging.getLogger("bank_services")
+
+
+
+class BaseTransferView(CreateView):
+    permission_classes = [AllowAny]
+
+    def _get_existing_record(self, model, key_value, key_field):
+        """Helper to retrieve an existing record by a unique key."""
+        filter_kwargs = {key_field: key_value}
+        return model.objects.filter(**filter_kwargs).first()
+
+    def _error_response(self, message, status_code):
+        return Response({"error": message}, status=status_code)
+
+    def _success_response(self, data, status_code):
+        return Response(data, status_code)
+    
+    def _generate_success_template(self, transfer, sepa_xml):
+        """Genera una plantilla de respuesta exitosa para una transferencia."""
+        return {
+            "transfer": {
+                "id": transfer.id,
+                "source_account": transfer.source_account,
+                "destination_account": transfer.destination_account,
+                "amount": transfer.amount,
+                "currency": transfer.currency,
+                "status": transfer.status,
+            },
+            "sepa_xml": sepa_xml,
+        }
+
+    def _generate_error_template(self, error_message):
+        """Genera una plantilla de respuesta de error."""
+        return {
+            "error": {
+                "message": error_message,
+                "code": "TRANSFER_ERROR",
+            }
+        }
+
+
+class TransferCOMCreateView(BaseTransferView):
+    @swagger_auto_schema(operation_description="Create a transfer", request_body=SEPA2Serializer)
+    def post(self, request):
+        IDEMPOTENCY_HEADER = "Idempotency-Key"
+        idempotency_key = request.headers.get(IDEMPOTENCY_HEADER)
+        if not idempotency_key:
+            return self._error_response(f"{IDEMPOTENCY_HEADER} header is required", status.HTTP_400_BAD_REQUEST)
+
+        existing_transfer = self._get_existing_record(Transfer, idempotency_key, "idempotency_key")
+        if existing_transfer:
+            return self._success_response(
+                {"message": "Duplicate transfer", "transfer_id": existing_transfer.id}, status.HTTP_200_OK
+            )
+
+        serializer = SEPA2Serializer(data=request.data)
+        if not serializer.is_valid():
+            return self._error_response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+        transfer_data = serializer.validated_data
+        bank = request.data.get("bank")
+
+        try:
+            response = self.process_bank_transfer(bank, transfer_data, idempotency_key)
+            if "error" in response:
+                logger.warning(f"Error en la transferencia: {response['error']}")
+                return self._error_response(self._generate_error_template(response['error']), status.HTTP_400_BAD_REQUEST)
+
+            transfer = serializer.save(idempotency_key=idempotency_key, status="ACCP")
+            
+            # Generar SEPA XML
+            try:
+                sepa_xml = generate_sepa_xml(transfer)
+                return self._success_response(
+                    self._generate_success_template(transfer, sepa_xml), status.HTTP_201_CREATED
+                )
+            except Exception as e:
+                logger.error(f"Error generando SEPA XML: {str(e)}", exc_info=True)
+                return self._error_response(self._generate_error_template("Error generando SEPA XML"), status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except APIException as e:
+            logger.error(f"Error en la transferencia: {str(e)}")
+            return self._error_response({"error": str(e)}, status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.critical(f"Error crítico en la transferencia: {str(e)}", exc_info=True)
+            raise APIException("Error inesperado en la transferencia bancaria.")
+
+    def process_bank_transfer(self, bank, transfer_data, idempotency_key):
+        transfer_functions = {
+            "memo": memo_bank_transfer,
+            "deutsche": deutsche_bank_transfer,
+        }
+        if bank not in transfer_functions:
+            raise APIException("Invalid bank selection")
+
+        try:
+            return transfer_functions[bank](
+                transfer_data["source_account"], transfer_data["destination_account"],
+                transfer_data["amount"], transfer_data["currency"], idempotency_key
+            )
+        except Exception as e:
+            logger.error(f"Error procesando transferencia bancaria: {str(e)}", exc_info=True)
+            raise APIException("Error procesando la transferencia bancaria.")
+        
+    def get_html_form_template(self):
+        """Genera una plantilla HTML para ingresar datos de transferencia desde un archivo."""
+        template_path = os.path.join("api/extras", "transfer_form.html")
+        return render_to_string(template_path)
+
+class SepaTransferCOMCreateView(BaseTransferView):
+    model = SEPA2  # Define el modelo asociado
+    fields = "__all__"  # Especifica los campos del modelo que se usarán en el formulario
+    template_name = "api/transfers/transfer_form.html"  # Define el nombre de la plantilla
+    @swagger_auto_schema(operation_description="Create a SEPA transfer", request_body=SEPA2Serializer)
+    def post(self, request):
+        IDEMPOTENCY_HEADER = "Idempotency-Key"
+        idempotency_key = request.headers.get(IDEMPOTENCY_HEADER)
+        if not idempotency_key:
+            return self._error_response(f"{IDEMPOTENCY_HEADER} header is required", status.HTTP_400_BAD_REQUEST)
+
+        existing_transaction = self._get_existing_record(SEPA2, idempotency_key, "transaction_id")
+        if existing_transaction:
+            return self._success_response(
+                {"message": "Duplicate SEPA transfer", "transaction_id": existing_transaction.id}, status.HTTP_200_OK
+            )
+
+        serializer = SEPA2Serializer(data=request.data)
+        if not serializer.is_valid():
+            return self._error_response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+        transaction = serializer.save()
+        try:
+            sepa_xml = generate_sepa_xml(transaction)
+            return self._success_response(
+                {"sepa_xml": sepa_xml, "transaction": serializer.data}, status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            logger.critical(f"Error generating SEPA XML: {str(e)}", exc_info=True)
+            raise APIException("Unexpected error during SEPA transfer.")
+
+    def get_html_form_template(self):
+        """Genera una plantilla HTML para ingresar datos de transferencia desde un archivo."""
+        template_path = os.path.join("api/extras", "transfer_form.html")
+        return render_to_string(template_path)
+
+class TransferCOMListView(ListView):
+    model = SEPA2
+    template_name = "api/transfers/transfer_list.html"
+    context_object_name = "transfers"
+
+class TransferCOMCreateView(BaseTransferView, CreateView):
+    model = SEPA2
+    form_class = SEPA2Form
+    template_name = "api/transfers/transfer_form.html"
+
+class TransferCOMUpdateView(BaseTransferView, UpdateView):
+    model = SEPA2
+    form_class = SEPA2Form
+    template_name = "api/transfers/transfer_form.html"
+
+class TransferCOMDeleteView(DeleteView):
+    model = SEPA2
+    template_name = "api/transfers/transfer_confirm_delete.html"
+    success_url = "/transfers/"
+
+
+
+from rest_framework import generics
+from api.transfers.models import SEPA2
+from api.transfers.serializers import SEPA2Serializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny, AllowAny
+from api.core.bank_services import deutsche_bank_transfer, memo_bank_transfer
+from rest_framework.exceptions import APIException
+import logging
+from drf_yasg.utils import swagger_auto_schema
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from api.transfers.forms import SEPA2Form
+from django.contrib import messages
+from api.core.services import generate_sepa_xml
+
+logger = logging.getLogger("bank_services")
+
+class TransferList(generics.ListCreateAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class TransferDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class TransferCreateView(APIView):
+    #permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+    
+    @swagger_auto_schema(operation_description="Create a transfer", request_body=SEPA2Serializer)
+    def post(self, request):
+        idempotency_key = request.headers.get("Idempotency-Key")
+        if not idempotency_key:
+            return Response({"error": "Idempotency-Key header is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        existing_transfer = SEPA2.objects.filter(idempotency_key=idempotency_key).first()
+        if existing_transfer:
+            return Response({"message": "Duplicate transfer", "transfer_id": existing_transfer.id},
+                            status=status.HTTP_200_OK)
+
+        serializer = SEPA2Serializer(data=request.data)
+        if serializer.is_valid():
+            transfer_data = serializer.validated_data
+            bank = request.data.get("bank")
+
+            try:
+                if bank == "memo":
+                    response = memo_bank_transfer(
+                        transfer_data["source_account"], transfer_data["destination_account"],
+                        transfer_data["amount"], transfer_data["currency"], idempotency_key
+                    )
+                elif bank == "deutsche":
+                    response = deutsche_bank_transfer(
+                        transfer_data["source_account"], transfer_data["destination_account"],
+                        transfer_data["amount"], transfer_data["currency"], idempotency_key
+                    )
+                else:
+                    return Response({"error": "Invalid bank selection"}, status=status.HTTP_400_BAD_REQUEST)
+
+                if "error" in response:
+                    logger.warning(f"Error en la transferencia: {response['error']}")
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+                serializer.save(idempotency_key=idempotency_key, status="ACCP")
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            except Exception as e:
+                logger.critical(f"Error crítico en la transferencia: {str(e)}", exc_info=True)
+                raise APIException("Error inesperado en la transferencia bancaria.")
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def transfer_create_view(request):
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('transfer_list'))
+    else:
+        try:
+            form = SEPA2Form()
+        except Exception as e:
+            messages.error(request, f"Error al cargar el formulario: {str(e)}")
+            form = None
+    return render(request, 'api/transfers/transfer_form.html', {'form': form})
+
+def transfer_update_view(request, pk):
+    transfer = get_object_or_404(SEPA2, pk=pk)
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST, instance=transfer)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('transfer_detail', args=[pk]))  # Redirige al detalle de la transferencia
+    else:
+        form = SEPA2Form(instance=transfer)
+    return render(request, 'api/transfers/transfer_form.html', {'form': form})
+
+class SepaTransferCreateView(APIView):
+    #permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+    @swagger_auto_schema(operation_description="Create a SEPA transfer", request_body=SEPA2Serializer)
+    def post(self, request):
+        idempotency_key = request.headers.get("Idempotency-key")  # Corregido: se usa una cadena literal
+        if not idempotency_key:
+            return Response({"error": "Idempotency-Key header is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        existing_transaction = SEPA2.objects.filter(transaction_id=idempotency_key).first()
+        if existing_transaction:
+            return Response({"message": "Duplicate SEPA transfer", "transaction_id": existing_transaction.transaction_id}, status=status.HTTP_200_OK)
+
+        serializer = SEPA2Serializer(data=request.data)
+        if serializer.is_valid():
+            transaction = serializer.save()
+            try:
+                sepa_xml = generate_sepa_xml(transaction)
+                return Response({"sepa_xml": sepa_xml, "transaction": serializer.data}, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                logger.critical(f"Error generating SEPA XML: {str(e)}", exc_info=True)
+                raise APIException("Unexpected error during SEPA transfer.")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SepaTransferListView(generics.ListAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class SepaTransferUpdateView(generics.UpdateAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class SepaTransferDeleteView(generics.DestroyAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+def sepa_transaction_create_view(request):
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('sepa-transfer_list'))
+    else:
+        form = SEPA2Form()
+    return render(request, 'transfers/sepa_transaction_form.html', {'form': form})
+
+def sepa_transaction_update_view(request, pk):
+    transaction = get_object_or_404(SEPA2, pk=pk)
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST, instance=transaction)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('sepa-transaction-detail', args=[pk]))
+    else:
+        form = SEPA2Form(instance=transaction)
+    return render(request, 'transfers/sepa_transaction_form.html', {'form': form})
+
+class SEPA2List(generics.ListCreateAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class SEPA2Detail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+
+
+import logging
+import os
+import uuid
+import xml.etree.ElementTree as ET
+from datetime import datetime
+from config import settings
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.template.loader import render_to_string
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, generics
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view
+from rest_framework.exceptions import APIException
+from drf_yasg.utils import swagger_auto_schema
+from api.transfers.models import SEPA2
+from api.transfers.serializers import SEPA2Serializer
+from api.transfers.forms import SEPA2Form
+from api.core.bank_services import deutsche_bank_transfer, memo_bank_transfer
+from api.core.services import generate_sepa_xml
+
+logger = logging.getLogger("bank_services")
+
+# Constantes
+ERROR_KEY = "error"
+IDEMPOTENCY_HEADER = "Idempotency-Key"
+
+# Funciones auxiliares
+def error_response(message, status_code):
+    return Response({"error": message}, status=status_code)
+
+def success_response(data, status_code):
+    return Response(data, status_code)
+
+def get_existing_record(model, key_value, key_field):
+    filter_kwargs = {key_field: key_value}
+    return model.objects.filter(**filter_kwargs).first()
+
+def process_bank_transfer(bank, transfer_data, idempotency_key):
+    transfer_functions = {
+        "memo": memo_bank_transfer,
+        "deutsche": deutsche_bank_transfer,
+    }
+    if bank not in transfer_functions:
+        raise APIException("Banco seleccionado no es válido")
+    try:
+        return transfer_functions[bank](
+            transfer_data["source_account"],
+            transfer_data["destination_account"],
+            transfer_data["amount"],
+            transfer_data["currency"],
+            idempotency_key
+        )
+    except Exception as e:
+        logger.error(f"Error procesando transferencia bancaria: {str(e)}", exc_info=True)
+        raise APIException("Error procesando la transferencia bancaria.")
+
+# Views basadas en APIView
+class TransferCreateView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(operation_description="Create a transfer", request_body=SEPA2Serializer)
+    def post(self, request):
+        idempotency_key = request.headers.get(IDEMPOTENCY_HEADER)
+        if not idempotency_key:
+            return error_response(f"{IDEMPOTENCY_HEADER} header is required", status.HTTP_400_BAD_REQUEST)
+
+        existing_transfer = get_existing_record(SEPA2, idempotency_key, "idempotency_key")
+        if existing_transfer:
+            return success_response(
+                {"message": "Duplicate transfer", "transfer_id": existing_transfer.id}, status.HTTP_200_OK
+            )
+
+        serializer = SEPA2Serializer(data=request.data)
+        if not serializer.is_valid():
+            return error_response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+        transfer_data = serializer.validated_data
+        bank = request.data.get("bank")
+        if not bank:
+            return error_response("El campo 'bank' es obligatorio", status.HTTP_400_BAD_REQUEST)
+
+        try:
+            response = process_bank_transfer(bank, transfer_data, idempotency_key)
+            if ERROR_KEY in response:
+                logger.warning(f"Error en la transferencia: {response[ERROR_KEY]}")
+                return error_response(response[ERROR_KEY], status.HTTP_400_BAD_REQUEST)
+
+            transfer = serializer.save(idempotency_key=idempotency_key, status="ACCP")
+            try:
+                sepa_xml = generate_sepa_xml(transfer)
+                return success_response({"transfer": serializer.data, "sepa_xml": sepa_xml}, status.HTTP_201_CREATED)
+            except ValueError as e:
+                logger.error(f"Error generando SEPA XML: {str(e)}", exc_info=True)
+                return error_response(str(e), status.HTTP_400_BAD_REQUEST)
+
+        except APIException as e:
+            logger.error(f"Error en la transferencia: {str(e)}")
+            return error_response({"error": str(e)}, status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.critical(f"Error crítico en la transferencia: {str(e)}", exc_info=True)
+            raise APIException("Error inesperado en la transferencia bancaria.")
+
+# Views basadas en generics
+class TransferList(generics.ListCreateAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class TransferDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+# Views basadas en plantillas
+def transfer_create_view(request):
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('transfer_list'))
+    else:
+        form = SEPA2Form()
+    return render(request, 'api/transfers/transfer_form.html', {'form': form})
+
+def transfer_update_view(request, pk):
+    transfer = get_object_or_404(SEPA2, pk=pk)
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST, instance=transfer)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('transfer_detail', args=[pk]))
+    else:
+        form = SEPA2Form(instance=transfer)
+    return render(request, 'api/transfers/transfer_form.html', {'form': form})
+
+def transfer_delete_view(request, pk):
+    transfer = get_object_or_404(SEPA2, pk=pk)
+    if request.method == 'POST':
+        transfer.delete()
+        return redirect('transfer_list')
+    return render(request, 'api/transfers/transfer_confirm_delete.html', {'transfer': transfer})
+
+
+
+from rest_framework import generics
+from api.transfers.serializers import SEPA2Serializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from drf_yasg.utils import swagger_auto_schema
+from django.shortcuts import render, get_object_or_404, redirect
+from api.transfers.forms import SEPA2Form
+from api.transfers.models import SEPA2
+
+class TransactionList(generics.ListCreateAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class TransactionList(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(operation_description="Create a transaction", request_body=SEPA2Serializer)
+    def post(self, request):
+        idempotency_key = request.headers.get("Idempotency-Key")
+        if not idempotency_key:
+            return Response({"error": "Idempotency-Key header is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verificar transacción existente por idempotency_key
+        existing_transaction = SEPA2.objects.filter(
+            idempotency_key=idempotency_key
+        ).first()
+        
+        if existing_transaction:
+            return Response({"message": "Duplicate transaction", "transaction_id": existing_transaction.id}, status=status.HTTP_200_OK)
+        
+        # Crear nueva transacción
+        serializer = SEPA2Serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(
+                idempotency_key=idempotency_key,
+                account=request.user.account  # Vincula automáticamente la cuenta del usuario
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @swagger_auto_schema(operation_description="List transactions")
+    def get(self, request):
+        transactions = SEPA2.objects.filter(account=request.user.account)
+        serializer = SEPA2Serializer(transactions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+def transaction_list(request):
+    transactions = SEPA2.objects.filter(account=request.user.account)
+    return render(request, 'api/transactions/transaction_list.html', {'transactions': transactions})
+
+def transaction_create(request):
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST)
+        if form.is_valid():
+            transaction = form.save(commit=False)
+            transaction.account = request.user.account
+            transaction.user = request.user
+            transaction.save()
+            return redirect('transfer_list')
+    else:
+        form = SEPA2Form()
+    return render(request, 'api/transactions/transaction_form.html', {'form': form})
+
+def transaction_detail(request, pk):
+    # Asegurar que 'pk' sea un UUID válido
+    transaction = get_object_or_404(SEPA2, pk=pk, account=request.user.account)
+    return render(request, 'api/transactions/transaction_detail.html', {'transaction': transaction})
+
+def transaction_update(request, pk):
+    transaction = get_object_or_404(SEPA2, pk=pk, account=request.user.account)
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST, instance=transaction)
+        if form.is_valid():
+            form.save()
+            return redirect('transfer_list')
+    else:
+        form = SEPA2Form(instance=transaction)
+    return render(request, 'api/transactions/transaction_form.html', {'form': form})
+
+def transaction_delete(request, pk):
+    transaction = get_object_or_404(SEPA2, pk=pk, account=request.user.account)
+    if request.method == 'POST':
+        transaction.delete()
+        return redirect('transfer_list')
+    return render(request, 'api/transactions/transaction_confirm_delete.html', {'transaction': transaction})
+
+
+
+from rest_framework import generics
+from api.transfers.serializers import SEPA2Serializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from drf_yasg.utils import swagger_auto_schema
+from django.shortcuts import render, get_object_or_404, redirect
+from api.transfers.forms import SEPA2Form
+from api.transfers.models import SEPA2
+
+class TransactionList(generics.ListCreateAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SEPA2.objects.all()
+    serializer_class = SEPA2Serializer
+
+class TransactionList(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(operation_description="Create a transaction", request_body=SEPA2Serializer)
+    def post(self, request):
+        idempotency_key = request.headers.get("Idempotency-Key")
+        if not idempotency_key:
+            return Response({"error": "Idempotency-Key header is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verificar transacción existente por idempotency_key
+        existing_transaction = SEPA2.objects.filter(
+            idempotency_key=idempotency_key
+        ).first()
+        
+        if existing_transaction:
+            return Response({"message": "Duplicate transaction", "transaction_id": existing_transaction.id}, status=status.HTTP_200_OK)
+        
+        # Crear nueva transacción
+        serializer = SEPA2Serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(
+                idempotency_key=idempotency_key,
+                account=request.user.account  # Vincula automáticamente la cuenta del usuario
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @swagger_auto_schema(operation_description="List transactions")
+    def get(self, request):
+        transactions = SEPA2.objects.filter(account=request.user.account)
+        serializer = SEPA2Serializer(transactions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+def transaction_list(request):
+    transactions = SEPA2.objects.filter(account=request.user.account)
+    return render(request, 'api/transactions/transaction_list.html', {'transactions': transactions})
+
+def transaction_create(request):
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST)
+        if form.is_valid():
+            transaction = form.save(commit=False)
+            transaction.account = request.user.account
+            transaction.user = request.user
+            transaction.save()
+            return redirect('transfer_list')
+    else:
+        form = SEPA2Form()
+    return render(request, 'api/transactions/transaction_form.html', {'form': form})
+
+def transaction_detail(request, pk):
+    # Asegurar que 'pk' sea un UUID válido
+    transaction = get_object_or_404(SEPA2, pk=pk, account=request.user.account)
+    return render(request, 'api/transactions/transaction_detail.html', {'transaction': transaction})
+
+def transaction_update(request, pk):
+    transaction = get_object_or_404(SEPA2, pk=pk, account=request.user.account)
+    if request.method == 'POST':
+        form = SEPA2Form(request.POST, instance=transaction)
+        if form.is_valid():
+            form.save()
+            return redirect('transfer_list')
+    else:
+        form = SEPA2Form(instance=transaction)
+    return render(request, 'api/transactions/transaction_form.html', {'form': form})
+
+def transaction_delete(request, pk):
+    transaction = get_object_or_404(SEPA2, pk=pk, account=request.user.account)
+    if request.method == 'POST':
+        transaction.delete()
+        return redirect('transfer_list')
+    return render(request, 'api/transactions/transaction_confirm_delete.html', {'transaction': transaction})
+
+
+
+import logging
+import os
+from pyexpat.errors import messages
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+import requests
+import xml.etree.ElementTree as ET
+import uuid
+
+from config import settings
+from datetime import datetime
+from django.core.exceptions import ImproperlyConfigured
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.exceptions import APIException
+from rest_framework.decorators import api_view
+
+from drf_yasg.utils import swagger_auto_schema
+from django.urls import reverse, reverse_lazy
+from django.template.loader import render_to_string
+
+from api.transfers.forms import SEPA2Form
+from api.transfers.models import SEPA2
+from api.transfers.serializers import SEPA2Serializer
+
+logger = logging.getLogger("bank_services")
+
+# Constantes para cadenas repetidas
+ERROR_KEY = "error"
+AMOUNT_KEY = "amount"
+CURRENCY_KEY = "currency"
+IDEMPOTENCY_HEADER = "Idempotency-Key"
+
+def generate_sepa_xml(transaction):
+    """
+    Genera un XML SEPA (ISO 20022) para la transferencia.
+
+    Args:
+        transaction: Objeto con los datos de la transacción.
+
+    Returns:
+        str: XML generado como cadena.
+
+    Raises:
+        ValueError: Si faltan datos requeridos en la transacción.
+    """
+    required_fields = ["sender_name", "sender_iban", "execution_date", "amount"]
+    for field in required_fields:
+        if not getattr(transaction, field, None):
+            raise ValueError(f"El campo {field} es requerido para generar el SEPA XML.")
+
+    # Crear el documento XML
+    root = ET.Element("Document", xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03")
+    CstmrCdtTrfInitn = ET.SubElement(root, "CstmrCdtTrfInitn")
+
+    # Información del grupo de pagos
+    GrpHdr = ET.SubElement(CstmrCdtTrfInitn, "GrpHdr")
+    #ET.SubElement(GrpHdr, "MsgId").text = str(uuid.uuid4())  # ID único del mensaje
+    ET.SubElement(GrpHdr, "MsgId").text = str(transaction.reference)  # ID único del mensaje
+    #ET.SubElement(GrpHdr, "CreDtTm").text = datetime.utcnow().isoformat()
+    ET.SubElement(GrpHdr, "CreDtTm").text = transaction.request_date.isoformat()
+    ET.SubElement(GrpHdr, "NbOfTxs").text = "1"
+    ET.SubElement(GrpHdr, "CtrlSum").text = str(transaction.amount)
+    InitgPty = ET.SubElement(GrpHdr, "InitgPty")
+    #ET.SubElement(InitgPty, "Nm").text = transaction.sender_name
+    ET.SubElement(InitgPty, "Nm").text = transaction.account.name
+
+    # Información de la transacción
+    PmtInf = ET.SubElement(CstmrCdtTrfInitn, "PmtInf")
+    #ET.SubElement(PmtInf, "PmtInfId").text = str(uuid.uuid4())
+    ET.SubElement(PmtInf, "PmtInfId").text = str(transaction.transaction_id)
+    ET.SubElement(PmtInf, "PmtMtd").text = "TRF"  # Transferencia
+    ET.SubElement(PmtInf, "BtchBookg").text = "false"
+    ET.SubElement(PmtInf, "NbOfTxs").text = "1"
+    ET.SubElement(PmtInf, "CtrlSum").text = str(transaction.amount)
+    PmtTpInf = ET.SubElement(PmtInf, "PmtTpInf")
+    SvcLvl = ET.SubElement(PmtTpInf, "SvcLvl")
+    ET.SubElement(SvcLvl, "Cd").text = "SEPA"
+    ReqdExctnDt = ET.SubElement(PmtInf, "ReqdExctnDt")
+    ReqdExctnDt.text = transaction.execution_date.strftime("%Y-%m-%d")
+
+    # Datos del ordenante
+    Dbtr = ET.SubElement(PmtInf, "Dbtr")
+    #ET.SubElement(Dbtr, "Nm").text = transaction.sender_name
+    ET.SubElement(Dbtr, "Nm").text = transaction.account.name
+    DbtrAcct = ET.SubElement(PmtInf, "DbtrAcct")
+    Id = ET.SubElement(DbtrAcct, "Id")
+    #ET.SubElement(Id, "IBAN").text = transaction.sender_iban
+    ET.SubElement(Id, "IBAN").text = transaction.account.iban.iban
+    DbtrAgt = ET.SubElement(PmtInf, "DbtrAgt")
+    FinInstnId = ET.SubElement(DbtrAgt, "FinInstnId")
+    #ET.SubElement(FinInstnId, "BIC").text = transaction.sender_bic
+    ET.SubElement(FinInstnId, "BIC").text = transaction.account.iban.bic
+
+    # Datos del beneficiario
+    CdtTrfTxInf = ET.SubElement(PmtInf, "CdtTrfTxInf")
+    PmtId = ET.SubElement(CdtTrfTxInf, "PmtId")
+    #ET.SubElement(PmtId, "EndToEndId").text = transaction.reference
+    ET.SubElement(PmtId, "EndToEndId").text = transaction.end_to_end_id
+    Amt = ET.SubElement(CdtTrfTxInf, "Amt")
+    ET.SubElement(Amt, "InstdAmt", Ccy=transaction.currency).text = str(transaction.amount)
+    CdtrAgt = ET.SubElement(CdtTrfTxInf, "CdtrAgt")
+    FinInstnId = ET.SubElement(CdtrAgt, "FinInstnId")
+    #ET.SubElement(FinInstnId, "BIC").text = transaction.recipient_bic
+    ET.SubElement(FinInstnId, "BIC").text = transaction.beneficiary_name.iban.bic
+    Cdtr = ET.SubElement(CdtTrfTxInf, "Cdtr")
+    #ET.SubElement(Cdtr, "Nm").text = transaction.recipient_name
+    ET.SubElement(Cdtr, "Nm").text = transaction.beneficiary_name.name
+    CdtrAcct = ET.SubElement(CdtTrfTxInf, "CdtrAcct")
+    Id = ET.SubElement(CdtrAcct, "Id")
+    #ET.SubElement(Id, "IBAN").text = transaction.recipient_iban
+    ET.SubElement(Id, "IBAN").text = transaction.beneficiary_name.iban.iban
+    RmtInf = ET.SubElement(CdtTrfTxInf, "RmtInf")
+    #ET.SubElement(RmtInf, "Ustrd").text = transaction.unstructured_remittance_info
+    ET.SubElement(RmtInf, "Ustrd").text = transaction.internal_note
+
+    # Generar el XML
+    xml_string = ET.tostring(root, encoding="utf-8", method="xml").decode("utf-8")
+    return xml_string
+
+# def get_memo_bank_token():
+#     """Obtiene el token de Memo Bank."""
+#     if not all([settings.MEMO_BANK_CLIENT_ID, settings.MEMO_BANK_CLIENT_SECRET]):
+#         raise ImproperlyConfigured("Las credenciales de Memo Bank no están configuradas correctamente.")
+#     url = f"{settings.MEMO_BANK_API_URL}/oauth/token"
+#     payload = {
+#         "grant_type": "client_credentials",
+#         "client_id": settings.MEMO_BANK_CLIENT_ID,
+#         "client_secret": settings.MEMO_BANK_CLIENT_SECRET
+#     }
+#     headers = {"Content-Type": "application/json"}
+#     try:
+#         response = requests.post(url, json=payload, headers=headers)
+#         response.raise_for_status()
+#         token_response = response.json()
+#         access_token = token_response.get("access_token")
+#         if not access_token:
+#             logger.error(f"Error obteniendo token: {token_response.get('error')}")
+#             return {ERROR_KEY: "No se pudo obtener el token de Memo Bank"}
+#         return token_response
+#     except requests.exceptions.HTTPError as e:
+#         logger.error(f"HTTPError en Memo Bank Token: {e}, Response: {response.text}")
+#         return {ERROR_KEY: "Error al obtener el token de Memo Bank"}
+#     except requests.exceptions.RequestException as e:
+#         logger.error(f"Error en conexión con Memo Bank Token: {e}")
+#         return {ERROR_KEY: "No se pudo conectar con Memo Bank"}
+
+def get_deutsche_bank_token():
+    """Obtiene el token de Deutsche Bank."""
+    url = f"{settings.DEUTSCHE_BANK_API_URL}/oauth/token"
+    payload = {
+        "grant_type": "client_credentials",
+        "client_id": settings.DEUTSCHE_BANK_CLIENT_ID,
+        "client_secret": settings.DEUTSCHE_BANK_CLIENT_SECRET
+    }
+    headers = {"Content-Type": "application/json"}
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTPError en Deutsche Bank Token: {e}, Response: {response.text}")
+        return {ERROR_KEY: "Error al obtener el token de Deutsche Bank"}
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error en conexión con Deutsche Bank Token: {e}")
+        return {ERROR_KEY: "No se pudo conectar con Deutsche Bank"}
+
+# def memo_bank_transfer(source_account, destination_account, amount, currency, idempotency_key):
+#     token_response = get_memo_bank_token()
+#     access_token = token_response.get("access_token")
+#     if not access_token:
+#         return {ERROR_KEY: "No se pudo obtener el token de Memo Bank"}
+#     url = f"{settings.MEMO_BANK_API_URL}/transfers"
+#     headers = {
+#         "Authorization": f"Bearer {access_token}",
+#         "Content-Type": "application/json",
+#         "Idempotency-Key": idempotency_key
+#     }
+#     payload = {
+#         "source_account": source_account,
+#         "destination_account": destination_account,
+#         "amount": str(amount),
+#         "currency": currency
+#     }
+#     try:
+#         response = requests.post(url, json=payload, headers=headers)
+#         response.raise_for_status()  # Lanza un error si el status code no es 2xx
+#         return response.json()
+#     except requests.exceptions.HTTPError as e:
+#         logger.error(f"HTTPError en Memo Bank: {e}, Response: {response.text}")
+#         return {"error": "Error en Memo Bank"}
+#     except requests.exceptions.RequestException as e:
+#         logger.error(f"Error en conexión con Memo Bank: {e}")
+#         return {"error": "No se pudo conectar con Memo Bank"}
+
+def deutsche_bank_transfer(source_account, destination_account, amount, currency, idempotency_key):
+    url = f"{settings.DEUTSCHE_BANK_API_URL}/transfers"
+    headers = {
+        "Authorization": f"Bearer {get_deutsche_bank_token()['access_token']}",
+        "Content-Type": "application/json",
+        "Idempotency-Key": idempotency_key
+    }
+    payload = {
+        "source_account": source_account,
+        "destination_account": destination_account,
+        "amount": str(amount),
+        "currency": currency
+    }
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()  # Lanza un error si el status code no es 2xx
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTPError en Deutsche Bank: {e}, Response: {response.text}")
+        return {"error": "Error en Deutsche Bank"}
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error en conexión con Deutsche Bank: {e}")
+        return {"error": "No se pudo conectar con Deutsche Bank"}
+
+def get_existing_record(model, key_value, key_field):
+    #"""Helper to retrieve an existing record by a unique key."""
+    filter_kwargs = {key_field: key_value}
+    return model.objects.filter(**filter_kwargs).first()
+
+def error_response(message, status_code):
+    return Response({"error": message}, status=status_code)
+
+def success_response(data, status_code):
+    return Response(data, status_code)
+
+def generate_success_template(transfer, sepa_xml):
+    #"""Genera una plantilla de respuesta exitosa para una transferencia."""
+    return {
+        "transfer": {
+            "id": transfer.id,
+            "source_account": transfer.source_account,
+            "destination_account": transfer.destination_account,
+            "amount": transfer.amount,
+            "currency": transfer.currency,
+            "status": transfer.status,
+        },
+        "sepa_xml": sepa_xml,
+    }
+
+def generate_error_template(error_message):
+    #"""Genera una plantilla de respuesta de error."""
+    return {"error": {"message": error_message,"code": "TRANSFER_ERROR",}}
+
+def process_bank_transfer(bank, transfer_data, idempotency_key):
+    """Procesa una transferencia bancaria según el banco seleccionado."""
+    transfer_functions = {
+        # "memo": memo_bank_transfer,
+        "deutsche": deutsche_bank_transfer,
+    }
+    if bank not in transfer_functions:
+        raise APIException("Banco seleccionado no es válido")
+    required_fields = ["source_account", "destination_account", AMOUNT_KEY, CURRENCY_KEY]
+    for field in required_fields:
+        if field not in transfer_data:
+            raise APIException(f"Falta el campo requerido: {field}")
+    try:
+        return transfer_functions[bank](
+            transfer_data["source_account"],
+            transfer_data["destination_account"],
+            transfer_data[AMOUNT_KEY],
+            transfer_data[CURRENCY_KEY],
+            idempotency_key
+        )
+    except Exception as e:
+        logger.error(f"Error procesando transferencia bancaria: {str(e)}", exc_info=True)
+        raise APIException("Error procesando la transferencia bancaria.")
+
+def get_html_form_template():
+    #"""Genera una plantilla HTML para ingresar datos de transferencia desde un archivo."""
+    template_path = os.path.join("api/extras", "transfer_form.html")
+    return render_to_string(template_path)
+
+def get_success_url():
+    return reverse_lazy('transfer_list')
+
+@swagger_auto_schema(method="post", operation_description="Create a transfer", request_body=SEPA2Serializer)
+@api_view(["POST"])
+def transfer_api_create_view(request):
+    """Crea una transferencia bancaria."""
+    if not request.user.is_authenticated:
+        return error_response("Se requiere autenticación", status.HTTP_401_UNAUTHORIZED)
+    idempotency_key = request.headers.get(IDEMPOTENCY_HEADER)
+    if not idempotency_key:
+        return error_response(f"El encabezado {IDEMPOTENCY_HEADER} es obligatorio", status.HTTP_400_BAD_REQUEST)
+    serializer = SEPA2Serializer(data=request.data)
+    if not serializer.is_valid():
+        return error_response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+    transfer_data = serializer.validated_data
+    bank = request.data.get("bank")
+    if not bank:
+        return error_response("El campo 'bank' es obligatorio", status.HTTP_400_BAD_REQUEST)
+    try:
+        with transaction.atomic(): # type: ignore
+            existing_transfer = get_existing_record(SEPA2, idempotency_key, "idempotency_key")
+            if existing_transfer:
+                return success_response(
+                    {"message": "Transferencia duplicada", "transfer_id": existing_transfer.id},
+                    status.HTTP_200_OK
+                )
+            transfer = serializer.save(idempotency_key=idempotency_key, status="ACCP")
+        response = process_bank_transfer(bank, transfer_data, idempotency_key)
+        if ERROR_KEY in response:
+            logger.warning(f"Error en la transferencia: {response[ERROR_KEY]}")
+            return error_response(generate_error_template(response[ERROR_KEY]), status.HTTP_400_BAD_REQUEST)
+        try:
+            sepa_xml = generate_sepa_xml(transfer)
+            return success_response(generate_success_template(transfer, sepa_xml), status.HTTP_201_CREATED)
+        except ValueError as e:
+            logger.error(f"Error generando SEPA XML: {str(e)}", exc_info=True)
+            return error_response(generate_error_template(str(e)), status.HTTP_400_BAD_REQUEST)
+    except APIException as e:
+        logger.error(f"Error en la transferencia: {str(e)}")
+        return error_response({"error": str(e)}, status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        logger.critical(f"Error crítico en la transferencia: {str(e)}", exc_info=True)
+        raise APIException("Error inesperado en la transferencia bancaria.")
+
+@swagger_auto_schema(method="post", operation_description="Create a transfer", request_body=SEPA2Serializer)
+@api_view(["POST"])
+def transfer_api_view(request):
+    #"""Vista principal para manejar transferencias."""
+    if request.method == "POST":
+        form = SEPA2Form(request.POST)
+        return transfer_api_create_view(request)
+    return error_response("Método no permitido", status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+import logging
+import os
+from pyexpat.errors import messages
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+import requests
+import xml.etree.ElementTree as ET
+import uuid
+
+from config import settings
+from datetime import datetime
+from django.core.exceptions import ImproperlyConfigured
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.exceptions import APIException
+from rest_framework.decorators import api_view
+
+from drf_yasg.utils import swagger_auto_schema
+from django.urls import reverse, reverse_lazy
+from django.template.loader import render_to_string
+
+from api.transfers.models import SEPA2
+from api.transfers.serializers import SEPA2Serializer
+
+logger = logging.getLogger("bank_services")
+
+# Constantes para cadenas repetidas
+ERROR_KEY = "error"
+AMOUNT_KEY = "amount"
+CURRENCY_KEY = "currency"
+IDEMPOTENCY_HEADER_KEY = "idempotency_key"
+REFERENCE = "reference"
+E2E = "end_to_end_id"
+USRTI = "intenal_note"
+TRANSACTION = "transaction_id"
+
+
+ACCOUNT_IBAN = "account_iban"
+ACCOUNT_BIC = "account_bic"
+ACCOUNT_NAME = "account_name"
+ACCOUNT_BANK = "account_bank"
+
+BENEFICIARY_IBAN = "beneficiary_iban"
+BENEFICIARY_BIC = "beneficiary_bic"
+BENEFICIARY_NAME = "beneficiary_name"
+BENEFICIARY_BANK = "beneficiary_bank"
+
+
+# Mensajes de estado y error
+TRANSFER_STATUS_ACCEPTED = "ACCP"
+TRANSFER_DUPLICATE_MESSAGE = "Transferencia duplicada"
+TRANSFER_ERROR_MESSAGE = "Error en la transferencia"
+TRANSFER_UNEXPECTED_ERROR_MESSAGE = "Error inesperado en la transferencia bancaria."
+DEUTSCHE_BANK_TOKEN_ERROR_MESSAGE = "No se pudo obtener el token de Deutsche Bank"
+DEUTSCHE_BANK_CONNECTION_ERROR_MESSAGE = "No se pudo conectar con Deutsche Bank"
+
+def handle_transfer_request(request):
+    
+    if not request.user.is_authenticated:
+        return error_response("Se requiere autenticación", status.HTTP_401_UNAUTHORIZED)
+
+    idempotency_key = request.headers.get(IDEMPOTENCY_HEADER_KEY)
+    if not idempotency_key:
+        return error_response(f"El encabezado {IDEMPOTENCY_HEADER_KEY} es obligatorio", status.HTTP_400_BAD_REQUEST)
+
+    serializer = SEPA2Serializer(data=request.data)
+    if not serializer.is_valid:
+        return error_response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+    transfer_data = serializer.validated_data
+    bank = "deutsche"  # Se fuerza el uso de Deutsche Bank
+
+    try:
+        with SEPA2.objects.atomic():
+            existing_transfer = get_existing_record(SEPA2, idempotency_key, "idempotency_key")
+            if existing_transfer:
+                return success_response(
+                    {"message": TRANSFER_DUPLICATE_MESSAGE, "transfer_id": existing_transfer.transaction_id},
+                    status.HTTP_200_OK
+                )
+            transfer = serializer.save(idempotency_key=idempotency_key, status=TRANSFER_STATUS_ACCEPTED)
+
+        token_response = get_deutsche_bank_token()
+        access_token = token_response.get("access_token")
+        if not access_token:
+            return error_response(DEUTSCHE_BANK_TOKEN_ERROR_MESSAGE, status.HTTP_400_BAD_REQUEST)
+
+        url = f"{settings.DEUTSCHE_BANK_API_URL}/transfers"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotency_key
+        }
+        payload = {
+            ACCOUNT_IBAN: str(transfer_data[ACCOUNT_IBAN]),
+            BENEFICIARY_IBAN: str(transfer_data[BENEFICIARY_IBAN]),
+            AMOUNT_KEY: str(transfer_data[AMOUNT_KEY]),
+            CURRENCY_KEY: transfer_data[CURRENCY_KEY]
+        }
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+
+        try:
+            sepa_xml = generate_sepa_xml(transfer)
+            return success_response(generate_success_template(transfer, sepa_xml), status.HTTP_201_CREATED)
+        except ValueError as e:
+            logger.error(f"Error generando SEPA XML: {str(e)}", exc_info=True)
+            return error_response(generate_error_template(str(e)), status.HTTP_400_BAD_REQUEST)
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error en conexión con Deutsche Bank: {e}")
+        return error_response(DEUTSCHE_BANK_CONNECTION_ERROR_MESSAGE, status.HTTP_400_BAD_REQUEST)
+    except APIException as e:
+        logger.error(f"{TRANSFER_ERROR_MESSAGE}: {str(e)}")
+        return error_response({ERROR_KEY: str(e)}, status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        logger.critical(f"{TRANSFER_UNEXPECTED_ERROR_MESSAGE}: {str(e)}", exc_info=True)
+        raise APIException(TRANSFER_UNEXPECTED_ERROR_MESSAGE)
+
+# Funciones auxiliares movidas fuera del método principal
+def error_response(message, status_code):
+    return Response({"error": message}, status=status_code)
+
+def success_response(data, status_code):
+    return Response(data, status_code)
+
+def generate_error_template(error_message):
+    return {"error": {"message": error_message, "code": "TRANSFER_ERROR"}}
+
+def generate_success_template(transfer_data, sepa_xml):
+    return {
+        "transfer": {
+            "id": transfer_data.transaction_id,
+            "account_name": str(transfer_data[ACCOUNT_IBAN]),
+            BENEFICIARY_IBAN: str(transfer_data[BENEFICIARY_IBAN]),
+            AMOUNT_KEY: str(transfer_data[AMOUNT_KEY]),
+            CURRENCY_KEY: transfer_data[CURRENCY_KEY],
+            "status": transfer_data.status,
+        },
+        "sepa_xml": sepa_xml,
+    }
+
+def get_existing_record(model, key_value, key_field):
+    filter_kwargs = {key_field: key_value}
+    return model.objects.filter(**filter_kwargs).first()
+
+def generate_sepa_xml(transfer):
+    required_fields = [ACCOUNT_NAME, ACCOUNT_IBAN, ACCOUNT_BIC,"execution_date", AMOUNT_KEY, CURRENCY_KEY, BENEFICIARY_IBAN, BENEFICIARY_BIC, BENEFICIARY_NAME]
+    for field in required_fields:
+        if not getattr(transfer, field, None):
+            raise ValueError(f"El campo {field} es requerido para generar el SEPA XML.")
+
+    # Crear el documento XML
+    root = ET.Element("Document", xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03")
+    CstmrCdtTrfInitn = ET.SubElement(root, "CstmrCdtTrfInitn")
+
+    # Información del grupo de pagos
+    GrpHdr = ET.SubElement(CstmrCdtTrfInitn, "GrpHdr")
+    ET.SubElement(GrpHdr, "MsgId").text = str(uuid.uuid4())  # ID único del mensaje
+    ET.SubElement(GrpHdr, "CreDtTm").text = datetime.utcnow().isoformat()
+    ET.SubElement(GrpHdr, "NbOfTxs").text = "1"
+    ET.SubElement(GrpHdr, "CtrlSum").text = str(getattr(transfer, AMOUNT_KEY))
+    InitgPty = ET.SubElement(GrpHdr, "InitgPty")
+    ET.SubElement(InitgPty, "Nm").text = transfer.ACCOUNT_NAME
+
+    # Información de la transacción
+    PmtInf = ET.SubElement(CstmrCdtTrfInitn, "PmtInf")
+    #ET.SubElement(PmtInf, "PmtInfId").text = str(uuid.uuid4())
+    ET.SubElement(PmtInf, "PmtInfId").text = str(getattr(transfer, AMOUNT_KEY))
+    ET.SubElement(PmtInf, "PmtMtd").text = "TRF"  # Transferencia
+    ET.SubElement(PmtInf, "BtchBookg").text = "false"
+    ET.SubElement(PmtInf, "NbOfTxs").text = "1"
+    ET.SubElement(PmtInf, "CtrlSum").text = str(getattr(transfer, AMOUNT_KEY))
+    PmtTpInf = ET.SubElement(PmtInf, "PmtTpInf")
+    SvcLvl = ET.SubElement(PmtTpInf, "SvcLvl")
+    ET.SubElement(SvcLvl, "Cd").text = "SEPA"
+    ReqdExctnDt = ET.SubElement(PmtInf, "ReqdExctnDt")
+    ReqdExctnDt.text = transfer.execution_date.strftime("%Y-%m-%d")
+
+    # Datos del ordenante
+    Dbtr = ET.SubElement(PmtInf, "Dbtr")
+    ET.SubElement(Dbtr, "Nm").text = getattr(transfer, ACCOUNT_NAME, "")
+    DbtrAcct = ET.SubElement(PmtInf, "DbtrAcct")
+    Id = ET.SubElement(DbtrAcct, "Id")
+    ET.SubElement(Id, "IBAN").text = str(getattr(transfer, ACCOUNT_IBAN, ""))
+    DbtrAgt = ET.SubElement(PmtInf, "DbtrAgt")
+    FinInstnId = ET.SubElement(DbtrAgt, "FinInstnId")
+    ET.SubElement(FinInstnId, "BIC").text = getattr(transfer, ACCOUNT_BIC, "")
+
+    # Datos del beneficiario
+    CdtTrfTxInf = ET.SubElement(PmtInf, "CdtTrfTxInf")
+    PmtId = ET.SubElement(CdtTrfTxInf, "PmtId")
+    ET.SubElement(PmtId, "EndToEndId").text = getattr(transfer, E2E, "")
+    Amt = ET.SubElement(CdtTrfTxInf, "Amt")
+    ET.SubElement(Amt, "InstdAmt", Ccy=getattr(transfer, CURRENCY_KEY, "")).text = str(getattr(transfer, AMOUNT_KEY, ""))
+    CdtrAgt = ET.SubElement(CdtTrfTxInf, "CdtrAgt")
+    FinInstnId = ET.SubElement(CdtrAgt, "FinInstnId")
+    ET.SubElement(FinInstnId, "BIC").text = getattr(transfer, BENEFICIARY_BIC, "")
+    Cdtr = ET.SubElement(CdtTrfTxInf, "Cdtr")
+    ET.SubElement(Cdtr, "Nm").text = getattr(transfer, BENEFICIARY_NAME, "")
+    CdtrAcct = ET.SubElement(CdtTrfTxInf, "CdtrAcct")
+    Id = ET.SubElement(CdtrAcct, "Id")
+    ET.SubElement(Id, "IBAN").text = str(getattr(transfer, BENEFICIARY_IBAN, ""))
+    RmtInf = ET.SubElement(CdtTrfTxInf, "RmtInf")
+    ET.SubElement(RmtInf, "Ustrd").text = getattr(transfer, "unstructured_remittance_info", "")
+
+    # Generar el XML
+    xml_string = ET.tostring(root, encoding="utf-8", method="xml").decode("utf-8")
+    return xml_string
+
+def get_deutsche_bank_token():
+    url = f"{settings.DEUTSCHE_BANK_API_URL}/oauth/token"
+    payload = {
+        "grant_type": "client_credentials",
+        "client_id": settings.DEUTSCHE_BANK_CLIENT_ID,
+        "client_secret": settings.DEUTSCHE_BANK_CLIENT_SECRET
+    }
+    headers = {"Content-Type": "application/json"}
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTPError en Deutsche Bank Token: {e}, Response: {response.text}")
+        return {ERROR_KEY: "Error al obtener el token de Deutsche Bank"}
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error en conexión con Deutsche Bank Token: {e}")
+        return {ERROR_KEY: "No se pudo conectar con Deutsche Bank"}
+
+def process_transfer(transfer_data):
+    token_response = get_deutsche_bank_token()
+    access_token = token_response.get("access_token")
+    if not access_token:
+        return {ERROR_KEY: DEUTSCHE_BANK_TOKEN_ERROR_MESSAGE}
+
+    url = f"{settings.DEUTSCHE_BANK_API_URL}/transfers"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+        "Idempotency-Key": str(transfer_data[IDEMPOTENCY_HEADER_KEY])
+    }
+    payload = {
+        ACCOUNT_IBAN: str(transfer_data[ACCOUNT_IBAN]),
+        BENEFICIARY_IBAN: str(transfer_data[BENEFICIARY_IBAN]),
+        AMOUNT_KEY: str(transfer_data[AMOUNT_KEY]),
+        CURRENCY_KEY: transfer_data[CURRENCY_KEY],
+    }
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTPError en Deutsche Bank: {e}, Response: {response.text}")
+        return {ERROR_KEY: "Error en Deutsche Bank"}
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error en conexión con Deutsche Bank: {e}")
+        return {ERROR_KEY: DEUTSCHE_BANK_CONNECTION_ERROR_MESSAGE}
+
+def get_html_form_template():
+    template_path = os.path.join("api/extras", "transfer_form.html")
+    return render_to_string(template_path)
+
+def get_success_url():
+    return reverse_lazy('transfer_list')
+
+@swagger_auto_schema(method="post", operation_description="Create a transfer", request_body=SEPA2Serializer)
+@api_view(["POST"])
+def transfer_api_copy_view(request):
+    if request.method == "POST":
+        return handle_transfer_request(request)
+    return error_response("Método no permitido", status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+from rest_framework import generics, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework.exceptions import APIException
+from drf_yasg.utils import swagger_auto_schema
+from django.urls import reverse_lazy
+from django.contrib import messages
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, DetailView
+from api.transactions.serializers import SEPASerializer
+from api.transactions.models import SEPA
+from api.transactions.forms import SEPAForm
+from api.core.bank_services import deutsche_bank_transfer, memo_bank_transfer
+from api.core.services import generate_sepa_xml
+import logging
+import os
+
+from api.transfers.forms import SEPA2Form
+from api.transfers.models import SEPA2
+from api.transfers.serializers import SEPA2Serializer
+
+logger = logging.getLogger("bank_services")
+
+class BaseSEPAView(APIView):
+    #permission_classes = [IsAllowed]
+
+    def _get_existing_record(self, model, key_value, key_field):
+        """Helper to retrieve an existing record by a unique key."""
+        return model.objects.filter(**{key_field: key_value}).first()
+
+    def _response(self, data, status_code):
+        """Unified response method for success and error."""
+        return Response(data, status=status_code)
+
+    def _generate_template(self, SEPA2, sepa_xml=None, error_message=None):
+        """Generates a response template for success or error."""
+        if error_message:
+            return {"error": {"message": error_message, "code": "TRANSFER_ERROR"}}
+        return {
+            "transfer": {
+                "transaction_id": SEPA2.transaction_id,
+                "reference": SEPA2.reference,
+                "idempotency_key": SEPA2.idempotency_key,
+                "amount": SEPA2.amount,
+                "currency": SEPA2.currency,
+                "transfer_type": SEPA2.transfer_type,
+                "sepa_xml": sepa_xml,
+            }
+        }
+
+class SEPAView(BaseSEPAView):
+    model = SEPA2
+    fields = "__all__"
+    template_name = "api/SEPA/transfer_form.html"
+    
+    @swagger_auto_schema(operation_description="Create a SEPA", request_body=SEPA2Serializer)
+    def post(self, request):
+        idempotency_key = request.headers.get("Idempotency-Key")
+        if not idempotency_key:
+            return self._response({"error": "Idempotency-Key header is required"}, status.HTTP_400_BAD_REQUEST)
+
+        existing_transfer = self._get_existing_record(SEPA2, idempotency_key, "idempotency_key")
+        if existing_transfer:
+            return self._response(
+                {"message": "Duplicate SEPA", "transfer_id": existing_transfer.id}, status.HTTP_200_OK
+            )
+
+        serializer = SEPA2Serializer(data=request.data)
+        if not serializer.is_valid():
+            return self._response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+        transfer_data = serializer.validated_data
+        bank = request.data.get("bank")
+
+        try:
+            response = self._process_bank_transfer(bank, transfer_data, idempotency_key)
+            if "error" in response:
+                logger.warning(f"Error en la transferencia: {response['error']}")
+                return self._response(self._generate_template(None, error_message=response['error']), status.HTTP_400_BAD_REQUEST)
+
+            transfer = serializer.save(idempotency_key=idempotency_key, status="ACCP")
+            try:
+                sepa_xml = generate_sepa_xml(transfer)
+                return self._response(self._generate_template(transfer, sepa_xml), status.HTTP_201_CREATED)
+            except Exception as e:
+                logger.error(f"Error generando SEPA XML: {str(e)}", exc_info=True)
+                return self._response(self._generate_template(None, error_message="Error generando SEPA XML"), status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except APIException as e:
+            logger.error(f"Error en la transferencia: {str(e)}")
+            return self._response({"error": str(e)}, status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.critical(f"Error crítico en la transferencia: {str(e)}", exc_info=True)
+            raise APIException("Error inesperado en la transferencia bancaria.")
+
+    def _process_bank_transfer(self, bank, transfer_data, idempotency_key):
+        transfer_functions = {
+            "memo": memo_bank_transfer,
+            "deutsche": deutsche_bank_transfer,
+        }
+        if bank not in transfer_functions:
+            raise APIException("Invalid bank selection")
+
+        try:
+            return transfer_functions[bank](
+                transfer_data["source_account"], transfer_data["destination_account"],
+                transfer_data["amount"], transfer_data["currency"], idempotency_key
+            )
+        except Exception as e:
+            logger.error(f"Error procesando transferencia bancaria: {str(e)}", exc_info=True)
+            raise APIException("Error procesando la transferencia bancaria.")
+    
+    def get_success_url(self):
+        return reverse_lazy('transfer_list')    
+
+
+class TransferListView(ListView):
+    model = SEPA2
+    template_name = "api/SEPA/transfer_list.html"
+    context_object_name = "transfers"
+
+
+class TransferCreateView(CreateView):
+    model = SEPA2
+    form_class = SEPA2Form
+    template_name = "api/SEPA/transfer_form.html"
+    
+    def get_success_url(self):
+        return reverse_lazy('transfer_list')
+
+
+class TransferUpdateView(UpdateView):
+    model = SEPA2
+    form_class = SEPA2Form
+    template_name = "api/SEPA/transfer_form.html"
+    success_url = reverse_lazy('transfer_list')  # Redirige a la lista de transferencias
+
+
+class TransferDeleteView(DeleteView):
+    model = SEPA2
+    template_name = "api/SEPA/transfer_confirm_delete.html"
+    success_url = reverse_lazy("transfer_list")
+

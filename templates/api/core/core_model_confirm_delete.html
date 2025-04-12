@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<br><br>
+
+<div class="container mt-4">
+    <h1>Eliminar Core Model</h1>
+    <p>¿Estás seguro de que deseas eliminar el Core Model "{{ core_model.name }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="{% url 'core-model-list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+GitHub Copilot
+Claro, puedo ayudarte a revisar los logs. Aquí tienes los pasos para acceder y revisar los logs en un entorno Django:
+
+1. Revisar los Logs del Servidor en Desarrollo
+Si estás ejecutando tu aplicación Django en un entorno de desarrollo, los logs se mostrarán en la consola donde ejecutaste el servidor. Para iniciar el servidor de desarrollo, usa el siguiente comando:
+
+Observa la consola para cualquier mensaje de error o traza de excepción que aparezca cuando intentes realizar la solicitud que está fallando.
+
+python manage.py runserver
+
+2. Revisar los Logs del Servidor en Producción
+Si estás ejecutando tu aplicación en un entorno de producción, los logs generalmente se almacenan en archivos de log. La ubicación de estos archivos depende de cómo hayas configurado tu servidor web (por ejemplo, Gunicorn, uWSGI, etc.) y tu servidor de aplicaciones (por ejemplo, Nginx, Apache, etc.).
+
+Ejemplo con Gunicorn y Nginx
+Si estás usando Gunicorn y Nginx, los archivos de log suelen estar en las siguientes ubicaciones:
+
+Logs de Gunicorn: /var/log/gunicorn/error.log
+Logs de Nginx: /var/log/nginx/error.log
+Puedes revisar estos archivos usando un editor de texto o el comando cat o tail en la terminal. Por ejemplo:
+
+# Ver los últimos 100 registros del log de Gunicorn
+tail -n 100 /var/log/gunicorn/error.log
+
+# Ver los últimos 100 registros del log de Nginx
+tail -n 100 /var/log/nginx/error.log
+
+3. Configurar Logging en Django
+Asegúrate de que tu configuración de logging en Django esté correctamente configurada para capturar errores y excepciones. Aquí tienes un ejemplo de configuración de logging en el archivo settings.py:
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+Con esta configuración, los logs de Django se escribirán en un archivo llamado debug.log en el directorio base de tu proyecto.
+
+4. Revisar los Logs de Django
+Después de configurar el logging, intenta reproducir el error y luego revisa el archivo debug.log para ver los detalles del error. Puedes usar un editor de texto o el comando cat o tail en la terminal. Por ejemplo:
+
+# Ver los últimos 100 registros del log de Django
+tail -n 100 debug.log
+
+5. Compartir los Logs
+Si encuentras mensajes de error o trazas de excepción en los logs, puedes compartirlos aquí para que pueda ayudarte a diagnosticar y solucionar el problema.
+
+Siguiendo estos pasos, deberías poder acceder y revisar los logs de tu aplicación Django para identificar la causa del error 500.

@@ -1,0 +1,250 @@
+2025-03-02 19:06:47,750 - INFO - Iniciando script de automatización...
+2025-03-02 19:06:47,750 - ERROR - Error al cargar la configuración base: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+2025-03-02 19:06:47,750 - ERROR - No se pudo cargar la configuración base. Verifica el archivo config_base.json.
+2025-03-02 19:07:43,541 - INFO - Iniciando script de automatización...
+2025-03-02 19:07:43,541 - ERROR - Error al cargar la configuración base: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+2025-03-02 19:07:43,542 - ERROR - No se pudo cargar la configuración base. Verifica el archivo config_base.json.
+2025-03-02 19:15:18,277 - INFO - Iniciando script de automatización...
+2025-03-02 19:15:18,277 - ERROR - Error al cargar la configuración base: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+2025-03-02 19:15:18,277 - ERROR - No se pudo cargar la configuración base. Verifica el archivo config_base.json.
+2025-03-02 19:37:38,096 - INFO - Iniciando script de automatización...
+2025-03-02 19:37:38,098 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:38:58,837 - INFO - Iniciando script de automatización...
+2025-03-02 19:38:58,837 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:40:17,769 - INFO - Iniciando script de automatización...
+2025-03-02 19:40:17,769 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:40:17,771 - INFO - IPs generadas: ['193.150.166.0/255', '10.0.0.1/50']
+2025-03-02 19:40:17,771 - ERROR - Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/diccionarios/usuarios.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/diccionarios/usuarios.txt'
+2025-03-02 19:40:17,773 - ERROR - Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/diccionarios/contraseñas.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/diccionarios/contraseñas.txt'
+2025-03-02 19:40:17,781 - ERROR - ssh-keygen no está instalada.
+2025-03-02 19:40:17,781 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 19:50:20,458 - INFO - Iniciando script de automatización...
+2025-03-02 19:50:20,459 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:50:20,459 - INFO - Diccionarios combinados generados: {}
+2025-03-02 19:50:20,461 - INFO - IPs generadas: ['193.150.166.0/255', '10.0.0.1/50']
+2025-03-02 19:50:20,461 - ERROR - Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/diccionarios/usuarios.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/diccionarios/usuarios.txt'
+2025-03-02 19:50:20,461 - ERROR - Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/diccionarios/contraseñas.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/diccionarios/contraseñas.txt'
+2025-03-02 19:50:20,466 - ERROR - ssh-keygen no está instalada.
+2025-03-02 19:50:20,466 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 19:51:45,793 - INFO - Iniciando script de automatización...
+2025-03-02 19:51:45,793 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:51:45,793 - INFO - Diccionarios combinados generados: {}
+2025-03-02 19:51:45,795 - INFO - IPs generadas: ['193.150.166.0/255', '10.0.0.1/50']
+2025-03-02 19:51:45,795 - ERROR - Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/usuarios.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/usuarios.txt'
+2025-03-02 19:51:45,795 - ERROR - Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/contraseñas.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/contraseñas.txt'
+2025-03-02 19:51:45,799 - ERROR - ssh-keygen no está instalada.
+2025-03-02 19:51:45,799 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 19:52:24,553 - INFO - Iniciando script de automatización...
+2025-03-02 19:52:24,553 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:52:24,554 - INFO - Diccionarios combinados generados: {}
+2025-03-02 19:52:24,555 - INFO - IPs generadas: ['193.150.166.0/255', '10.0.0.1/50']
+2025-03-02 19:52:24,562 - ERROR - ssh-keygen no está instalada.
+2025-03-02 19:52:24,562 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 19:56:39,002 - INFO - Iniciando script de automatización...
+2025-03-02 19:56:39,005 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:56:39,005 - INFO - Diccionarios combinados generados: {}
+2025-03-02 19:56:39,009 - INFO - IPs generadas: ['193.150.166.0/255', '10.0.0.1/50']
+2025-03-02 19:56:39,015 - ERROR - ssh-keygen no está instalada.
+2025-03-02 19:56:39,016 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 19:57:44,614 - INFO - Iniciando script de automatización...
+2025-03-02 19:57:44,614 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:57:44,615 - INFO - Diccionarios combinados generados: {}
+2025-03-02 19:57:44,619 - INFO - IPs generadas: ['193.150.166.0/255', '10.0.0.1/50']
+2025-03-02 19:57:44,624 - ERROR - ssh-keygen no está instalada.
+2025-03-02 19:57:44,624 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 19:59:11,132 - INFO - Iniciando script de automatización...
+2025-03-02 19:59:11,132 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:59:11,132 - INFO - Diccionarios combinados generados: {}
+2025-03-02 19:59:11,134 - INFO - IPs generadas: ['193.150.166.0/255', '10.0.0.1/50']
+2025-03-02 19:59:11,138 - ERROR - ssh-keygen no está instalada.
+2025-03-02 19:59:11,138 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 19:59:57,564 - INFO - Iniciando script de automatización...
+2025-03-02 19:59:57,564 - INFO - Configuración base cargada correctamente.
+2025-03-02 19:59:57,564 - INFO - Diccionarios combinados generados: {}
+2025-03-02 19:59:57,566 - INFO - IPs generadas: ['193.150.166.0/255', '10.0.0.1/50']
+2025-03-02 19:59:57,566 - ERROR - Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/usuarios.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/usuarios.txt'
+2025-03-02 19:59:57,567 - ERROR - Error al leer el archivo /home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/contraseñas.txt: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/../diccionarios/diccionarios/contraseñas.txt'
+2025-03-02 19:59:57,570 - ERROR - ssh-keygen no está instalada.
+2025-03-02 19:59:57,570 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 20:47:12,593 - INFO - Iniciando script de automatización...
+2025-03-02 20:47:12,595 - ERROR - Error al cargar la configuración: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+2025-03-02 20:47:12,595 - ERROR - No se pudo cargar la configuración. Verifica el archivo config.json.
+2025-03-02 20:47:40,182 - INFO - Iniciando script de automatización...
+2025-03-02 20:47:40,182 - ERROR - Error al cargar la configuración: [Errno 2] No such file or directory: '/home/markmur88/Documentos/automation_project/scripts/config/config.json'
+2025-03-02 20:47:40,182 - ERROR - No se pudo cargar la configuración. Verifica el archivo config.json.
+2025-03-02 20:48:25,518 - INFO - Iniciando script de automatización...
+2025-03-02 20:48:25,518 - INFO - Configuración cargada correctamente.
+2025-03-02 20:48:25,527 - ERROR - ssh-keygen no está instalada.
+2025-03-02 20:48:25,528 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 20:50:35,830 - INFO - Iniciando script de automatización...
+2025-03-02 20:50:35,831 - INFO - Configuración cargada correctamente.
+2025-03-02 20:50:35,836 - ERROR - ssh-keygen no está instalada.
+2025-03-02 20:50:35,836 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 20:51:07,500 - INFO - Iniciando script de automatización...
+2025-03-02 20:51:07,500 - INFO - Configuración cargada correctamente.
+2025-03-02 20:51:07,504 - ERROR - ssh-keygen no está instalada.
+2025-03-02 20:51:07,504 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 20:51:44,615 - INFO - Iniciando script de automatización...
+2025-03-02 20:51:44,616 - INFO - Configuración cargada correctamente.
+2025-03-02 20:51:44,619 - ERROR - ssh-keygen no está instalada. Error: Command '['ssh-keygen', '--version']' returned non-zero exit status 1.
+2025-03-02 20:51:44,620 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 20:53:36,191 - INFO - Iniciando script de automatización...
+2025-03-02 20:53:36,191 - INFO - Configuración cargada correctamente.
+2025-03-02 20:56:47,194 - INFO - Iniciando script de automatización...
+2025-03-02 20:57:43,633 - INFO - Iniciando script de automatización...
+2025-03-02 20:58:28,097 - INFO - Iniciando script de automatización...
+2025-03-02 20:58:28,099 - ERROR - Error al ejecutar el comando: /bin/sh: 1: protonvpn-cli: not found
+2025-03-02 20:58:28,100 - INFO - Conectando a ProtonVPN en Alemania...
+2025-03-02 20:58:38,105 - INFO - Configuración cargada correctamente.
+2025-03-02 20:59:12,246 - INFO - Iniciando script de automatización...
+2025-03-02 21:00:06,975 - INFO - Iniciando script de automatización...
+2025-03-02 21:00:06,977 - INFO - Configuración cargada correctamente.
+2025-03-02 21:13:08,232 - INFO - Iniciando script de automatización...
+2025-03-02 21:13:08,234 - INFO - Configuración cargada correctamente.
+2025-03-02 21:15:16,046 - INFO - Iniciando script de automatización...
+2025-03-02 21:15:16,046 - INFO - Configuración cargada correctamente.
+2025-03-02 21:15:26,060 - ERROR - El comando para verificar ssh-keygen excedió el tiempo de espera y fue terminado.
+2025-03-02 21:15:26,064 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 21:21:22,641 - INFO - Iniciando script de automatización...
+2025-03-02 21:21:22,641 - INFO - Configuración cargada correctamente.
+2025-03-02 21:21:32,647 - ERROR - El comando para verificar ssh-keygen excedió el tiempo de espera y fue terminado.
+2025-03-02 21:21:32,652 - ERROR - Falta la herramienta: ssh-keygen. Instálala antes de continuar.
+2025-03-02 21:22:14,629 - INFO - Iniciando script de automatización...
+2025-03-02 21:22:14,629 - INFO - Configuración cargada correctamente.
+2025-03-02 21:22:14,655 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-02 21:24:40,495 - INFO - Iniciando script de automatización...
+2025-03-02 21:24:40,497 - INFO - Configuración cargada correctamente.
+2025-03-02 21:24:40,502 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-02 21:26:00,175 - INFO - Iniciando script de automatización...
+2025-03-02 21:26:00,176 - INFO - Configuración cargada correctamente.
+2025-03-02 21:26:00,182 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-02 21:26:00,332 - ERROR - hydra no está instalada. Error: Command '['hydra', '--version']' returned non-zero exit status 255.
+2025-03-02 21:26:00,334 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-02 21:26:49,018 - INFO - Iniciando script de automatización...
+2025-03-02 21:26:49,018 - INFO - Configuración cargada correctamente.
+2025-03-02 21:26:49,018 - INFO - Paso 1: Escanear puertos
+2025-03-02 21:26:49,018 - INFO - Iniciando: Escanear Puertos
+2025-03-02 21:26:50,395 - INFO - Comando ejecutado correctamente: Escanear Puertos
+2025-03-02 21:26:50,396 - INFO - Escaneando puertos en 193.150.166.1/255...
+2025-03-02 21:26:52,396 - INFO - Paso 2: Conectar al servidor SSH
+2025-03-02 21:26:52,396 - ERROR - Error al leer el archivo diccionarios/usuarios.txt: [Errno 2] No such file or directory: 'diccionarios/usuarios.txt'
+2025-03-02 21:26:52,397 - INFO - Paso 3: Ataque de Hydra
+2025-03-02 21:26:52,397 - ERROR - Error al leer el archivo diccionarios/usuarios.txt: [Errno 2] No such file or directory: 'diccionarios/usuarios.txt'
+2025-03-02 21:26:52,397 - ERROR - Error al leer el archivo diccionarios/contrasenas.txt: [Errno 2] No such file or directory: 'diccionarios/contrasenas.txt'
+2025-03-02 21:26:52,397 - INFO - Script completado.
+2025-03-02 21:29:34,144 - INFO - Iniciando script de automatización...
+2025-03-02 21:29:34,145 - INFO - Configuración cargada correctamente.
+2025-03-02 21:29:34,151 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-02 21:29:34,185 - ERROR - hydra no está instalada. Error: Command '['hydra', '--version']' returned non-zero exit status 255.
+2025-03-02 21:29:34,185 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-02 21:37:15,682 - INFO - Iniciando script de automatización...
+2025-03-02 21:37:15,683 - INFO - Configuración cargada correctamente.
+2025-03-02 21:38:20,719 - INFO - Iniciando script de automatización...
+2025-03-02 21:38:20,719 - INFO - Configuración cargada correctamente.
+2025-03-02 21:38:20,737 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-02 21:38:20,814 - ERROR - hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+2025-03-02 21:38:20,814 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-02 23:46:54,876 - INFO - Iniciando script de automatización...
+2025-03-02 23:46:54,877 - INFO - Configuración cargada correctamente.
+2025-03-02 23:46:54,914 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-02 23:46:55,122 - ERROR - hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+2025-03-02 23:46:55,124 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-02 23:52:55,034 - INFO - Iniciando script de automatización...
+2025-03-02 23:52:55,036 - INFO - Configuración cargada correctamente.
+2025-03-02 23:52:55,069 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-02 23:52:55,289 - ERROR - hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+2025-03-02 23:52:55,290 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-03 00:32:35,347 - INFO - Iniciando script de automatización...
+2025-03-03 00:32:35,349 - INFO - Configuración cargada correctamente.
+2025-03-03 00:32:35,405 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-03 00:32:35,732 - ERROR - hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+2025-03-03 00:32:35,734 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-03 00:40:54,234 - INFO - Iniciando script de automatización...
+2025-03-03 00:40:54,237 - INFO - Configuración cargada correctamente.
+2025-03-03 00:40:54,276 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-03 00:40:54,518 - ERROR - hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+2025-03-03 00:40:54,519 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-03 00:45:39,347 - INFO - Iniciando script de automatización...
+2025-03-03 00:45:39,350 - INFO - Configuración cargada correctamente.
+2025-03-03 00:45:39,370 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-03 00:45:39,435 - ERROR - hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+2025-03-03 00:45:39,436 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-03 00:47:11,554 - INFO - Iniciando script de automatización...
+2025-03-03 00:47:11,554 - INFO - Configuración cargada correctamente.
+2025-03-03 00:47:11,579 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-03 00:47:11,732 - ERROR - hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+2025-03-03 00:47:11,732 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-03 00:50:53,882 - INFO - Iniciando script de automatización...
+2025-03-03 00:50:53,885 - INFO - Configuración cargada correctamente.
+2025-03-03 00:50:53,941 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-03 00:50:54,233 - ERROR - hydra no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S hydra --version' returned non-zero exit status 255.
+2025-03-03 00:50:54,235 - ERROR - Falta la herramienta: hydra. Instálala antes de continuar.
+2025-03-03 00:51:07,427 - INFO - Iniciando script de automatización...
+2025-03-03 00:51:07,427 - INFO - Configuración cargada correctamente.
+2025-03-03 00:51:07,444 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-03 00:51:07,472 - ERROR - ssh no está instalada. Error: Command 'echo Ptf8454Jd55 | sudo -S ssh --version' returned non-zero exit status 255.
+2025-03-03 00:51:07,472 - ERROR - Falta la herramienta: ssh. Instálala antes de continuar.
+2025-03-03 00:57:30,892 - INFO - Iniciando script de automatización...
+2025-03-03 00:57:30,893 - INFO - Configuración cargada correctamente.
+2025-03-03 00:57:30,933 - INFO - nmap está instalada. Salida: Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.7 openssl-3.4.1 libssh2-1.11.1 libz-1.3.1 libpcre2-10.45 libpcap-1.10.5 nmap-libdnet-1.12 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+2025-03-03 00:57:30,934 - INFO - Paso 1: Escanear puertos
+2025-03-03 00:57:30,934 - INFO - Iniciando: Escanear Puertos
+2025-03-03 00:57:31,926 - INFO - Comando ejecutado correctamente: Escanear Puertos
+2025-03-03 00:57:31,927 - INFO - Escaneando puertos en 193.150.166.1/255...
+2025-03-03 00:57:33,928 - INFO - Script completado.

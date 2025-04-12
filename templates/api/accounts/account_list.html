@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Cuentas{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'accounts_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br><h1>Lista de Cuentas</h1>
+<a href="{% url 'account_create' %}" class="btn btn-primary mb-3">Crear Cuenta</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Saldo</th>
+            <th>Moneda</th>
+            <th>IBAN</th>
+            <th>Tipo</th>
+            <th>Principal</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for account in accounts %}
+        <tr>
+            <td>{{ account.name }}</td>
+            <td>{{ account.status }}</td>
+            <td>{{ account.balance }}</td>
+            <td>{{ account.currency }}</td>
+            <td>{{ account.iban }}</td>
+            <td>{{ account.get_type_display }}</td>
+            <td>{{ account.is_main|yesno:"Sí,No" }}</td>
+            <td>
+                <a href="{% url 'account_update' account.id %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'account_delete' account.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

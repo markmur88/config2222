@@ -1,0 +1,186 @@
+*FRANKFURT 1 – GERMANY*
+
+WWW.BUNDESB.Länder (Staatabank der DDR2)  
+Succeeded by the European Central Bank (1999)3  
+SUPER SECURITY CODE: DEUTSCHE BANK AG FRANKFURT  
+TRANSPECTION ID:  
+
+---  
+
+*DATE:* 28.02.2024  
+*START Time:* 09:33:37 AM  
+
+---
+
+Approved by the Euro …… and Federal Reserve team and technical committee. Includes German server security codes.  
+Do not share this information with others. The terminal consists of six layers of security, each of which has approximately 200 quadrats and approximately 500 quadrats and ……….. is connected. Therefore, Transaction Code in this screen shot will play a key role in the Deutsche Bank server.  
+
+1. Sending Bank: DEUTSCHE BANK AG  
+2. Sending Bank Address: FRANKFURT AM MAIN, GERMANY  
+3. Transaction code: USCSY-GOSB1:DBFF100T:EUR/GG24314  
+4. Receiver Reference DTC:GOSB/USC09042014  
+5. Investor reference: GOSB1/USC/23032014/UBSWCH80A500B  
+6. Inter banking Blocking Code: 144A:S:G4639DV8  
+7. Identity Code: ZYC DB FR DE 17BEH  
+8. Server Global ID (ORIGIN): AS8373  
+
+---
+
+9. Server Global IP: 193 150 166 0/24 / 193 150 166 0/243  
+10. Currency: EURO (€)  
+11. Amount: 193,520,398,020,123,000.00  
+12. Account No.: 010581700  
+13. Sort Code Number: 678 691 681 DEUTSCHE BANK AG FRANKFURT AM MAIN,GERMANY  
+14. Client Number: 000000005RT-RN-388-37862BEH17RLN000000  
+15. Permit Arrival Money Number: SCF-664M388RT667  
+16. WTS (Window Terminal server): SO200235  
+17. LOGIN Domain: DEUBA  
+18. LOGON Server: FRAESWDBRP 21  
+19. Farm Name: FARM 42  
+20. Client Name: F4700302  
+21. User Name: 493069k1  
+22. User ID: FGM470  
+23. Clearing House No.: DEUT-HEBA37890672  
+24. Transaction ID: 090512DEUTDEFFXXX886479  
+25. Transfer code: 144A;S:G4639DVY8  
+26. Reference Number DEUT997856743216  
+27. Unique Transaction No. DEUT997856743216  
+28. DB screen short code: A23F14.01.31.47.GTF5  
+29. Server ID: AS8373  
+
+---
+
+24. Transaction ID: 090512DEUTDEFFXXX886479  
+25. Transfer code: 144A:S:G4639DY8  
+26. Reference Number DEUT997856743216  
+27. Unique Transaction No. DEUT997856743216  
+28. DB screen short code: A23F14.01.31.47.GTF5  
+29. Server ID: AS8373  
+30. Server IDP: 193.150.166.0/24/193.150.166.0/243  
+31. WTS Server (Window terminal serve): S020005636  
+32. IWAD NUMBER: CR38828530  
+33. Db bank officer1: COLIN FAN (PTN CODE 022677)  
+34. Db bank officer2: MANUEL MANG. (PTN CODE 817690)  
+35. KREDIT INSTITUTE DB GERMANY : PTRSE/ ORACLE EBICS  
+36. TREASURY AGREEMENT: CR38828530  
+37. FILE N°: A23F17.01.31.47.GTF5  
+
+END CODE FRANKFURT | ******  
+The First Terminal Layer:  
+Includes proprietary first layer code and Deutsche Bank master server code  
+
+Access Code : e4f15898780  
+Release Code:  
+
+---
+
+*Whols IP 193.150.166.0*
+
+% This is the RIPE Database query service.
+% The objects are in RPSL format.
+%
+% The RIPE Database is subject to Terms and Conditions.
+% See http://www.ripe.net/db/support/db-terms-conditions.pdf
+
+% Note: this output has been filtered.
+% To receive output for a database update, use the "-B" flag.
+
+% Information related to '193.150.166.0 - 193.150.167.255'
+
+% Abuse contact for '193.150.166.0 - 193.150.167.255' is dns.admin@db.com'
+
+---
+
+*Instrumental data*
+- *DataName*: 193.150.166.0 - 193.150.167.255
+- *DataName*: DBANK
+- *Error Name*: Frankfurt
+- *Error Name*: ORG-DBAG-RIPE
+- *Error Name*: DE
+- *Error Name*: RS7833-RIPE
+- *Error Name*: DIS53-RIPE
+- *Error Name*: ASSIGNED P1
+- *Error Name*: RIPE-NCC-END-MNT
+- *Error Name*: AS12312-MNT
+
+---
+
+mnt-by: AS12980-MNT
+mnt-by: DB-MNT
+created: 1970-01-01T00:00:002
+last-modified: 2016-04-14T09:31:442
+source: RIPE # Filtered
+
+organisation: ORG-DBAG-RIPE
+org-name: Deutsche Bank AG
+org-type: LIR
+address: Alfred-Herrhausen-Allee 16-24
+address: 65760
+address: Eschborn
+address: GERMANY
+phone: +496991068634
+fax-no: +498991068360
+admin-c: RS7813-RIPE
+admin-c: Ad6725-RIPE
+admin-c: JM8128-RIPE
+admin-c: PP3928-RIPE
+abuse-c: AR14549-RIPE
+mnt-ref: RIPE-NCC-HM-MNT
+mnt-ref: DB-MNT
+mnt-by: RIPE-NCC-HM-MNT
+mnt-by: DB-MNT
+created: 2008-09-22T10:30:362
+last-modified: 2016-09-05T18:39:102
+source: RIPE # Filtered
+
+---
+
+role: DB IP Services
+address: Deutsche Bank AG
+address: IP Services Team
+address: Alfred-Herrhausen-Allee 16-24
+address: 65760 Eschborn
+address: Germany
+phone: +49 69 910 68634
+fax-no: +49 69 910 63360
+admin-c: RS7813-RIPE
+admin-c: PF6815-RIPE
+
+---
+
+admin-c: A66725-RIPE
+admin-c: JM8128-RIPE
+tech-c: RS7813-RIPE
+tech-c: PF6815-RIPE
+tech-c: A66725-RIPE
+tech-c: JM8128-RIPE
+nic-hdl: DIS53-RIPE
+abuse-mailbox: db.com
+mnt-by: DB-MNT
+created: 2011-09-31T12:24:322
+last-modified: 2015-09-25T10:56:522
+source: RIPE # Filtered
+
+person: Reiner Schaefer
+address: Deutsche Bank AG GTO IES Network Engineering Postfach 65760 Eschborn DE
+phone: +49-69-910-68634
+fax-no: +49-69-910-68360
+nic-hdl: RS7813-RIPE
+created: 2007-06-26T12:05:332
+last-modified: 2016-04-06T22:21:502
+mnt-by: RIPE-NCC-LOCKED-MNT
+source: RIPE # Filtered
+
+% Information related to '192.150.166.0/24A58373'
+
+---
+
+% Information related to '193.150.166.0/24AS8373'
+
+route: 193.150.166.0/24  
+descr: Deutsche Bank AG  
+origin: AS8373  
+mnt-by: DB-MNT  
+created: 2012-03-01T1B:25:37Z  
+last-modified: 2012-03-01T1S:25:37Z  
+source: RIPE 

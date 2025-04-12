@@ -1,0 +1,45 @@
+
+
+
+parameters= {
+    paymentId = UUID
+    idempotency-id = DET & paymentId
+    otp = "SEPA_TRANSFER_GRANT"
+    Correlation-Id = RET & paymentId
+    transactionStatus = "PDMA"
+}
+
+requestBody= {
+    purposeCode = "1234"
+    requestExecutionDate = "date(yyyy-MM-dd) CET timezone"
+    debtor
+        debtorName
+        debtorPostalAddress
+            country
+            addressLine
+                streetAndHouseNumber
+                zipCodeAndCity
+    debtorAccount
+        iban
+        currency
+    paymentIdentification
+        endToEndId = paymentId
+        instructionId = INT & paymentId
+    instructedAmount
+        amount
+        currency
+    creditorAgent
+        financialInstitutionId
+    creditor
+        creditorName
+        creditorPostalAddress
+            country
+            addressLine
+                streetAndHouseNumber
+                zipCodeAndCity
+    creditorAccount
+        iban
+        currency
+    remittanceInformationStructured = contract related - references to business
+    remittanceInformationUnstructured = contract related : references to business
+}

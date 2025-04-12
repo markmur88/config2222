@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Lista de Transferencias SEPA{% endblock %}
+
+
+{% block content %}
+<a href="{% url 'transfers_index' %}" class="btn btn-secondary mb-3">Regresar al Índice</a>
+<br><br>
+
+<h1>Lista de Transferencias SEPA</h1>
+
+<a href="{% url 'sepa_create' %}" class="btn btn-primary mb-3">Crear SEPA</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th style="width: 30%;">ID</th>
+            <th style="width: 30%;">Referencia</th>
+            <th style="width: 10%;">Monto</th>
+            <th style="width: 5%;">Moneda</th>
+            <th style="width: 5%;">Estado</th>
+            <th style="width: 11%;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transfer in transfers %}
+        <tr>
+            <td>{{ transfer.idempotency_key }}</td>
+            <td>{{ transfer.reference }}</td>
+            <td>{{ transfer.amount }}</td>
+            <td>{{ transfer.currency }}</td>
+            <td>{{ transfer.status }}</td>
+            <td>
+                <a href="{% url 'sepa_update' transfer.id %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'sepa_delete' transfer.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

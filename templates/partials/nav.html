@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">Banco</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+
+
+                <!-- Configuración -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="configDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Configuración
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="configDropdown">
+                        <li><a class="dropdown-item" href="{% url 'iban-list' %}">IBANs</a></li>
+                        <li><a class="dropdown-item" href="{% url 'mandate-list' %}">Mandate</a></li>
+                        <li><a class="dropdown-item" href="{% url 'collection-list' %}">Collection</a></li>
+                    </ul>
+                </li>
+
+                <!-- Cuentas -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="accountsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Cuentas
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="accountsDropdown">
+                        <li><a class="dropdown-item" href="{% url 'debtor-list' %}">Deudores</a></li>
+                        <li><a class="dropdown-item" href="{% url 'account_list' %}">Cuenta</a></li>
+                    </ul>
+                </li>
+
+                <!-- Transacciones -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="transactionsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Transacciones
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="transactionsDropdown">
+                        <li><a class="dropdown-item" href="{% url 'transfer_list' %}">Transferencia SEPA</a></li>
+                        <li><a class="dropdown-item" href="{% url 'sepa_api' %}">SEPA API</a></li>
+                    </ul>
+                </li>
+
+                <div class="d-flex ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+</nav>

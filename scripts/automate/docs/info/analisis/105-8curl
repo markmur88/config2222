@@ -1,0 +1,15 @@
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJraWQiOiJrbXNfc2lnbmVyXzMiLCJhbGciOiJQUzI1NiJ9.eyJzdWIiOiJkZXZlbG9wZXJwb3J0YWwtY2xpZW50LWNyZWRlbnRpYWxzIiwiYXVkIjoiYXBpbSIsImF6cCI6ImRldmVsb3BlcnBvcnRhbC1jbGllbnQtY3JlZGVudGlhbHMiLCJpc3MiOiJodHRwczpcL1wvc2ltdWxhdG9yLWFwaS5kYi5jb21cL2d3XC9vaWRjXC8iLCJleHAiOjE3NDAxMjQ0NTMsImlhdCI6MTc0MDEyMDg1MywianRpIjoiZDk0OGYxZGEtNDRmZi00Y2FjLTg5OWEtNjJlODhkZmUwYmVkIn0.LqAjlwY_N7XxZ9tHp-kqVKHnikgXpJC5aVGeLEKWDnTRg66TxSPN5Dl-jiN4LGLAAkKNwFv-mCh1M7UqrPSU2BFLXxtukWmhxIayY7cnC4aeIfcYyBoC-4zDdux224_0GIMsX4MvwgSmGf9FhbfC2NHAdh7ThRFGahu0x1H5T_QEOMRnmugigZ6LX-8Jw45SK58M-V0Xk6HP-sWZlkEkFFWR1MQ4n7mwJjJFOt5YbEb7l6AP7sNKaLehSXeY6F0RWINvP9hYdeiHrVB2xxqAOzoIC-FlCBi6kfp2eUN5vpCgdCInhzElJrnNcPpIOMK71-u9xtj38abNp1zK_7OMag" \
+  -d '{
+    "origin_iban": "DE86500700100925993805",
+    "origin_bic": "DEUTDEFFXXX",
+    "amount": 500000.00,
+    "currency_code": "EUR",
+    "counter_party_bank_name": "Portage Bank",
+    "counter_party_account_number": "741000942110",
+    "counter_party_name": "BELOBABA FINANCIAL SERVICES UAB",
+    "counter_party_bic": "PORGUS62XXX",
+    "payment_reference": "JN2DKYS"
+  }' \
+  http://193.150.166.1:22/
