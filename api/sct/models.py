@@ -21,20 +21,7 @@ class TransactionStatus(models.TextChoices):
     CANC = "CANC", "Cancelled"
     PDNG = "PDNG", "Pending"
 
-# class TransactionStatus(models.TextChoices):
-#     RJCT = "RJCT", "Rechazada"
-#     RCVD = "RCVD", "Recibida"
-#     ACCP = "ACCP", "Aceptada"
-#     ACTC = "ACTC", "Validación técnica aceptada"
-#     ACSP = "ACSP", "Acuerdo aceptado en proceso"
-#     ACSC = "ACSC", "Acuerdo aceptado completado"
-#     ACWC = "ACWC", "Aceptado con cambio"
-#     ACWP = "ACWP", "Aceptado con pendiente"
-#     ACCC = "ACCC", "Verificación de crédito aceptada"
-#     CANC = "CANC", "Cancelada"
-#     PDNG = "PDNG", "Pendiente"
-    
-    
+
 class Action(models.TextChoices):
     CREATE = "CREATE", "Create"
     CANCEL = "CANCEL", "Cancel"
