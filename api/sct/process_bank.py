@@ -34,12 +34,7 @@ IDEMPOTENCY_HEADER = "Idempotency-Key"
 IDEMPOTENCY_HEADER_KEY = 'idempotency_key'
 
 
-
-
-
-
-
-def process_bank_transfer1(transfers, idempotency_key):
+def process_bank_transfer_json(transfers, idempotency_key):
     """
     Procesa una transferencia bancaria exclusivamente para Deutsche Bank.
     """
@@ -96,7 +91,7 @@ def process_bank_transfer(idempotency_key, transfers):
         return {"error": str(e)}
 
 
-def process_bank_transfer11(idempotency_key, transfers):
+def process_bank_transfer_xml(idempotency_key, transfers):
     """
     Procesa una transferencia bancaria utilizando un archivo XML generado para SEPA.
     """

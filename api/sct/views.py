@@ -81,7 +81,6 @@ class SepaCreditTransferCreateView2(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class SepaCreditTransferDetailsView(APIView):
     """
     View para obtener los detalles de una transferencia SEPA.

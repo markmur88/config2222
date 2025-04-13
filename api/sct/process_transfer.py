@@ -5,7 +5,7 @@ from api.sct.models import (
     SepaCreditTransferRequest, SepaCreditTransferResponse, 
     SepaCreditTransferDetailsResponse, SepaCreditTransferUpdateScaRequest
 )
-from api.sct.process_bank import process_bank_transfer, process_bank_transfer1, process_bank_transfer11
+from api.sct.process_bank import process_bank_transfer, process_bank_transfer1, process_bank_transfer11, process_bank_transfer_json, process_bank_transfer_xml
 from api.sct.serializers import (
     SepaCreditTransferRequestSerializer, SepaCreditTransferResponseSerializer, 
     SepaCreditTransferDetailsResponseSerializer, SepaCreditTransferUpdateScaRequestSerializer
@@ -247,14 +247,14 @@ class ProcessTransferView12(APIView):
             transfers = SepaCreditTransferRequest.objects.get(idempotency_key=idempotency_key)
 
             # Procesar con process_bank_transfer
-            bank_response_1 = process_bank_transfer1(idempotency_key, transfers)
+            bank_response_1 = process_bank_transfer_json(idempotency_key, transfers)
 
             # Verificar si hubo un error en el primer procesamiento
             if "error" in bank_response_1:
                 return Response({"error": bank_response_1["error"]}, status=status.HTTP_400_BAD_REQUEST)
 
             # Procesar con process_bank_transfer1
-            bank_response_2 = process_bank_transfer11(transfers, idempotency_key)
+            bank_response_2 = process_bank_transfer_xml(transfers, idempotency_key)
 
             # Verificar si hubo un error en el segundo procesamiento
             if "error" in bank_response_2:
