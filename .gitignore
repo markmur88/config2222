@@ -1,0 +1,90 @@
+# Directorios específicos del proyecto
+scripts/
+dbapi/
+Docker/
+docs/
+temp/
+staticfiles/
+test/
+
+# Archivos de configuración sensibles
+.env
+my.cnf
+openapi.yaml
+petstore.yaml
+
+# Archivos de Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.egg-info/
+*.egg
+
+# Bases de datos y logs
+*.db
+*.sqlite3
+*.log
+
+# Archivos de traducción
+*.pot
+*.mo
+
+# Archivos temporales y de respaldo
+*.pot~
+*.swp
+*.swo
+
+# Archivos específicos de sistemas operativos
+*.DS_Store
+
+# Certificados y claves
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.p7b
+*.p7s
+
+# Archivos comprimidos
+*.zip
+*.tar.gz
+*.tar
+*.tgz
+*.gz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.tar.xz
+*.tar.bz2
+*.tar.lz
+*.tar.lzma
+*.tar.zst
+*.tar.lzo
+*.tar.lzop
+
+# Archivos de Node.js
+package.json
+package-lock.json
+
+# Archivos de pruebas y cobertura
+pytest_cache/
+*.coverage
+*.cover
+*.coverage.*
+*.coveragerc
+.hypothesis/
+.hypothesis.*
+
+# Entornos virtuales de Python
+.venv/
+venv/
+
+# Migraciones de Django u otros frameworks
+migrations/
+
+# Otros archivos innecesarios
+zzzz
