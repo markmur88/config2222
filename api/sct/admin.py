@@ -1,3 +1,7 @@
+"""
+Admin configuration for SEPA Credit Transfer (SCT) models.
+This module registers all SCT-related models to the Django admin interface.
+"""
 from django.contrib import admin
 from api.sct.models import (
     CategoryPurpose, ServiceLevel, LocalInstrument,
@@ -6,7 +10,7 @@ from api.sct.models import (
     ErrorResponse,
 )
 
-# Registrar los modelos
+# Register the models with the admin site
 admin.site.register(CategoryPurpose)
 admin.site.register(ServiceLevel)
 admin.site.register(LocalInstrument)

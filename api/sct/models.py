@@ -1,14 +1,24 @@
+"""
+Models for SEPA Credit Transfer (SCT) functionality.
+
+This module defines the data models for SCT requests, responses,
+and supporting reference data.
+"""
+import logging
 import uuid
 from django.db import models
 from django.core.validators import RegexValidator
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-import logging
+from typing import Optional, Any
 
 logger = logging.getLogger(__name__)
 
 
 class TransactionStatus(models.TextChoices):
+    """
+    Status codes for SEPA Credit Transfer transactions.
+    """
     RJCT = "RJCT", "Rejected"
     RCVD = "RCVD", "Received"
     ACCP = "ACCP", "Accepted"
@@ -21,24 +31,16 @@ class TransactionStatus(models.TextChoices):
     CANC = "CANC", "Cancelled"
     PDNG = "PDNG", "Pending"
 
-# class TransactionStatus(models.TextChoices):
-#     RJCT = "RJCT", "Rechazada"
-#     RCVD = "RCVD", "Recibida"
-#     ACCP = "ACCP", "Aceptada"
-#     ACTC = "ACTC", "Validación técnica aceptada"
-#     ACSP = "ACSP", "Acuerdo aceptado en proceso"
-#     ACSC = "ACSC", "Acuerdo aceptado completado"
-#     ACWC = "ACWC", "Aceptado con cambio"
-#     ACWP = "ACWP", "Aceptado con pendiente"
-#     ACCC = "ACCC", "Verificación de crédito aceptada"
-#     CANC = "CANC", "Cancelada"
-#     PDNG = "PDNG", "Pendiente"
-    
-    
+
 class Action(models.TextChoices):
+    """
+    Action types for SEPA Credit Transfer transactions.
+    """
     CREATE = "CREATE", "Create"
     CANCEL = "CANCEL", "Cancel"
 
+
+# Status choices for model fields
 STATUS = [
     ('RJCT', 'RJCT'),
     ('RCVD', 'RCVD'),
@@ -52,7 +54,7 @@ STATUS = [
     ('PDNG', 'PDNG'),
 ]
 
-
+# Predefined choices for entity names
 NAME = [
     ('---', '---'),
     ('MIRYA TRADING CO LTD', 'MIRYA TRADING CO LTD'),
@@ -65,10 +67,9 @@ NAME = [
     ('MOHAMMAD REZA NAJAFI KALASHI', 'MOHAMMAD REZA NAJAFI KALASHI'),
     ('SERVICES ET PUBLICITÉ ONLINE LTD', 'SERVICES ET PUBLICITÉ ONLINE LTD'),
     ('XXX', 'XXX'),
-
 ]
 
-
+# Predefined IBAN choices
 IBAN = [
     ('---', '---'),
     ('DE86500700100925993805', 'DE86500700100925993805'),
@@ -81,10 +82,9 @@ IBAN = [
     ('DE41400501500154813455', 'DE41400501500154813455'),
     ('GB33REVO00996939552283', 'GB33REVO00996939552283'),
     ('XXX', 'XXX'),
-
 ]
 
-
+# Predefined BIC choices
 BIC = [
     ('---', '---'),
     ('DEUTDEFFXXX', 'DEUTDEFFXXX'),
@@ -96,10 +96,9 @@ BIC = [
     ('WELADED1MST', 'WELADED1MST'),
     ('REVOGB21XXX', 'REVOGB21XXX'),
     ('XXX', 'XXX'),
-
 ]
 
-
+# Predefined bank choices
 BANK = [
     ('---', '---'),
     ('DEUTSCHE BANK AG', 'DEUTSCHE BANK AG'),
@@ -111,10 +110,9 @@ BANK = [
     ('SPARKASSE MÜNSTERLAND OST', 'SPARKASSE MÜNSTERLAND OST'),
     ('REVOLUT LIMITED', 'REVOLUT LIMITED'),
     ('XXX', 'XXX'),
-
 ]
 
-
+# Predefined street and number choices
 STREETNUMBER = [
     ('---', '---'),
     ('TAUNUSANLAGE 12', 'TAUNUSANLAGE 12'),
@@ -127,10 +125,9 @@ STREETNUMBER = [
     ('WESELER STRABE 230', 'WESELER STRABE 230'),
     ('WESTFERRY CIRCUS 7', 'WESTFERRY CIRCUS 7'),
     ('XXX', 'XXX'),
-
 ]
 
-
+# Predefined zip code and city choices
 ZIPCODECITY = [
     ('---', '---'),
     ('60325 FRANKFURT', '60325 FRANKFURT'),
@@ -143,10 +140,9 @@ ZIPCODECITY = [
     ('48151 MÜNSTER', '48151 MÜNSTER'),
     ('E14 4HD LONDON', 'E14 4HD LONDON'),
     ('XXX', 'XXX'),
-
 ]
 
-
+# Predefined country choices
 COUNTRY = [
     ('--', '--'),
     ('DE', 'Germany'),
@@ -154,10 +150,9 @@ COUNTRY = [
     ('GB', 'Great Britain'),
     ('UK', 'United Kingdom'),
     ('FR', 'France'),
-
 ]
 
-
+# Predefined currency code choices
 CURRENCYCODE = [
     ('---', '---'),
     ('EUR', 'EUR'),
@@ -167,20 +162,21 @@ CURRENCYCODE = [
 ]
 
 
-
-
-
 class SepaCreditTransferRequest(models.Model):
-    idempotency_key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    """
+    Model representing a SEPA Credit Transfer request.
     
+    Contains all details needed for initiating a SEPA Credit Transfer payment,
+    including debtor and creditor information, payment details, and transaction status.
+    """
+    idempotency_key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     transaction_status = models.CharField(max_length=10, choices=STATUS, default="PDNG")
     purpose_code = models.CharField(max_length=4, blank=True, null=True, default="INST")
-    
     payment_id = models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
     auth_id = models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
+    requested_execution_date = models.DateField(auto_now_add=True, blank=True, null=True)
     
-    requested_execution_date = models.DateField(auto_now_add=True ,blank=True, null=True)
-    
+    # Debtor information
     debtor_name = models.CharField(max_length=140, choices=NAME, default="MIRYA TRADING CO LTD")
     debtor_adress_street_and_house_number = models.CharField(max_length=70, choices=STREETNUMBER, default="TAUNUSANLAGE 12")
     debtor_adress_zip_code_and_city = models.CharField(max_length=70, choices=ZIPCODECITY, default="60325 FRANKFURT")
@@ -189,25 +185,29 @@ class SepaCreditTransferRequest(models.Model):
     debtor_account_bic = models.CharField(max_length=11, choices=BIC, default="DEUTDEFFXXX")
     debtor_account_currency = models.CharField(max_length=3, choices=CURRENCYCODE, default="EUR")
     
+    # Payment identification
     payment_identification_end_to_end_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     payment_identification_instruction_id = models.CharField(max_length=35, blank=True, null=True)
-        
+    
+    # Payment amount
     instructed_amount = models.DecimalField(max_digits=15, decimal_places=2)
     instructed_currency = models.CharField(max_length=3, choices=CURRENCYCODE)
-        
+    
+    # Creditor information
     creditor_name = models.CharField(max_length=70, choices=NAME, default="")
     creditor_adress_street_and_house_number = models.CharField(max_length=70, choices=STREETNUMBER, default="")
     creditor_adress_zip_code_and_city = models.CharField(max_length=70, choices=ZIPCODECITY, default="")
-    creditor_adress_country = models.CharField(max_length=2, choices=COUNTRY, default="")    
+    creditor_adress_country = models.CharField(max_length=2, choices=COUNTRY, default="")
     creditor_account_iban = models.CharField(max_length=34, choices=IBAN, default="")
     creditor_account_bic = models.CharField(max_length=11, choices=BIC, default="")
     creditor_account_currency = models.CharField(max_length=3, choices=CURRENCYCODE, default="")
     creditor_agent_financial_institution_id = models.CharField(max_length=255, choices=BANK, default="")
     
+    # Remittance information
     remittance_information_structured = models.CharField(max_length=10, blank=True, null=True)
     remittance_information_unstructured = models.CharField(max_length=10, blank=True, null=True)
     
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.idempotency_key)
     
     class Meta:
@@ -216,7 +216,18 @@ class SepaCreditTransferRequest(models.Model):
 
 
 @receiver(pre_save, sender=SepaCreditTransferRequest)
-def set_default_fields(sender, instance, **kwargs):
+def set_default_fields(sender, instance: SepaCreditTransferRequest, **kwargs) -> None:
+    """
+    Signal handler to set default UUIDs for SepaCreditTransferRequest fields if not provided.
+    
+    Args:
+        sender: The model class
+        instance: The model instance being saved
+        **kwargs: Additional arguments
+        
+    Raises:
+        Exception: If there's an error setting default fields
+    """
     try:
         if not instance.payment_identification_end_to_end_id:
             instance.payment_identification_end_to_end_id = uuid.uuid4()
@@ -226,18 +237,21 @@ def set_default_fields(sender, instance, **kwargs):
             instance.payment_id = uuid.uuid4()
         if not instance.auth_id:
             instance.auth_id = uuid.uuid4()
-        logger.info(f"Campos predeterminados establecidos para la transferencia {instance.id}")
+        logger.info(f"Default fields set for transfer {instance.id}")
     except Exception as e:
-        logger.error(f"Error al establecer campos predeterminados: {str(e)}", exc_info=True)
+        logger.error(f"Error setting default fields: {str(e)}", exc_info=True)
         raise
 
 
 class SepaCreditTransferUpdateScaRequest(models.Model):
+    """
+    Model for updating the Strong Customer Authentication (SCA) status of a SEPA transfer.
+    """
     action = models.CharField(max_length=10, choices=Action.choices)
     auth_id = models.UUIDField()
     payment_id = models.ForeignKey(SepaCreditTransferRequest, on_delete=models.CASCADE)
     
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.payment_id)
     
     class Meta:
@@ -246,11 +260,16 @@ class SepaCreditTransferUpdateScaRequest(models.Model):
 
 
 class SepaCreditTransferResponse(models.Model):
+    """
+    Model representing a response to a SEPA Credit Transfer request.
+    
+    Contains status information and references to the original request.
+    """
     transaction_status = models.CharField(max_length=10, choices=TransactionStatus.choices)
     payment_id = models.ForeignKey(SepaCreditTransferRequest, on_delete=models.CASCADE)
     auth_id = models.UUIDField()
     
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.payment_id)
     
     class Meta:
@@ -259,38 +278,49 @@ class SepaCreditTransferResponse(models.Model):
 
 
 class SepaCreditTransferDetailsResponse(models.Model):
+    """
+    Model representing detailed information about a SEPA Credit Transfer.
+    
+    Used for retrieving comprehensive details about a transfer, including
+    both debtor and creditor information.
+    """
     transaction_status = models.CharField(max_length=10, choices=TransactionStatus.choices)
     payment_id = models.ForeignKey(SepaCreditTransferRequest, on_delete=models.CASCADE)
     purpose_code = models.CharField(max_length=4, blank=True, null=True)
     requested_execution_date = models.DateField(blank=True, null=True)
     
+    # Debtor information
     debtor_name = models.CharField(max_length=140)
     debtor_adress_street_and_house_number = models.CharField(max_length=70, blank=True, null=True)
     debtor_adress_zip_code_and_city = models.CharField(max_length=70, blank=True, null=True)
-    debtor_adress_country = models.CharField(max_length=2)    
+    debtor_adress_country = models.CharField(max_length=2)
     debtor_account_iban = models.CharField(max_length=34)
     debtor_account_bic = models.CharField(max_length=11)
     debtor_account_currency = models.CharField(max_length=3)
     
+    # Creditor information
     creditor_name = models.CharField(max_length=70)
     creditor_adress_street_and_house_number = models.CharField(max_length=70, blank=True, null=True)
     creditor_adress_zip_code_and_city = models.CharField(max_length=70, blank=True, null=True)
-    creditor_adress_country = models.CharField(max_length=2)    
+    creditor_adress_country = models.CharField(max_length=2)
     creditor_account_iban = models.CharField(max_length=34)
     creditor_account_bic = models.CharField(max_length=11)
-    creditor_account_currency = models.CharField(max_length=3)  # Corregido de "creditot_account_currency"
+    creditor_account_currency = models.CharField(max_length=3)  # Corrected from "creditot_account_currency"
     creditor_agent_financial_institution_id = models.CharField(max_length=255)
     
+    # Payment identification
     payment_identification_end_to_end_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     payment_identification_instruction_id = models.CharField(max_length=35, blank=True, null=True)
-        
+    
+    # Payment amount
     instructed_amount = models.DecimalField(max_digits=15, decimal_places=2)
     instructed_currency = models.CharField(max_length=3)
-        
+    
+    # Remittance information
     remittance_information_structured = models.CharField(max_length=140, blank=True, null=True)
     remittance_information_unstructured = models.CharField(max_length=140, blank=True, null=True)
     
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.payment_id)
     
     class Meta:
@@ -299,11 +329,14 @@ class SepaCreditTransferDetailsResponse(models.Model):
 
 
 class ErrorResponse(models.Model):
+    """
+    Model for storing error responses.
+    """
     code = models.IntegerField()
     message = models.CharField(max_length=170, blank=True, null=True)
     message_id = models.CharField(max_length=255, blank=True, null=True)
     
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.code} - {self.message_id} - {self.message}"
     
     class Meta:
@@ -311,10 +344,15 @@ class ErrorResponse(models.Model):
         verbose_name_plural = "Error Responses"
 
 
-
 class CategoryPurpose(models.Model):
+    """
+    Reference data model for category purpose codes.
+    """
     code = models.CharField(max_length=4, help_text="Category purpose code as per ISO 20022.")
     description = models.CharField(max_length=140, blank=True, null=True)
+    
+    def __str__(self) -> str:
+        return f"{self.code} - {self.description}"
     
     class Meta:
         verbose_name = "Category Purpose"
@@ -322,8 +360,14 @@ class CategoryPurpose(models.Model):
 
 
 class ServiceLevel(models.Model):
+    """
+    Reference data model for service level codes.
+    """
     code = models.CharField(max_length=4, help_text="Service level code as per ISO 20022.")
     description = models.CharField(max_length=140, blank=True, null=True)
+    
+    def __str__(self) -> str:
+        return f"{self.code} - {self.description}"
     
     class Meta:
         verbose_name = "Service Level"
@@ -331,8 +375,14 @@ class ServiceLevel(models.Model):
 
 
 class LocalInstrument(models.Model):
+    """
+    Reference data model for local instrument codes.
+    """
     code = models.CharField(max_length=4, help_text="Local instrument code as per ISO 20022.")
     description = models.CharField(max_length=140, blank=True, null=True)
+    
+    def __str__(self) -> str:
+        return f"{self.code} - {self.description}"
     
     class Meta:
         verbose_name = "Local Instrument"

@@ -1,281 +1,281 @@
-from rest_framework.exceptions import APIException
-import logging  # Importar el módulo de logging
-import xml.etree.ElementTree as ET
-from datetime import datetime
-import uuid
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+"""
+Deutsche Bank integration module for SEPA Credit Transfers.
+
+This module handles the communication with Deutsche Bank's API for processing
+SEPA Credit Transfers, including formatting requests and handling responses.
+"""
+import logging
 import os
-from django.conf import settings
+import uuid
+from datetime import datetime
+from typing import Dict, Any, Union, Optional
+
 import requests
-from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, generics
+from django.conf import settings
+from dotenv import load_dotenv
 
 from api.sct.models import SepaCreditTransferRequest
-from api.sct.serializers import SepaCreditTransferRequestSerializer
-from api.sct.generate_pdf import generar_pdf_transferencia
-from api.sct.generate_xml import generate_sepa_xml
 
-from dotenv import load_dotenv
+# Load environment variables
 load_dotenv()
 
-
-# Configurar el logger
+# Configure logger
 logger = logging.getLogger(__name__)
 
-# Constantes
+# Constants
 ERROR_KEY = "error"
 IDEMPOTENCY_HEADER = "Idempotency-Key"
 IDEMPOTENCY_HEADER_KEY = 'idempotency_key'
 
 
-def deutsche_bank_transfer(idempotency_key, transfers):
+def deutsche_bank_transfer(idempotency_key: str, transfers: Union[SepaCreditTransferRequest, uuid.UUID]) -> Dict[str, Any]:
     """
-    Procesa una transferencia bancaria utilizando los datos de SepaCreditTransferRequest.
+    Process a bank transfer using SepaCreditTransferRequest data with Deutsche Bank.
+    
+    This is the main function for Deutsche Bank transfers.
+    
+    Args:
+        idempotency_key: Unique key to ensure idempotency
+        transfers: Either a SepaCreditTransferRequest object or a UUID to look it up
+        
+    Returns:
+        dict: Response containing success information or error details
     """
     try:
-        # token_response = get_deutsche_bank_token()
-        # access_token = token_response.get("access_token")
-        
-        # Si transfers es un UUID, buscar el objeto correspondiente
+        # If transfers is a UUID, look up the corresponding object
         if isinstance(transfers, uuid.UUID):
             transfers = SepaCreditTransferRequest.objects.filter(id=transfers).first()
             if not transfers:
-                raise ValueError("No se encontró una transferencia con el ID proporcionado.")
+                raise ValueError("Transfer with the provided ID not found.")
         else:
-            # Validar que transfers no sea None
+            # Validate that transfers is not None
             if not transfers:
-                raise ValueError("El objeto transfers no es válido.")
-            
+                raise ValueError("The transfers object is not valid.")
+                
         access_token = os.getenv("ACCESS_TOKEN")
-        psu_id = os.getenv("PSU_ID")
-        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
-
         url = f"{settings.DEUTSCHE_BANK_API_URL}"
+        
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
             "idempotency-id": str(idempotency_key),
             "otp": "SEPA_TRANSFER_GRANT",
             'X-Request-ID': f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}",
-            'PSU-ID': f"{psu_id}",
-            'PSU-IP-Address': f"{psu_ip_address}"
+            'PSU-ID': '02569S',
+            'PSU-IP-Address': '193.150.166.1'
         }
-
-        # Construir los datos de la transferencia
+        
+        # Build transfer data
         payload = {
-            "paymentId":str(transfers.payment_id),
-            "purposeCode":transfers.purpose_code,
-            "requestedExecutionDate":transfers.requested_execution_date.strftime("%Y-%m-%d"),
+            "paymentId": str(transfers.payment_id),
+            "purposeCode": transfers.purpose_code,
+            "requestedExecutionDate": transfers.requested_execution_date.strftime("%Y-%m-%d"),
             "debtor": {
-                "name":transfers.debtor_name,
+                "name": transfers.debtor_name,
                 "address": {
-                    "streetAndHouseNumber":transfers.debtor_adress_street_and_house_number,
-                    "zipCodeAndCity":transfers.debtor_adress_zip_code_and_city,
-                    "country":transfers.debtor_adress_country
+                    "streetAndHouseNumber": transfers.debtor_adress_street_and_house_number,
+                    "zipCodeAndCity": transfers.debtor_adress_zip_code_and_city,
+                    "country": transfers.debtor_adress_country
                 }
             },
             "debtorAccount": {
-                "iban":transfers.debtor_account_iban,
-                "bic":transfers.debtor_account_bic,
-                "currency":transfers.debtor_account_currency
+                "iban": transfers.debtor_account_iban,
+                "bic": transfers.debtor_account_bic,
+                "currency": transfers.debtor_account_currency
             },
             "creditor": {
-                "name":transfers.creditor_name,
+                "name": transfers.creditor_name,
                 "address": {
-                    "streetAndHouseNumber":transfers.creditor_adress_street_and_house_number,
-                    "zipCodeAndCity":transfers.creditor_adress_zip_code_and_city,
-                    "country":transfers.creditor_adress_country
+                    "streetAndHouseNumber": transfers.creditor_adress_street_and_house_number,
+                    "zipCodeAndCity": transfers.creditor_adress_zip_code_and_city,
+                    "country": transfers.creditor_adress_country
                 }
             },
             "creditorAccount": {
-                "iban":transfers.creditor_account_iban,
-                "bic":transfers.creditor_account_bic,
-                "currency":transfers.creditor_account_currency
+                "iban": transfers.creditor_account_iban,
+                "bic": transfers.creditor_account_bic,
+                "currency": transfers.creditor_account_currency
             },
             "creditorAgent": {
-                "financialInstitutionId":transfers.creditor_agent_financial_institution_id
+                "financialInstitutionId": transfers.creditor_agent_financial_institution_id
             },
             "paymentIdentification": {
-                "endToEndId":str(transfers.payment_identification_end_to_end_id),
-                "instructionId":transfers.payment_identification_instruction_id
+                "endToEndId": str(transfers.payment_identification_end_to_end_id),
+                "instructionId": transfers.payment_identification_instruction_id
             },
             "instructedAmount": {
-                "amount":str(transfers.instructed_amount),
-                "currency":transfers.instructed_currency
+                "amount": str(transfers.instructed_amount),
+                "currency": transfers.instructed_currency
             },
-            "remittanceInformationStructured":transfers.remittance_information_structured,
-            "remittanceInformationUnstructured":transfers.remittance_information_unstructured
+            "remittanceInformationStructured": transfers.remittance_information_structured,
+            "remittanceInformationUnstructured": transfers.remittance_information_unstructured
         }
         
+        # Send request to bank
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
-
-        # Retornar las respuestas organizadas
+        
+        # Return organized responses
         return {
             "SepaCreditTransferRequest": payload,
             "bank_response": response.json()
         }
-
+        
     except requests.exceptions.HTTPError as e:
-        logger.error(f"HTTPError en Deutsche Bank: {e}, Response: {response.text}")
+        logger.error(f"HTTPError in Deutsche Bank: {e}, Response: {response.text}")
         return {"error": f"HTTPError: {response.text}"}
-
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error en conexión con Deutsche Bank: {e}")
+        logger.error(f"Connection error with Deutsche Bank: {e}")
         return {"error": f"RequestException: {str(e)}"}
-
     except Exception as e:
-        logger.error(f"Error inesperado en Deutsche Bank: {str(e)}", exc_info=True)
-        return {"error": f"Error inesperado: {str(e)}"}
+        logger.error(f"Unexpected error in Deutsche Bank: {str(e)}", exc_info=True)
+        return {"error": f"Unexpected error: {str(e)}"}
 
 
-
-def deutsche_bank_transfer0(idempotency_key, transfers):
+def deutsche_bank_transfer0(idempotency_key: str, transfers: Union[SepaCreditTransferRequest, uuid.UUID]) -> Dict[str, Any]:
     """
-    Procesa una transferencia bancaria utilizando los datos de SepaCreditTransferRequest.
+    Process a bank transfer using SepaCreditTransferRequest data with Deutsche Bank.
+    
+    This version returns all related response objects for testing.
+    
+    Args:
+        idempotency_key: Unique key to ensure idempotency
+        transfers: Either a SepaCreditTransferRequest object or a UUID to look it up
+        
+    Returns:
+        dict: Response containing all related objects or error details
     """
     try:
-        # token_response = get_deutsche_bank_token()
-        # access_token = token_response.get("access_token")
-        
-        # Si transfers es un UUID, buscar el objeto correspondiente
+        # If transfers is a UUID, look up the corresponding object
         if isinstance(transfers, uuid.UUID):
             transfers = SepaCreditTransferRequest.objects.filter(id=transfers).first()
             if not transfers:
-                raise ValueError("No se encontró una transferencia con el ID proporcionado.")
+                raise ValueError("Transfer with the provided ID not found.")
         else:
-            # Validar que transfers no sea None
+            # Validate that transfers is not None
             if not transfers:
-                raise ValueError("El objeto transfers no es válido.")
-            
+                raise ValueError("The transfers object is not valid.")
+                
         access_token = os.getenv("ACCESS_TOKEN")
-        psu_id = os.getenv("PSU_ID")
-        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
-
         url = f"{settings.DEUTSCHE_BANK_API_URL}"
+        
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
             "idempotency-id": str(idempotency_key),
             "otp": "SEPA_TRANSFER_GRANT",
             'X-Request-ID': f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}",
-            'PSU-ID': f"{psu_id}",
-            'PSU-IP-Address': f"{psu_ip_address}"
+            'PSU-ID': '02569S',
+            'PSU-IP-Address': '193.150.166.1'
         }
-
-
-        # Construir los datos de la transferencia
+        
+        # Build transfer data
         payload = {
-            "paymentId":str(transfers.payment_id),
-            "purposeCode":transfers.purpose_code,
-            "requestedExecutionDate":transfers.requested_execution_date.strftime("%Y-%m-%d"),
+            "paymentId": str(transfers.payment_id),
+            "purposeCode": transfers.purpose_code,
+            "requestedExecutionDate": transfers.requested_execution_date.strftime("%Y-%m-%d"),
             "debtor": {
-                "name":transfers.debtor_name,
+                "name": transfers.debtor_name,
                 "address": {
-                    "streetAndHouseNumber":transfers.debtor_adress_street_and_house_number,
-                    "zipCodeAndCity":transfers.debtor_adress_zip_code_and_city,
-                    "country":transfers.debtor_adress_country
+                    "streetAndHouseNumber": transfers.debtor_adress_street_and_house_number,
+                    "zipCodeAndCity": transfers.debtor_adress_zip_code_and_city,
+                    "country": transfers.debtor_adress_country
                 }
             },
             "debtorAccount": {
-                "iban":transfers.debtor_account_iban,
-                "bic":transfers.debtor_account_bic,
-                "currency":transfers.debtor_account_currency
+                "iban": transfers.debtor_account_iban,
+                "bic": transfers.debtor_account_bic,
+                "currency": transfers.debtor_account_currency
             },
             "creditor": {
-                "name":transfers.creditor_name,
+                "name": transfers.creditor_name,
                 "address": {
-                    "streetAndHouseNumber":transfers.creditor_adress_street_and_house_number,
-                    "zipCodeAndCity":transfers.creditor_adress_zip_code_and_city,
-                    "country":transfers.creditor_adress_country
+                    "streetAndHouseNumber": transfers.creditor_adress_street_and_house_number,
+                    "zipCodeAndCity": transfers.creditor_adress_zip_code_and_city,
+                    "country": transfers.creditor_adress_country
                 }
             },
             "creditorAccount": {
-                "iban":transfers.creditor_account_iban,
-                "bic":transfers.creditor_account_bic,
-                "currency":transfers.creditor_account_currency
+                "iban": transfers.creditor_account_iban,
+                "bic": transfers.creditor_account_bic,
+                "currency": transfers.creditor_account_currency
             },
             "creditorAgent": {
-                "financialInstitutionId":transfers.creditor_agent_financial_institution_id
+                "financialInstitutionId": transfers.creditor_agent_financial_institution_id
             },
             "paymentIdentification": {
-                "endToEndId":str(transfers.payment_identification_end_to_end_id),
-                "instructionId":transfers.payment_identification_instruction_id
+                "endToEndId": str(transfers.payment_identification_end_to_end_id),
+                "instructionId": transfers.payment_identification_instruction_id
             },
             "instructedAmount": {
-                "amount":str(transfers.instructed_amount),
-                "currency":transfers.instructed_currency
+                "amount": str(transfers.instructed_amount),
+                "currency": transfers.instructed_currency
             },
-            "remittanceInformationStructured":transfers.remittance_information_structured,
-            "remittanceInformationUnstructured":transfers.remittance_information_unstructured
+            "remittanceInformationStructured": transfers.remittance_information_structured,
+            "remittanceInformationUnstructured": transfers.remittance_information_unstructured
         }
-
+        
         SepaCreditTransferUpdateScaRequest = {
             "action": "CREATE",
-            "authId":transfers.auth_id,
+            "authId": transfers.auth_id,
         }
-
+        
         SepaCreditTransferResponse = {
-            "transactionStatus":transfers.transaction_status,
-            "paymentId":transfers.payment_id,
-            "authId":transfers.auth_id
+            "transactionStatus": transfers.transaction_status,
+            "paymentId": transfers.payment_id,
+            "authId": transfers.auth_id
         }
-
+        
         SepaCreditTransferDetailsResponse = {
-            "transactionStatus":transfers.transaction_status,
-            "paymentId":transfers.payment_id,
-            "requestedExecutionDate":transfers.requested_execution_date.strftime("%Y-%m-%d"),
+            "transactionStatus": transfers.transaction_status,
+            "paymentId": transfers.payment_id,
+            "requestedExecutionDate": transfers.requested_execution_date.strftime("%Y-%m-%d"),
             "debtor": {
-                "name":transfers.debtor_name,
+                "name": transfers.debtor_name,
                 "address": {
-                    "streetAndHouseNumber":transfers.debtor_adress_street_and_house_number,
-                    "zipCodeAndCity":transfers.debtor_adress_zip_code_and_city,
-                    "country":transfers.debtor_adress_country
+                    "streetAndHouseNumber": transfers.debtor_adress_street_and_house_number,
+                    "zipCodeAndCity": transfers.debtor_adress_zip_code_and_city,
+                    "country": transfers.debtor_adress_country
                 }
             },
             "debtorAccount": {
-                "iban":transfers.debtor_account_iban,
-                "bic":transfers.debtor_account_bic,
-                "currency":transfers.debtor_account_currency
+                "iban": transfers.debtor_account_iban,
+                "bic": transfers.debtor_account_bic,
+                "currency": transfers.debtor_account_currency
             },
             "creditor": {
-                "name":transfers.creditor_name,
+                "name": transfers.creditor_name,
                 "address": {
-                    "streetAndHouseNumber":transfers.creditor_adress_street_and_house_number,
-                    "zipCodeAndCity":transfers.creditor_adress_zip_code_and_city,
-                    "country":transfers.creditor_adress_country
+                    "streetAndHouseNumber": transfers.creditor_adress_street_and_house_number,
+                    "zipCodeAndCity": transfers.creditor_adress_zip_code_and_city,
+                    "country": transfers.creditor_adress_country
                 }
             },
             "creditorAccount": {
-                "iban":transfers.creditor_account_iban,
-                "bic":transfers.creditor_account_bic,
-                "currency":transfers.creditor_account_currency
+                "iban": transfers.creditor_account_iban,
+                "bic": transfers.creditor_account_bic,
+                "currency": transfers.creditor_account_currency
             },
             "creditorAgent": {
-                "financialInstitutionId":transfers.creditor_agent_financial_institution_id
+                "financialInstitutionId": transfers.creditor_agent_financial_institution_id
             },
             "paymentIdentification": {
-                "endToEndId":str(transfers.payment_identification_end_to_end_id),
-                "instructionId":transfers.payment_identification_instruction_id
+                "endToEndId": str(transfers.payment_identification_end_to_end_id),
+                "instructionId": transfers.payment_identification_instruction_id
             },
             "instructedAmount": {
-                "amount":str(transfers.instructed_amount),
-                "currency":transfers.instructed_currency
+                "amount": str(transfers.instructed_amount),
+                "currency": transfers.instructed_currency
             },
-            "remittanceInformationStructured":transfers.remittance_information_structured,
-            "remittanceInformationUnstructured":transfers.remittance_information_unstructured
+            "remittanceInformationStructured": transfers.remittance_information_structured,
+            "remittanceInformationUnstructured": transfers.remittance_information_unstructured
         }
-
-        # Enviar la solicitud al banco
+        
+        # Send request to bank
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
-
-        # Retornar las respuestas organizadas
+        
+        # Return organized responses
         return {
             "SepaCreditTransferRequest": payload,
             "SepaCreditTransferUpdateScaRequest": SepaCreditTransferUpdateScaRequest,
@@ -283,138 +283,43 @@ def deutsche_bank_transfer0(idempotency_key, transfers):
             "SepaCreditTransferDetailsResponse": SepaCreditTransferDetailsResponse,
             "bank_response": response.json()
         }
-
+        
     except requests.exceptions.HTTPError as e:
-        logger.error(f"HTTPError en Deutsche Bank: {e}, Response: {response.text}")
+        logger.error(f"HTTPError in Deutsche Bank: {e}, Response: {response.text}")
         return {"error": f"HTTPError: {response.text}"}
-
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error en conexión con Deutsche Bank: {e}")
+        logger.error(f"Connection error with Deutsche Bank: {e}")
         return {"error": f"RequestException: {str(e)}"}
-
     except Exception as e:
-        logger.error(f"Error inesperado en Deutsche Bank: {str(e)}", exc_info=True)
-        return {"error": f"Error inesperado: {str(e)}"}
+        logger.error(f"Unexpected error in Deutsche Bank: {str(e)}", exc_info=True)
+        return {"error": f"Unexpected error: {str(e)}"}
 
 
-def deutsche_bank_transfer1(idempotency_key, transfers):
+def deutsche_bank_transfer1(idempotency_key: str, transfers: SepaCreditTransferRequest) -> Dict[str, Any]:
     """
-    Procesa una transferencia bancaria utilizando los datos de SepaCreditTransferRequest.
+    Process a bank transfer using SepaCreditTransferRequest data with Deutsche Bank.
+    
+    This version uses a simplified request format.
+    
+    Args:
+        idempotency_key: Unique key to ensure idempotency
+        transfers: SepaCreditTransferRequest object with transfer details
+        
+    Returns:
+        dict: Response containing success information or error details
     """
     try:
         access_token = os.getenv("ACCESS_TOKEN")
-        psu_id = os.getenv("PSU_ID")
-        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
-
         url = f"{settings.DEUTSCHE_BANK_API_URL}"
+        
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
             "idempotency-id": str(idempotency_key),
-            "otp": "SEPA_TRANSFER_GRANT",
-            'X-Request-ID': f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}",
-            'PSU-ID': f"{psu_id}",
-            'PSU-IP-Address': f"{psu_ip_address}"
+            "otp": "SEPA_TRANSFER_GRANT"
         }
-
-
-        # Construir los datos de la transferencia
-        SepaCreditTransferRequest = {
-            "purposeCode":transfers.purpose_code,
-            "requestedExecutionDate":transfers.requested_execution_date.strftime("%Y-%m-%d"),
-            "debtor": {
-                "name":transfers.debtor_name,
-                "address": {
-                    "streetAndHouseNumber":transfers.debtor_adress_street_and_house_number,
-                    "zipCodeAndCity":transfers.debtor_adress_zip_code_and_city,
-                    "country":transfers.debtor_adress_country
-                }
-            },
-            "debtorAccount": {
-                "iban":transfers.debtor_account_iban,
-                "bic":transfers.debtor_account_bic,
-                "currency":transfers.debtor_account_currency
-            },
-            "creditor": {
-                "name":transfers.creditor_name,
-                "address": {
-                    "streetAndHouseNumber":transfers.creditor_adress_street_and_house_number,
-                    "zipCodeAndCity":transfers.creditor_adress_zip_code_and_city,
-                    "country":transfers.creditor_adress_country
-                }
-            },
-            "creditorAccount": {
-                "iban":transfers.creditor_account_iban,
-                "bic":transfers.creditor_account_bic,
-                "currency":transfers.creditor_account_currency
-            },
-            "creditorAgent": {
-                "financialInstitutionId":transfers.creditor_agent_financial_institution_id
-            },
-            "paymentIdentification": {
-                "endToEndId":str(transfers.payment_identification_end_to_end_id),
-                "instructionId":transfers.payment_identification_instruction_id
-            },
-            "instructedAmount": {
-                "amount":str(transfers.instructed_amount),
-                "currency":transfers.instructed_currency
-            },
-            "remittanceInformationStructured":transfers.remittance_information_structured,
-            "remittanceInformationUnstructured":transfers.remittance_information_unstructured
-        }
-
-        # Enviar la solicitud al banco
-        response = requests.post(url, json=SepaCreditTransferRequest, headers=headers)
-        response.raise_for_status()
-
-        # Retornar las respuestas organizadas
-        return {
-            "SepaCreditTransferRequest": SepaCreditTransferRequest,
-            "bank_response": response.json()
-        }
-
-    except requests.exceptions.HTTPError as e:
-        logger.error(f"HTTPError en Deutsche Bank: {e}, Response: {response.text}")
-        return {"error": f"HTTPError: {response.text}"}
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error en conexión con Deutsche Bank: {e}")
-        return {"error": f"RequestException: {str(e)}"}
-
-    except Exception as e:
-        logger.error(f"Error inesperado en Deutsche Bank: {str(e)}", exc_info=True)
-        return {"error": f"Error inesperado: {str(e)}"}
-
-
-def deutsche_bank_transfer11(idempotency_key, transfers):
-    """
-    Procesa una transferencia bancaria utilizando los datos de SepaCreditTransferRequest.
-    """
-    try:
-        # Si transfers es un UUID, buscar el objeto correspondiente
-        if isinstance(transfers, uuid.UUID):
-            transfers = SepaCreditTransferRequest.objects.filter(id=transfers).first()
-            if not transfers:
-                raise ValueError("No se encontró una transferencia con el ID proporcionado.")
-            
-            
-        access_token = os.getenv("ACCESS_TOKEN")
-        psu_id = os.getenv("PSU_ID")
-        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
-
-        url = f"{settings.DEUTSCHE_BANK_API_URL}"
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-            "idempotency-id": str(idempotency_key),
-            "otp": "SEPA_TRANSFER_GRANT",
-            'X-Request-ID': f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}",
-            'PSU-ID': f"{psu_id}",
-            'PSU-IP-Address': f"{psu_ip_address}"
-        }
-
-
-        # Construir los datos de la transferencia
+        
+        # Build transfer data
         SepaCreditTransferRequest = {
             "purposeCode": transfers.purpose_code,
             "requestedExecutionDate": transfers.requested_execution_date.strftime("%Y-%m-%d"),
@@ -458,26 +363,121 @@ def deutsche_bank_transfer11(idempotency_key, transfers):
             "remittanceInformationStructured": transfers.remittance_information_structured,
             "remittanceInformationUnstructured": transfers.remittance_information_unstructured
         }
-
-        # Enviar la solicitud al banco
+        
+        # Send request to bank
         response = requests.post(url, json=SepaCreditTransferRequest, headers=headers)
         response.raise_for_status()
-
-        # Retornar las respuestas organizadas
+        
+        # Return organized responses
         return {
             "SepaCreditTransferRequest": SepaCreditTransferRequest,
             "bank_response": response.json()
         }
-
+        
     except requests.exceptions.HTTPError as e:
-        logger.error(f"HTTPError en Deutsche Bank: {e}, Response: {response.text}")
+        logger.error(f"HTTPError in Deutsche Bank: {e}, Response: {response.text}")
         return {"error": f"HTTPError: {response.text}"}
-
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error en conexión con Deutsche Bank: {e}")
+        logger.error(f"Connection error with Deutsche Bank: {e}")
         return {"error": f"RequestException: {str(e)}"}
-
     except Exception as e:
-        logger.error(f"Error inesperado en Deutsche Bank: {str(e)}", exc_info=True)
-        return {"error": f"Error inesperado: {str(e)}"}
+        logger.error(f"Unexpected error in Deutsche Bank: {str(e)}", exc_info=True)
+        return {"error": f"Unexpected error: {str(e)}"}
+
+
+def deutsche_bank_transfer11(idempotency_key: str, transfers: Union[SepaCreditTransferRequest, uuid.UUID]) -> Dict[str, Any]:
+    """
+    Process a bank transfer using SepaCreditTransferRequest data with Deutsche Bank.
     
+    This version includes additional headers for authentication.
+    
+    Args:
+        idempotency_key: Unique key to ensure idempotency
+        transfers: Either a SepaCreditTransferRequest object or a UUID to look it up
+        
+    Returns:
+        dict: Response containing success information or error details
+    """
+    try:
+        # If transfers is a UUID, look up the corresponding object
+        if isinstance(transfers, uuid.UUID):
+            transfers = SepaCreditTransferRequest.objects.filter(id=transfers).first()
+            if not transfers:
+                raise ValueError("Transfer with the provided ID not found.")
+                
+        access_token = os.getenv("ACCESS_TOKEN")
+        url = f"{settings.DEUTSCHE_BANK_API_URL}"
+        
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "idempotency-id": str(idempotency_key),
+            'X-Request-ID': f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}",
+            'PSU-ID': '02569S',
+            'PSU-IP-Address': '193.150.166.1'
+        }
+        
+        # Build transfer data
+        SepaCreditTransferRequest = {
+            "purposeCode": transfers.purpose_code,
+            "requestedExecutionDate": transfers.requested_execution_date.strftime("%Y-%m-%d"),
+            "debtor": {
+                "name": transfers.debtor_name,
+                "address": {
+                    "streetAndHouseNumber": transfers.debtor_adress_street_and_house_number,
+                    "zipCodeAndCity": transfers.debtor_adress_zip_code_and_city,
+                    "country": transfers.debtor_adress_country
+                }
+            },
+            "debtorAccount": {
+                "iban": transfers.debtor_account_iban,
+                "bic": transfers.debtor_account_bic,
+                "currency": transfers.debtor_account_currency
+            },
+            "creditor": {
+                "name": transfers.creditor_name,
+                "address": {
+                    "streetAndHouseNumber": transfers.creditor_adress_street_and_house_number,
+                    "zipCodeAndCity": transfers.creditor_adress_zip_code_and_city,
+                    "country": transfers.creditor_adress_country
+                }
+            },
+            "creditorAccount": {
+                "iban": transfers.creditor_account_iban,
+                "bic": transfers.creditor_account_bic,
+                "currency": transfers.creditor_account_currency
+            },
+            "creditorAgent": {
+                "financialInstitutionId": transfers.creditor_agent_financial_institution_id
+            },
+            "paymentIdentification": {
+                "endToEndId": str(transfers.payment_identification_end_to_end_id),
+                "instructionId": transfers.payment_identification_instruction_id
+            },
+            "instructedAmount": {
+                "amount": str(transfers.instructed_amount),
+                "currency": transfers.instructed_currency
+            },
+            "remittanceInformationStructured": transfers.remittance_information_structured,
+            "remittanceInformationUnstructured": transfers.remittance_information_unstructured
+        }
+        
+        # Send request to bank
+        response = requests.post(url, json=SepaCreditTransferRequest, headers=headers)
+        response.raise_for_status()
+        
+        # Return organized responses
+        return {
+            "SepaCreditTransferRequest": SepaCreditTransferRequest,
+            "bank_response": response.json()
+        }
+        
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTPError in Deutsche Bank: {e}, Response: {response.text}")
+        return {"error": f"HTTPError: {response.text}"}
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Connection error with Deutsche Bank: {e}")
+        return {"error": f"RequestException: {str(e)}"}
+    except Exception as e:
+        logger.error(f"Unexpected error in Deutsche Bank: {str(e)}", exc_info=True)
+        return {"error": f"Unexpected error: {str(e)}"}

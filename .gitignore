@@ -4,14 +4,10 @@ dbapi/
 Docker/
 docs/
 temp/
-staticfiles/
+
 test/
 
-# Archivos de configuración sensibles
-.env
-my.cnf
-openapi.yaml
-petstore.yaml
+
 
 # Archivos de Python
 *.pyc
@@ -24,7 +20,7 @@ __pycache__/
 # Bases de datos y logs
 *.db
 *.sqlite3
-*.log
+
 
 # Archivos de traducción
 *.pot
@@ -66,9 +62,7 @@ __pycache__/
 *.tar.lzo
 *.tar.lzop
 
-# Archivos de Node.js
-package.json
-package-lock.json
+
 
 # Archivos de pruebas y cobertura
 pytest_cache/

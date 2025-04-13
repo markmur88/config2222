@@ -1,16 +1,31 @@
+"""
+PDF generation module for SEPA Credit Transfer receipts.
+Provides functionality to create well-formatted PDF documents with transaction details.
+"""
 import logging
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import Table, TableStyle
-from reportlab.lib import colors
-from reportlab.pdfgen import canvas
-from datetime import datetime
 import os
+from datetime import datetime
+from typing import Any
+
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.platypus import Table, TableStyle
+
+from api.sct.models import SepaCreditTransferRequest  # Add this import for type hints
+
 logger = logging.getLogger("bank_services")
 
 
-def generar_pdf_transferencia(transfers):
+def generar_pdf_transferencia(transfers: SepaCreditTransferRequest) -> str:
     """
     Generates a well-organized PDF with SEPA transfer details.
+    
+    Args:
+        transfers: The SepaCreditTransferRequest object containing transfer details
+        
+    Returns:
+        str: The path to the generated PDF file
     """
     # PDF file name
     creditor_name = transfers.creditor_name.replace(" ", "_")
@@ -18,21 +33,21 @@ def generar_pdf_transferencia(transfers):
     payment_reference = transfers.payment_id
     pdf_filename = f"{creditor_name}_{timestamp}_{payment_reference}.pdf"
     pdf_path = os.path.join("media", pdf_filename)
-
+    
     # Create the media folder if it doesn't exist
     os.makedirs("media", exist_ok=True)
-
+    
     # Create the PDF
     c = canvas.Canvas(pdf_path, pagesize=letter)
-
+    
     # Title
     c.setFont("Helvetica-Bold", 14)
     c.drawString(150, 750, "SEPA Transfer Receipt")  # Adjust title position
     c.setFont("Helvetica", 10)
-
+    
     # Adjust initial positions
     current_y = 650  # Initial position for tables
-
+    
     # Header
     header_data = [
         ["Creation Date", datetime.now().strftime('%d/%m/%Y %H:%M:%S')],
@@ -52,7 +67,7 @@ def generar_pdf_transferencia(transfers):
     header_table.wrapOn(c, 50, current_y)
     header_table.drawOn(c, 50, current_y)
     current_y -= 120  # Adjust space for the next table
-
+    
     # Debtor Information
     debtor_data = [
         ["Debtor Information", ""],
@@ -60,7 +75,7 @@ def generar_pdf_transferencia(transfers):
         ["IBAN", transfers.debtor_account_iban],
         ["BIC", transfers.debtor_account_bic],
         ["Address", f"{transfers.debtor_adress_street_and_house_number}, "
-                    f"{transfers.debtor_adress_zip_code_and_city}, {transfers.debtor_adress_country}"]
+                   f"{transfers.debtor_adress_zip_code_and_city}, {transfers.debtor_adress_country}"]
     ]
     debtor_table = Table(debtor_data, colWidths=[150, 300])
     debtor_table.setStyle(TableStyle([
@@ -75,7 +90,7 @@ def generar_pdf_transferencia(transfers):
     debtor_table.wrapOn(c, 50, current_y)
     debtor_table.drawOn(c, 50, current_y)
     current_y -= 120  # Adjust space for the next table
-
+    
     # Creditor Information
     creditor_data = [
         ["Creditor Information", ""],
@@ -83,7 +98,7 @@ def generar_pdf_transferencia(transfers):
         ["IBAN", transfers.creditor_account_iban],
         ["BIC", transfers.creditor_account_bic],
         ["Address", f"{transfers.creditor_adress_street_and_house_number}, "
-                    f"{transfers.creditor_adress_zip_code_and_city}, {transfers.creditor_adress_country}"]
+                   f"{transfers.creditor_adress_zip_code_and_city}, {transfers.creditor_adress_country}"]
     ]
     creditor_table = Table(creditor_data, colWidths=[150, 300])
     creditor_table.setStyle(TableStyle([
@@ -98,7 +113,7 @@ def generar_pdf_transferencia(transfers):
     creditor_table.wrapOn(c, 50, current_y)
     creditor_table.drawOn(c, 50, current_y)
     current_y -= 200  # Adjust space for the next table
-
+    
     # Transfer Details
     transfer_data = [
         ["Transfer Details", ""],
@@ -124,12 +139,13 @@ def generar_pdf_transferencia(transfers):
     transfer_table.wrapOn(c, 50, current_y)
     transfer_table.drawOn(c, 50, current_y)
     current_y -= 200  # Adjust space for the footer
-
+    
     # Footer
     c.setFont("Helvetica-Oblique", 8)
     c.drawString(50, 50, "This document is an automatically generated receipt and does not require a signature.")
-
+    
     # Save the PDF
     c.save()
-
+    
+    logger.info(f"Generated PDF receipt at {pdf_path}")
     return pdf_path
