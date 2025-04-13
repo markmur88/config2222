@@ -39,17 +39,17 @@ IDEMPOTENCY_HEADER_KEY = 'idempotency_key'
 
 
 
-def process_bank_transfer1(transfer_data, idempotency_key):
+def process_bank_transfer1(transfers, idempotency_key):
     """
     Procesa una transferencia bancaria exclusivamente para Deutsche Bank.
     """
     try:
-        response = deutsche_bank_transfer(idempotency_key, transfer_data)
+        response = deutsche_bank_transfer(idempotency_key, transfers)
         if "error" not in response:
             return {
                 "transaction_status": "PDNG",
-                "payment_id":str(transfer_data.payment_id),
-                "auth_id":str(transfer_data.auth_id),
+                "payment_id":str(transfers.payment_id),
+                "auth_id":str(transfers.auth_id),
                 "bank_response": response,
             }
         return response
@@ -58,7 +58,7 @@ def process_bank_transfer1(transfer_data, idempotency_key):
         raise APIException("Error procesando la transferencia bancaria.")
 
 
-def process_bank_transfer(idempotency_key, transfer):
+def process_bank_transfer(idempotency_key, transfers):
     try:
         # # Ruta del archivo XML
         # xml_path = os.path.join(settings.MEDIA_ROOT, f"sepa_{transfer.idempotency_key}.xml")
@@ -66,9 +66,9 @@ def process_bank_transfer(idempotency_key, transfer):
         #     raise FileNotFoundError(f"El archivo XML {xml_path} no existe.")
 
         # Generar el archivo XML si no existe
-        xml_path = os.path.join(settings.MEDIA_ROOT, f"sepa_{transfer.idempotency_key}.xml")
+        xml_path = os.path.join(settings.MEDIA_ROOT, f"sepa_{transfers.idempotency_key}.xml")
         if not os.path.exists(xml_path):
-            sepa_xml = generate_sepa_xml(transfer)
+            sepa_xml = generate_sepa_xml(transfers)
             with open(xml_path, "w") as xml_file:
                 xml_file.write(sepa_xml)
 
@@ -96,15 +96,18 @@ def process_bank_transfer(idempotency_key, transfer):
         return {"error": str(e)}
 
 
-def process_bank_transfer11(idempotency_key, transfer):
+def process_bank_transfer11(idempotency_key, transfers):
+    """
+    Procesa una transferencia bancaria utilizando un archivo XML generado para SEPA.
+    """
     try:
         # Ruta del archivo XML
-        xml_path = os.path.join(settings.MEDIA_ROOT, f"sepa_{transfer.idempotency_key}.xml")
+        xml_path = os.path.join(settings.MEDIA_ROOT, f"sepa_{transfers.idempotency_key}.xml")
 
         # Generar el archivo XML si no existe
         if not os.path.exists(xml_path):
             try:
-                sepa_xml = generate_sepa_xml(transfer)
+                sepa_xml = generate_sepa_xml(transfers)
                 with open(xml_path, "w", encoding="utf-8") as xml_file:
                     os.chmod(xml_path, 0o600)  # Permisos restrictivos
                     xml_file.write(sepa_xml)
@@ -147,5 +150,4 @@ def process_bank_transfer11(idempotency_key, transfer):
     except Exception as e:
         logger.error(f"Error inesperado en process_bank_transfer para idempotency_key {idempotency_key}: {str(e)}", exc_info=True)
         return {"error": str(e)}
-        
       

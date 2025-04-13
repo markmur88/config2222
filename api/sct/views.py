@@ -5,6 +5,7 @@ from api.sct.models import (
     SepaCreditTransferRequest, SepaCreditTransferResponse, 
     SepaCreditTransferDetailsResponse, SepaCreditTransferUpdateScaRequest
 )
+from api.sct.process_transfer import ProcessTransferView11, ProcessTransferView12
 from api.sct.serializers import (
     SepaCreditTransferRequestSerializer, SepaCreditTransferResponseSerializer, 
     SepaCreditTransferDetailsResponseSerializer, SepaCreditTransferUpdateScaRequestSerializer
@@ -13,7 +14,6 @@ from django.conf import settings
 import os
 import logging
 from rest_framework.exceptions import APIException
-from api.sct.services import deutsche_bank_transfer, process_bank_transfer
 from api.sct.generate_xml import generate_sepa_xml
 from api.sct.generate_pdf import generar_pdf_transferencia
 from django.views.generic import ListView, CreateView
@@ -193,17 +193,13 @@ class SepaCreditTransferDownloadPdfView(APIView):
             return Response({"error": "Transfer not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class SCTList5View(CreateView, ListView):
+class SCTList55View(CreateView, ListView):
     model = SepaCreditTransferRequest
     form_class = SepaCreditTransferRequestForm
     template_name = "api/SCT/sct_list5.html"
     success_url = reverse_lazy('sct_list5')
 
     def get_initial(self):
-        """
-        Genera valores iniciales para los campos idempotency_key, payment_id,
-        payment_identification_end_to_end_id y requested_execution_date.
-        """
         initial = super().get_initial()
         initial['idempotency_key'] = uuid4()
         initial['payment_id'] = uuid4()
@@ -222,12 +218,54 @@ class SCTList5View(CreateView, ListView):
         transfer = form.save()
 
         # # Procesar la transferencia
-        process_view = ProcessTransferView4()
+        process_view = ProcessTransferView11()
         process_view.post(self.request, idempotency_key=transfer.idempotency_key)
 
         return super().form_valid(form)
 
 
+class SCTList5View(CreateView, ListView):
+    model = SepaCreditTransferRequest
+    form_class = SepaCreditTransferRequestForm
+    template_name = "api/SCT/sct_list5.html"
+    success_url = reverse_lazy('sct_list5')
+
+    def get_queryset(self):
+        # Define el queryset que se usará como object_list
+        return SepaCreditTransferRequest.objects.all()
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['idempotency_key'] = uuid4()
+        initial['payment_id'] = uuid4()
+        initial['auth_id'] = uuid4()
+        initial['payment_identification_end_to_end_id'] = uuid4()
+        initial['requested_execution_date'] = date.today()
+        return initial
+
+    def get_context_data(self, **kwargs):
+        # Asegurar que self.object_list esté definido
+        self.object_list = self.get_queryset()
+        context = super().get_context_data(**kwargs)
+        context['transfers'] = self.object_list  # Usar self.object_list
+        return context
+
+    def form_valid(self, form):
+        # Guardar la transferencia
+        transfer = form.save()
+
+        # Procesar la transferencia
+        process_view = ProcessTransferView12()
+        response = process_view.post(self.request, idempotency_key=transfer.idempotency_key)
+
+        # Verificar si hubo un error
+        if response.status_code != 200:
+            form.add_error(None, "Error al procesar la transferencia.")
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
+    
+    
 class DownloadXmlView(APIView):
     """
     View para descargar el archivo XML de una transferencia SEPA.
@@ -284,7 +322,7 @@ class DownloadPdfView(APIView):
             return Response({"error": "Error inesperado al procesar la solicitud."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class CancelTransferView(APIView):
+class CancelTransferView1(APIView):
     """
     View para cancelar una transferencia SEPA.
     """
@@ -297,168 +335,20 @@ class CancelTransferView(APIView):
             return Response({"error": "Transferencia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-
-
-class ProcessTransferView1(APIView):
-    def get(self, request, idempotency_key):
+class CancelTransferView(APIView):
+    """
+    View para cancelar una transferencia SEPA.
+    """
+    def post(self, request, id):
         try:
-            transfer = SepaCreditTransferRequest.objects.get(idempotency_key=idempotency_key)
-            serializer = SepaCreditTransferRequestSerializer(transfer)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            transfer = SepaCreditTransferRequest.objects.get(id=id)
+            transfer.delete()
+            return Response({"message": "Transferencia cancelada exitosamente."}, status=status.HTTP_200_OK)
         except SepaCreditTransferRequest.DoesNotExist:
+            logger.error(f"Transferencia con ID {id} no encontrada.", exc_info=True)  # Agregado
             return Response({"error": "Transferencia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            logger.error(f"Error al obtener los detalles de la transferencia: {str(e)}", exc_info=True)
-            return Response({"error": "Error inesperado al obtener los detalles de la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    def post(self, request, idempotency_key):
-        try:
-            transfer = SepaCreditTransferRequest.objects.get(id=idempotency_key)
-            idempotency_key = transfer.idempotency_key
-            bank_response = process_bank_transfer(idempotency_key, transfer)
-            if "error" in bank_response:
-                return Response({"error": bank_response["error"]}, status=status.HTTP_400_BAD_REQUEST)
-            transfer.transaction_status = "ACCP"
-            transfer.save()
-            return Response({"message": "Transferencia procesada exitosamente.", "bank_response": bank_response}, status=status.HTTP_200_OK)
-        except SepaCreditTransferRequest.DoesNotExist:
-            return Response({"error": "Transferencia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            logger.error(f"Error procesando transferencia: {str(e)}", exc_info=True)
-            return Response({"error": "Error inesperado al procesar la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-class ProcessTransferView2(APIView):
-    def get(self, request, idempotency_key):
-        try:
-            transfer = SepaCreditTransferRequest.objects.get(idempotency_key=idempotency_key)
-            serializer = SepaCreditTransferRequestSerializer(transfer)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except SepaCreditTransferRequest.DoesNotExist:
-            return Response({"error": "Transferencia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            logger.error(f"Error al obtener los detalles de la transferencia: {str(e)}", exc_info=True)
-            return Response({"error": "Error inesperado al obtener los detalles de la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    def post(self, request, idempotency_key):
-        try:
-            transfer = SepaCreditTransferRequest.objects.get(id=idempotency_key)
-            idempotency_key = transfer.idempotency_key
-            bank_response = process_bank_transfer(idempotency_key, transfer)
-            if "error" in bank_response:
-                return Response({"error": bank_response["error"]}, status=status.HTTP_400_BAD_REQUEST)
-            transfer.transaction_status = "ACCP"
-            transfer.save()
-            sepa_xml = generate_sepa_xml(transfer)
-            if not os.path.exists(sepa_xml):
-                return Response({"error": "No se pudo generar el archivo XML."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            with open(sepa_xml, "r", encoding="utf-8") as xml_file:
-                xml_content = xml_file.read()
-            return Response({
-                "message": "Transferencia procesada exitosamente.",
-                "bank_response": bank_response,
-                "xml_content": xml_content
-            }, status=status.HTTP_200_OK)
-        except SepaCreditTransferRequest.DoesNotExist:
-            return Response({"error": "Transferencia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            logger.error(f"Error procesando transferencia: {str(e)}", exc_info=True)
-            return Response({"error": "Error inesperado al procesar la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class ProcessTransferView3(APIView):
-    def get(self, request, idempotency_key):
-        try:
-            transfer = SepaCreditTransferRequest.objects.get(idempotency_key=idempotency_key)
-            serializer = SepaCreditTransferRequestSerializer(transfer)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except SepaCreditTransferRequest.DoesNotExist:
-            return Response({"error": "Transferencia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            logger.error(f"Error al obtener los detalles de la transferencia: {str(e)}", exc_info=True)
-            return Response({"error": "Error inesperado al obtener los detalles de la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    def post(self, request, idempotency_key):
-        idempotency_key = request.data.get("idempotency_key")
-        if not idempotency_key:
-            serializer = SepaCreditTransferRequestSerializer(data=request.data)
-            if serializer.is_valid():
-                transfer = serializer.save(transaction_status="PDNG")
-                idempotency_key = transfer.idempotency_key
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            transfer = SepaCreditTransferRequest.objects.get(idempotency_key=idempotency_key)
-            bank_response = process_bank_transfer(idempotency_key, transfer)
-            if "error" in bank_response:
-                return Response({"error": bank_response["error"]}, status=status.HTTP_400_BAD_REQUEST)
-            transfer.transaction_status = "ACCP"
-            transfer.save()
-            sepa_xml = generate_sepa_xml(transfer)
-            xml_path = os.path.join(settings.MEDIA_ROOT, f"sepa_{transfer.idempotency_key}.xml")
-            with open(xml_path, "w") as xml_file:
-                xml_file.write(sepa_xml)
-            return Response({
-                "message": "Transferencia procesada exitosamente.",
-                "bank_response": bank_response,
-                "xml_path": xml_path
-            }, status=status.HTTP_200_OK)
-        except SepaCreditTransferRequest.DoesNotExist:
-            return Response({"error": "Transferencia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            logger.error(f"Error procesando transferencia: {str(e)}", exc_info=True)
-            return Response({"error": "Error inesperado al procesar la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class ProcessTransferView4(APIView):
-    def get(self, request, idempotency_key):
-        try:
-            transfer = SepaCreditTransferRequest.objects.get(idempotency_key=idempotency_key)
-            serializer = SepaCreditTransferRequestSerializer(transfer)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except SepaCreditTransferRequest.DoesNotExist:
-            return Response({"error": "Transferencia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            logger.error(f"Error al obtener los detalles de la transferencia: {str(e)}", exc_info=True)
-            return Response({"error": "Error inesperado al obtener los detalles de la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    def post(self, request, idempotency_key=None):
-        # Obtener idempotency_key desde los datos o el argumento
-        if not idempotency_key:
-            idempotency_key = request.data.get("idempotency_key")
-        
-        if not idempotency_key:
-            serializer = SepaCreditTransferRequestSerializer(data=request.data)
-            if serializer.is_valid():
-                #transfer = serializer.save(transaction_status="PDNG")
-                transfer = serializer.save(transaction_status="ACCP")
-                idempotency_key = transfer.idempotency_key
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            transfer = SepaCreditTransferRequest.objects.get(idempotency_key=idempotency_key)
-            bank_response = process_bank_transfer(transfer, idempotency_key)
-            if "error" in bank_response:
-                return Response({"error": bank_response["error"]}, status=status.HTTP_400_BAD_REQUEST)
-            
-            transfer.transaction_status = "ACCP"
-            transfer.save()
-
-            # Generar el archivo XML
-            sepa_xml = generate_sepa_xml(transfer)
-            xml_path = os.path.join(settings.MEDIA_ROOT, f"sepa_{transfer.idempotency_key}.xml")
-            with open(xml_path, "w") as xml_file:
-                xml_file.write(sepa_xml)
-
-            return Response({
-                "message": "Transferencia procesada exitosamente.",
-                "bank_response": bank_response,
-                "xml_path": xml_path
-            }, status=status.HTTP_200_OK)
-        except SepaCreditTransferRequest.DoesNotExist:
-            return Response({"error": "Transferencia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            logger.error(f"Error procesando transferencia: {str(e)}", exc_info=True)
-            return Response({"error": "Error inesperado al procesar la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.error(f"Error inesperado al cancelar la transferencia: {str(e)}", exc_info=True)  # Agregado
+            return Response({"error": "Error inesperado al cancelar la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

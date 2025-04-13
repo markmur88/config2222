@@ -109,8 +109,8 @@ class SEPA3(models.Model):
     currency = models.CharField(max_length=3, default="EUR")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PDNG')  # Estado
     execution_date = models.DateField(auto_now_add=True)
-    reference = models.CharField(blank=True, null=True)
-    unstructured_remittance_info = models.CharField(blank=True, null=True)
+    reference = models.CharField(max_length=20, blank=True, null=True)
+    unstructured_remittance_info = models.CharField(max_length=20, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="created_%(class)s_set")

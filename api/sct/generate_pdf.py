@@ -1,18 +1,21 @@
+import logging
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from datetime import datetime
 import os
+logger = logging.getLogger("bank_services")
 
-def generar_pdf_transferencia(transfer_request):
+
+def generar_pdf_transferencia(transfers):
     """
     Generates a well-organized PDF with SEPA transfer details.
     """
     # PDF file name
-    creditor_name = transfer_request.creditor_name.replace(" ", "_")
+    creditor_name = transfers.creditor_name.replace(" ", "_")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    payment_reference = transfer_request.payment_id
+    payment_reference = transfers.payment_id
     pdf_filename = f"{creditor_name}_{timestamp}_{payment_reference}.pdf"
     pdf_path = os.path.join("media", pdf_filename)
 
@@ -33,8 +36,8 @@ def generar_pdf_transferencia(transfer_request):
     # Header
     header_data = [
         ["Creation Date", datetime.now().strftime('%d/%m/%Y %H:%M:%S')],
-        ["Payment Reference", transfer_request.payment_id],
-        ["Idempotency Key", transfer_request.idempotency_key]
+        ["Payment Reference", transfers.payment_id],
+        ["Idempotency Key", transfers.idempotency_key]
     ]
     header_table = Table(header_data, colWidths=[150, 300])
     header_table.setStyle(TableStyle([
@@ -53,11 +56,11 @@ def generar_pdf_transferencia(transfer_request):
     # Debtor Information
     debtor_data = [
         ["Debtor Information", ""],
-        ["Name", transfer_request.debtor_name],
-        ["IBAN", transfer_request.debtor_account_iban],
-        ["BIC", transfer_request.debtor_account_bic],
-        ["Address", f"{transfer_request.debtor_adress_street_and_house_number}, "
-                    f"{transfer_request.debtor_adress_zip_code_and_city}, {transfer_request.debtor_adress_country}"]
+        ["Name", transfers.debtor_name],
+        ["IBAN", transfers.debtor_account_iban],
+        ["BIC", transfers.debtor_account_bic],
+        ["Address", f"{transfers.debtor_adress_street_and_house_number}, "
+                    f"{transfers.debtor_adress_zip_code_and_city}, {transfers.debtor_adress_country}"]
     ]
     debtor_table = Table(debtor_data, colWidths=[150, 300])
     debtor_table.setStyle(TableStyle([
@@ -76,11 +79,11 @@ def generar_pdf_transferencia(transfer_request):
     # Creditor Information
     creditor_data = [
         ["Creditor Information", ""],
-        ["Name", transfer_request.creditor_name],
-        ["IBAN", transfer_request.creditor_account_iban],
-        ["BIC", transfer_request.creditor_account_bic],
-        ["Address", f"{transfer_request.creditor_adress_street_and_house_number}, "
-                    f"{transfer_request.creditor_adress_zip_code_and_city}, {transfer_request.creditor_adress_country}"]
+        ["Name", transfers.creditor_name],
+        ["IBAN", transfers.creditor_account_iban],
+        ["BIC", transfers.creditor_account_bic],
+        ["Address", f"{transfers.creditor_adress_street_and_house_number}, "
+                    f"{transfers.creditor_adress_zip_code_and_city}, {transfers.creditor_adress_country}"]
     ]
     creditor_table = Table(creditor_data, colWidths=[150, 300])
     creditor_table.setStyle(TableStyle([
@@ -99,13 +102,13 @@ def generar_pdf_transferencia(transfer_request):
     # Transfer Details
     transfer_data = [
         ["Transfer Details", ""],
-        ["Amount", f"{transfer_request.instructed_amount} {transfer_request.instructed_currency}"],
-        ["Requested Execution Date", transfer_request.requested_execution_date.strftime('%d/%m/%Y')],
-        ["Purpose Code", transfer_request.purpose_code],
-        ["Remittance Information (Structured)", transfer_request.remittance_information_structured or 'N/A'],
-        ["Remittance Information (Unstructured)", transfer_request.remittance_information_unstructured or 'N/A'],
-        ["Auth ID", transfer_request.auth_id],
-        ["Transaction Status", transfer_request.transaction_status],
+        ["Amount", f"{transfers.instructed_amount} {transfers.instructed_currency}"],
+        ["Requested Execution Date", transfers.requested_execution_date.strftime('%d/%m/%Y')],
+        ["Purpose Code", transfers.purpose_code],
+        ["Remittance Information (Structured)", transfers.remittance_information_structured or 'N/A'],
+        ["Remittance Information (Unstructured)", transfers.remittance_information_unstructured or 'N/A'],
+        ["Auth ID", transfers.auth_id],
+        ["Transaction Status", transfers.transaction_status],
         ["Priority", "High (Instant SEPA Credit Transfer)"]
     ]
     transfer_table = Table(transfer_data, colWidths=[200, 250])

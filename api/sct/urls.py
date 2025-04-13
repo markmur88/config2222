@@ -3,7 +3,6 @@ from api.sct.views import (
     CancelTransferView,
     DownloadPdfView,
     DownloadXmlView,
-    ProcessTransferView4,
     SepaCreditTransferCreateView,
     SepaCreditTransferCreateView2,
     SepaCreditTransferDetailsView,
@@ -42,5 +41,5 @@ urlpatterns = [
     path('download-xml/<uuid:idempotency_key>/', DownloadXmlView.as_view(), name='download_xml'),
     path('download-pdf/<int:id>/', DownloadPdfView.as_view(), name='download_pdf'),
     path('cancel-transfer/<int:id>/', CancelTransferView.as_view(), name='cancel_transfer'),
-    path('process-transfer/<uuid:idempotency_key>/', ProcessTransferView4.as_view(), name='process_transfer'),
+    # path('process-transfer/<uuid:idempotency_key>/', ProcessTransferView4.as_view(), name='process_transfer'),
 ]
