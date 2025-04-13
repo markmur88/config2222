@@ -5,7 +5,7 @@ from api.sct.models import (
     SepaCreditTransferRequest, SepaCreditTransferResponse, 
     SepaCreditTransferDetailsResponse, SepaCreditTransferUpdateScaRequest
 )
-from api.sct.process_bank import process_bank_transfer, process_bank_transfer1, process_bank_transfer11, process_bank_transfer_json, process_bank_transfer_xml
+from api.sct.process_bank import process_bank_transfer, process_bank_transfer_json, process_bank_transfer_xml
 from api.sct.serializers import (
     SepaCreditTransferRequestSerializer, SepaCreditTransferResponseSerializer, 
     SepaCreditTransferDetailsResponseSerializer, SepaCreditTransferUpdateScaRequestSerializer
@@ -274,3 +274,31 @@ class ProcessTransferView12(APIView):
         except Exception as e:
             logger.error(f"Error procesando transferencia: {str(e)}", exc_info=True)
             return Response({"error": "Error inesperado al procesar la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class ProcessTransferView13(APIView):
+    def post(self, request, idempotency_key):
+        try:
+            transfers = SepaCreditTransferRequest.objects.get(idempotency_key=idempotency_key)
+            bank_response = process_bank_transfer_json(idempotency_key, transfers)
+
+            if "error" in bank_response:
+                return Response({"error": bank_response["error"]}, status=status.HTTP_400_BAD_REQUEST)
+
+            transfers.transaction_status = "ACCP"
+            transfers.save()
+
+            # Generar el archivo XML
+            xml_path = os.path.join(settings.MEDIA_ROOT, f"sepa_{transfers.idempotency_key}.xml")
+            sepa_xml = generate_sepa_xml(transfers)
+            with open(xml_path, "w") as xml_file:
+                xml_file.write(sepa_xml)
+
+            return Response({
+                "message": "Transferencia procesada exitosamente.",
+                "xml_path": xml_path
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Error procesando transferencia: {str(e)}", exc_info=True)
+            return Response({"error": "Error inesperado al procesar la transferencia."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        

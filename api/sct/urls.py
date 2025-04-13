@@ -1,8 +1,7 @@
 from django.urls import path
+from api.sct.process_transfer import ProcessTransferView12
 from api.sct.views import (
-    CancelTransferView,
     DownloadPdfView,
-    DownloadXmlView,
     SepaCreditTransferCreateView,
     SepaCreditTransferCreateView2,
     SepaCreditTransferDetailsView,
@@ -12,9 +11,10 @@ from api.sct.views import (
     SepaCreditTransferListView,
     SepaCreditTransferDownloadXmlView,
     SepaCreditTransferDownloadPdfView,
-    SCTList5View
+    SCTList5View,
+    SCTProc5View
 )
-from .services import SCTCreateView, SCTList, SCTView, SepaCreditTransferCreateView3, SCTLView
+from api.sct.services import SCTCreateView, SCTList, SCTView, SepaCreditTransferCreateView3, SCTLView
 
 urlpatterns = [
     path('', SepaCreditTransferCreateView.as_view(), name='create_sepa_credit_transfer'),
@@ -38,8 +38,8 @@ urlpatterns = [
     
     # HTML SERVICES
     path('list5/', SCTList5View.as_view(), name='sct_list5'),
-    path('download-xml/<uuid:idempotency_key>/', DownloadXmlView.as_view(), name='download_xml'),
     path('download-pdf/<int:id>/', DownloadPdfView.as_view(), name='download_pdf'),
-    path('cancel-transfer/<int:id>/', CancelTransferView.as_view(), name='cancel_transfer'),
-    # path('process-transfer/<uuid:idempotency_key>/', ProcessTransferView4.as_view(), name='process_transfer'),
+    path('proc5/<uuid:pk>/', SCTProc5View.as_view(), name='sct_proc5'),
+    path('process/<uuid:idempotency_key>/', ProcessTransferView12.as_view(), name='process_transfer'),
+    
 ]

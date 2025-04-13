@@ -16,7 +16,7 @@ import logging
 from rest_framework.exceptions import APIException
 from api.sct.generate_xml import generate_sepa_xml
 from api.sct.generate_pdf import generar_pdf_transferencia
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from api.sct.forms import SepaCreditTransferRequestForm
 from uuid import uuid4
@@ -223,7 +223,7 @@ class SCTList55View(CreateView, ListView):
         return super().form_valid(form)
 
 
-class SCTList5View(CreateView, ListView):
+class SCTList6View(CreateView, ListView):
     model = SepaCreditTransferRequest
     form_class = SepaCreditTransferRequestForm
     template_name = "api/SCT/sct_list5.html"
@@ -264,7 +264,51 @@ class SCTList5View(CreateView, ListView):
 
         return super().form_valid(form)
     
+
+class SCTList5View(CreateView, ListView):
+    model = SepaCreditTransferRequest
+    form_class = SepaCreditTransferRequestForm
+    template_name = "api/SCT/sct_list5.html"
+    success_url = reverse_lazy('sct_list5')
+
+    def get_queryset(self):
+        # Define el queryset que se usará como object_list
+        return SepaCreditTransferRequest.objects.all()
     
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['idempotency_key'] = uuid4()
+        initial['payment_id'] = uuid4()
+        initial['auth_id'] = uuid4()
+        initial['payment_identification_end_to_end_id'] = uuid4()
+        initial['requested_execution_date'] = date.today()
+        return initial
+
+    def get_context_data(self, **kwargs):
+        # Asegurar que self.object_list esté definido
+        self.object_list = self.get_queryset()
+        context = super().get_context_data(**kwargs)
+        context['transfers'] = self.object_list  # Usar self.object_list
+        return context
+
+    def form_valid(self, form):
+        # Guardar la transferencia sin procesarla
+        form.save()
+        return super().form_valid(form)
+
+
+class SCTProc5View(UpdateView):
+    model = SepaCreditTransferRequest
+    form_class = SepaCreditTransferRequestForm
+    template_name = "api/SCT/sct_proc5.html"
+    success_url = reverse_lazy('sct_list5')
+
+    def form_valid(self, form):
+        # Guardar los cambios sin salir del formulario
+        self.object = form.save()
+        return self.render_to_response(self.get_context_data(form=form))
+
+
 class DownloadXmlView(APIView):
     """
     View para descargar el archivo XML de una transferencia SEPA.

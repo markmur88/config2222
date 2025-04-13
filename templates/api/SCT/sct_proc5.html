@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<a href="{% url 'sct_list5' %}" class="btn btn-secondary mb-3">Regresar al Listado</a>
+<br><br>
+
+<h1>Modificar Transferencia SEPA</h1>
+
+<!-- Formulario para modificar la transferencia -->
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">Monto</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="instructed_amount">Monto</label>
+                        {{ form.instructed_amount }}
+                    </div>
+                    <div class="form-group">
+                        <label for="instructed_currency">Moneda</label>
+                        {{ form.instructed_currency }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">Identificación</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="payment_identification_instruction_id">ID de Instrucción</label>
+                        {{ form.payment_identification_instruction_id }}
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_id">Payment ID</label>
+                        {{ form.payment_id }}
+                    </div>
+                    <div class="form-group">
+                        <label for="auth_id">Auth ID</label>
+                        {{ form.auth_id }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">Autorización</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="idempotency_key">Idempotency Key</label>
+                        {{ form.idempotency_key }}
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_identification_end_to_end_id">End-to-End ID</label>
+                        {{ form.payment_identification_end_to_end_id }}
+                    </div>
+                    <div class="form-group mb-6">
+                        <label for="requested_execution_date">Fecha de Ejecución Solicitada</label>
+                        {{ form.requested_execution_date }}
+                    </div>                                 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón para guardar cambios -->
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <!-- Botón para procesar la transferencia -->
+    <button type="submit" formaction="{% url 'process_transfer' object.idempotency_key %}" class="btn btn-primary">Procesar Transferencia</button>
+</form>
+{% endblock %}
