@@ -105,7 +105,7 @@ DATABASE_PSQL = {
         'PORT': '5432',
     }
 }
-DATABASES = DATABASE_SQLITE
+DATABASES = DATABASE_PSQL
 
 # Authentication
 AUTH_USER_MODEL = 'authentication.CustomUser'
