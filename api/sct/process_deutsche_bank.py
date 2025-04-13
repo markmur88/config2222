@@ -52,11 +52,8 @@ def deutsche_bank_transfer(idempotency_key, transfers):
                 raise ValueError("El objeto transfers no es válido.")
             
         access_token = os.getenv("ACCESS_TOKEN")
-
-        
-        # if not access_token:
-        #     logger.error(f"Error obteniendo token de Deutsche Bank: {token_response.get('error', 'Respuesta desconocida')}")
-        #     return {"error": "No se pudo obtener el token de acceso de Deutsche Bank"}
+        psu_id = os.getenv("PSU_ID")
+        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
 
         url = f"{settings.DEUTSCHE_BANK_API_URL}"
         headers = {
@@ -65,8 +62,8 @@ def deutsche_bank_transfer(idempotency_key, transfers):
             "idempotency-id": str(idempotency_key),
             "otp": "SEPA_TRANSFER_GRANT",
             'X-Request-ID': f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}",
-            'PSU-ID': '02569S',
-            'PSU-IP-Address': '193.150.166.1'            
+            'PSU-ID': f"{psu_id}",
+            'PSU-IP-Address': f"{psu_ip_address}"
         }
 
         # Construir los datos de la transferencia
@@ -157,11 +154,8 @@ def deutsche_bank_transfer0(idempotency_key, transfers):
                 raise ValueError("El objeto transfers no es válido.")
             
         access_token = os.getenv("ACCESS_TOKEN")
-
-        
-        # if not access_token:
-        #     logger.error(f"Error obteniendo token de Deutsche Bank: {token_response.get('error', 'Respuesta desconocida')}")
-        #     return {"error": "No se pudo obtener el token de acceso de Deutsche Bank"}
+        psu_id = os.getenv("PSU_ID")
+        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
 
         url = f"{settings.DEUTSCHE_BANK_API_URL}"
         headers = {
@@ -170,9 +164,10 @@ def deutsche_bank_transfer0(idempotency_key, transfers):
             "idempotency-id": str(idempotency_key),
             "otp": "SEPA_TRANSFER_GRANT",
             'X-Request-ID': f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}",
-            'PSU-ID': '02569S',
-            'PSU-IP-Address': '193.150.166.1'            
+            'PSU-ID': f"{psu_id}",
+            'PSU-IP-Address': f"{psu_ip_address}"
         }
+
 
         # Construir los datos de la transferencia
         payload = {
@@ -308,15 +303,20 @@ def deutsche_bank_transfer1(idempotency_key, transfers):
     """
     try:
         access_token = os.getenv("ACCESS_TOKEN")
+        psu_id = os.getenv("PSU_ID")
+        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
 
-        
         url = f"{settings.DEUTSCHE_BANK_API_URL}"
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
             "idempotency-id": str(idempotency_key),
-            "otp": "SEPA_TRANSFER_GRANT"
+            "otp": "SEPA_TRANSFER_GRANT",
+            'X-Request-ID': f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}",
+            'PSU-ID': f"{psu_id}",
+            'PSU-IP-Address': f"{psu_ip_address}"
         }
+
 
         # Construir los datos de la transferencia
         SepaCreditTransferRequest = {
@@ -399,16 +399,20 @@ def deutsche_bank_transfer11(idempotency_key, transfers):
             
             
         access_token = os.getenv("ACCESS_TOKEN")
-        
+        psu_id = os.getenv("PSU_ID")
+        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
+
         url = f"{settings.DEUTSCHE_BANK_API_URL}"
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
             "idempotency-id": str(idempotency_key),
+            "otp": "SEPA_TRANSFER_GRANT",
             'X-Request-ID': f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}",
-            'PSU-ID': '02569S',
-            'PSU-IP-Address': '193.150.166.1'            
+            'PSU-ID': f"{psu_id}",
+            'PSU-IP-Address': f"{psu_ip_address}"
         }
+
 
         # Construir los datos de la transferencia
         SepaCreditTransferRequest = {

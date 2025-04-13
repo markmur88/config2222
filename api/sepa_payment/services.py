@@ -1,10 +1,12 @@
 # apps/sepa_payment/services.py
+import os
 import requests
 import json
 from config import settings
 from django.core.exceptions import ImproperlyConfigured
 from datetime import datetime, timezone
-
+from dotenv import load_dotenv
+load_dotenv()
 from api.sepa_payment.models import SepaCreditTransfer, SepaCreditTransferError, SepaCreditTransferStatus
 
 class SepaPaymentService:
@@ -37,7 +39,9 @@ class SepaPaymentService:
 
     def create_payment(self, data):
         # access_token = self._get_access_token()
-        access_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQyNTA3MjYxLCJpYXQiOjE3NDI1MDU0NjEsImp0aSI6ImI0NDljOTA0Mjk0ODQ4ODE5ODk4OGY0ODA1ZGU0MWQwIiwidXNlcl9pZCI6MX0.kTfWCkyZR4cuuw1ySYSGxDyuZuDeotbJ_qc6FgBYnhk'
+        access_token = os.getenv("ACCESS_TOKEN")
+        psu_id = os.getenv("PSU_ID")
+        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
         headers = {
             'Authorization': f'Bearer {access_token}',
             'Content-Type': 'application/json',
@@ -100,7 +104,9 @@ class SepaPaymentService:
 
     def get_payment_status(self, payment_id):
         # access_token = self._get_access_token()
-        access_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQyNTA3MjYxLCJpYXQiOjE3NDI1MDU0NjEsImp0aSI6ImI0NDljOTA0Mjk0ODQ4ODE5ODk4OGY0ODA1ZGU0MWQwIiwidXNlcl9pZCI6MX0.kTfWCkyZR4cuuw1ySYSGxDyuZuDeotbJ_qc6FgBYnhk'
+        access_token = os.getenv("ACCESS_TOKEN")
+        psu_id = os.getenv("PSU_ID")
+        psu_ip_address = os.getenv("PSU_IP_ADDRESS")
         headers = {
             'Authorization': f'Bearer {access_token}',
             'X-Request-ID': self._generate_request_id()
