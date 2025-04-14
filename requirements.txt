@@ -15,6 +15,7 @@ django-oauth-toolkit
 djangorestframework
 djangorestframework_simplejwt
 drf-yasg
+gunicorn
 idna
 inflection
 iniconfig
