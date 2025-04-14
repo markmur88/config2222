@@ -98,7 +98,7 @@ DATABASE_SQLITE = {
 DATABASE_PSQL = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
+        'NAME': 'mydatabase22',
         'USER': 'markmur88',
         'PASSWORD': 'Ptf8454Jd55',
         'HOST': 'localhost',

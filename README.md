@@ -15,7 +15,8 @@ swiftapi4 es un proyecto diseñado para proporcionar una API rápida y eficiente
    python manage.py migrate
    python manage.py createsuperuser
    python manage.py collectstatic
-   python manage.py runserver
+   python -m pip install gunicorn
+   gunicorn config.wsgi
 2. Recopila los archivos estáticos:
    ```bash
    python manage.py collectstatic
